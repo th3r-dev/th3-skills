@@ -1,0 +1,8 @@
+{
+  "name": "th3-skills",
+  "description": "All th3 skills for Claude Code in one plugin.",
+  "version": "1.0.0",
+  "author": { "name": "TheeraphatStudent" },
+  "repository": "https://github.com/th3r-dev/th3-skills",
+  "license": "MIT"
+}

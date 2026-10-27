@@ -1,0 +1,12 @@
+{
+  "name": "th3-skills",
+  "owner": { "name": "TheeraphatStudent" },
+  "description": "Claude Code skills by th3.",
+  "plugins": [
+    {
+      "name": "th3-skills",
+      "source": "./",
+      "description": "All th3 skills in one plugin."
+    }
+  ]
+}

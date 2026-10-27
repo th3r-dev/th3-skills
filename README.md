@@ -2,10 +2,16 @@
 
 Skills for Claude Code, installable via [`npx skills`](https://dev.to/baltz/sharing-skills-with-npx-2nbc).
 
+## Install as a Claude Code plugin (all skills)
+
+```
+/plugin install th3-skills --marketplace th3r-dev/th3-skills
+```
+
 ## Install a skill
 
 ```
-npx skills@latest add TheeraphatStudent/th3-skills --skill poc-spec-driven-builder
+npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
 ```
 
 ## Skills
@@ -16,6 +22,8 @@ npx skills@latest add TheeraphatStudent/th3-skills --skill poc-spec-driven-build
 - [`pdf-operations`](skills/pdf-operations/SKILL.md) — PDF manipulation with `pdf-lib`: merging multiple PDFs into one, splitting a PDF into pages, extracting/reordering pages, rotating pages, and drawing overlays. Migrated from `pdf-kit-skills`.
 
 - [`podman-disk-reclaim`](skills/podman-disk-reclaim/SKILL.md) — reclaims Podman disk space on Windows, macOS and Linux: prunes unused images, runs `fstrim` in the Podman machine, and on Windows compacts the WSL `ext4.vhdx` so the space actually returns to the host. One stdlib-only Python script, `--dry-run` first.
+
+- [`prompt-cache-kit`](skills/prompt-cache-kit/SKILL.md) — makes dynamic agents cheaper by keeping prompt prefixes byte-identical so the prompt cache hits. A uv-run script builds a fingerprinted project outline locally, writes agent briefs that put that outline first and the task last, and reports per-agent cache hit rate from the local session logs.
 
 ## Related
 
