@@ -25,6 +25,8 @@ npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
 
 - [`prompt-cache-kit`](skills/prompt-cache-kit/SKILL.md) — makes dynamic agents cheaper by keeping prompt prefixes byte-identical so the prompt cache hits. A uv-run script builds a fingerprinted project outline locally, writes agent briefs that put that outline first and the task last, and reports per-agent cache hit rate from the local session logs.
 
+- [`dependency-vuln-explainer`](skills/dependency-vuln-explainer/SKILL.md) — explains a vulnerable dependency (Dependabot alert, GHSA/CVE, `npm audit`) so a person can see how the attack works and whether it reaches their app. Traces the lockfile path, rates real reachability instead of repeating the CVSS score, ranks fix options, draws the exploit and dependency path with `diagram-design`, and leaves a vuln card other agents can act on. Optional sandboxed repro via `poc-spec-driven-builder` in a network-less container. Benchmarked on a real liquidjs RCE alert (CVSS 10.0 → low real priority).
+
 ## Related
 
 - [kien-thai (เขียนไทย)](https://github.com/chakrit/kien-thai) by chakrit — a skill for writing Thai that Thai readers find easy to read. Pairs with `thai-mock-naming`: that skill handles the Thai prose in free-text fields, this one handles the identity fields.
