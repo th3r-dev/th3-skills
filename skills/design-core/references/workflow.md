@@ -1,0 +1,86 @@
+# How to work
+
+The order every design task follows, from a single button to a full flow. Each stage ends with
+a check. When a check fails, fix that stage before moving on; a problem carried forward is
+harder to find later.
+
+## 1. Understand
+
+- **Who and where.** Who uses this screen, on which device, in what situation (at a desk, on
+  the move, under time pressure). This sets density, tone and target size.
+- **The job.** One sentence: "On this screen, a <role> can <do what> so that <outcome>."
+  If you can't write it, ask before designing.
+- **Behavior from the source.** Take actions, validation, messages and role gates from the
+  app's code, the spec, or the user. Never invent business rules.
+
+Check: the one-sentence job is written down, and every open question is asked or answered.
+
+## 2. Inventory
+
+Read before you draw:
+
+- Components, variables (color, spacing, radius), text styles, effect styles.
+- The term list and capitalization in the existing screens.
+- Sibling screens in the same section: the new screen must look like them.
+- Platform: Apple HIG, Material, or web, and the frame sizes the product already uses.
+
+Missing pieces are a list to show the user, not values to invent. Ask before adding tokens or
+components. When the product has nothing at all, use the [defaults](visual-principles.md#defaults-when-the-product-has-none)
+and say so.
+
+Check: you can name the component, token and text style for every element you plan to place.
+
+## 3. Intent before pixels
+
+Write the plan as text and show it:
+
+- Content order, most important first.
+- The one focal point and the primary action.
+- The states: default, empty, loading, error, long content (see [interface-quality.md](interface-quality.md)).
+- Any flow as `[step] → <decision?> --True--> [step]`.
+- The visible text, in the product's words (see [writing.md](writing.md)).
+
+Check: the user agrees with the plan, or the request already fixed it. Skip the wait for a
+one-element change.
+
+## 4. Build
+
+- Smallest version first: the default state of one screen. Then add the other states.
+- Instances of components, never detached copies. Values bound to tokens.
+- Auto layout, so the screen survives long text and resizing.
+- Clear layer names: `Role ▸ Menu ▸ Screen` for screens, the component's name for parts.
+  No `Frame 123`, no `Group 7`.
+- Write only where the user pointed you. Experiments go on a duplicated page.
+
+Check: no raw values, no detached instances, no default layer names.
+
+## 5. Review
+
+1. Take one screenshot of the result.
+2. Score it with the review table in [SKILL.md](../SKILL.md#how-to-use-it).
+3. Fix the highest-impact findings. A few decisive fixes beat many small nudges.
+4. Take one more screenshot and score again. Stop at a pass or after three rounds, and report
+   what still fails rather than looping.
+
+Report scores and the remaining findings, never just "done".
+
+## 6. Hand off
+
+For each screen, the developer gets:
+
+- **States**, each one designed, not described.
+- **Behavior**: branches, alert texts and their exits, role gates, where each action leads.
+- **Tokens and components used**, so nothing has to be measured from pixels.
+- **Edge cases**: long text, empty data, slow network, no permission.
+- **Gaps**: anything still a placeholder, missing a token, or decided "for now".
+
+## Habits
+
+- Change one thing at a time when fixing, so you know which change helped.
+- Keep the user's content, brand and intent. Restyling that wasn't asked for is a finding
+  against you, not an improvement.
+- Old versions are kept beside the new one, never deleted.
+- Real data shapes, not lorem ipsum: realistic names, lengths and numbers. Mock data in
+  anything public.
+- A rule that blocks the user's request gets raised once, with the reason. If they still want
+  it, build what they asked.
