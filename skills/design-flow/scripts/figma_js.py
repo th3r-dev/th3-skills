@@ -21,8 +21,9 @@ the output verbatim as `code`.
   figma_js.py flow-kit --page 1:2 --tokens tokens.json        (build Flow/Node, Flow/Decision, Flow/Marker, Flow/Element Row)
   figma_js.py flow --page 1:2 --spec flow.json                  (UI → flow → UI: element on screen → kit nodes → target screen)
   figma_js.py state --page 1:2 --spec state.json                (target state screen: copy + dialog overlay, or imported page + sidebar)
-  figma_js.py make-room --page 1:2 --from-x 24900 --dx 10000 [--label <section label id>]   (shift a section right)
+  figma_js.py make-room --page 1:2 --from-x 24900 --dx 10000 [--label <section label id>] [--y-from Y --y-to Y]   (shift a section right)
   figma_js.py redraw-connectors --page 1:2 [--ids a,b] [--slack 400]   (fix stale connector routes after moves)
+  figma_js.py images --page 1:2 --root 10:20 --images capture.images.json   (raster images of an html-figma import)
   figma_js.py place-check --page 1:2                          (stage 1 check: screens overlapping, on a title? read-only)
   figma_js.py usage --page 1:2 [--spec usage.json]                         (rule check: every component used? read-only)
   figma_js.py ui-samples --page 1:2 --spec names.json         (code component → matching layers, grouped by structure and fill)
@@ -65,6 +66,8 @@ def self_test():
     assert TOKEN not in w and '"roots": ["2:2"]' in w
     a = render("autolayout", {"page": "1:1", "root": "2:2"})
     assert TOKEN not in a and '"root": "2:2"' in a
+    i = render("images", {"page": "1:1", "root": "2:2", "images": {"k": {"b64": "QUJD"}}})
+    assert TOKEN not in i and '"QUJD"' in i
     p = render("place", {"page": "1:1", "capture": "3:3", "target": "4:4", "name": "Role ▸ Menu ▸ ทดสอบ"})
     assert TOKEN not in p and "ทดสอบ" in p
     try:
@@ -84,9 +87,14 @@ def main():
     rc = sub.add_parser("redraw-connectors")
     rc.add_argument("--page", required=True); rc.add_argument("--ids", help="comma-separated connector ids (default: all stale)")
     rc.add_argument("--slack", type=float, default=400); rc.add_argument("-o", "--out")
+    im = sub.add_parser("images")
+    im.add_argument("--page", required=True); im.add_argument("--root", required=True, help="the imported frame")
+    im.add_argument("--images", required=True, help="the <capture>.images.json capture.py wrote"); im.add_argument("-o", "--out")
     mr = sub.add_parser("make-room")
     mr.add_argument("--page", required=True); mr.add_argument("--from-x", type=float, required=True)
     mr.add_argument("--dx", type=float, required=True); mr.add_argument("--label"); mr.add_argument("-o", "--out")
+    mr.add_argument("--y-from", type=float, help="row band: only nodes whose top is at or below this y move")
+    mr.add_argument("--y-to", type=float, help="row band: ... and above this y")
     for name in ("flow-kit", "flow", "extract", "state", "componentize", "ui-samples", "usage", "place-check"):
         s = sub.add_parser(name)
         s.add_argument("--page", required=True)
@@ -133,8 +141,10 @@ def main():
         a.cmd, params = "flow_render", {"page": a.page, **json.loads(Path(a.spec).read_text(encoding="utf-8"))}
     elif a.cmd == "redraw-connectors":
         a.cmd, params = "connector_redraw", {"page": a.page, "slack": a.slack, **({"ids": [i.strip() for i in a.ids.split(",")]} if a.ids else {})}
+    elif a.cmd == "images":
+        params = {"page": a.page, "root": a.root, "images": json.loads(Path(a.images).read_text(encoding="utf-8"))}
     elif a.cmd == "make-room":
-        a.cmd, params = "make_room", {"page": a.page, "from_x": a.from_x, "dx": a.dx, "label": a.label}
+        a.cmd, params = "make_room", {"page": a.page, "from_x": a.from_x, "dx": a.dx, "label": a.label, "y_from": a.y_from, "y_to": a.y_to}
     elif a.cmd == "place-check":
         a.cmd, params = "place_check", {"page": a.page}
     elif a.cmd == "usage":

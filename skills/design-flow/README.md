@@ -103,7 +103,9 @@ Read `SKILL.md` first. It holds the rules. This is the order of operations.
    → anything missing that the task needs: STOP, list it, ask
 2  capture
      live page / HTML :  capture.py url|html|jobs --to layers --out <work>/captures [--state FILE]
-                         import_html_layers path=captures/<file>.json  (relative to /work)
+                         import_html_layers source=captures/<file>.json  (relative to /work)
+                         figma_js.py images --page P --root <imported frame> --images captures/<file>.images.json
+                           → run_script  (raster images; capture.py splits them out of the layer JSON)
                          figma_js.py autolayout --page P --root <imported frame>  → run_script
      (official MCP only) capture.py ... --to figma --capture <id from generate_figma_design>
      image            :  upload as locked reference → rebuild with components + createAutoLayout

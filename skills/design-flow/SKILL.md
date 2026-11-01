@@ -76,8 +76,9 @@ can't write nodes. So [`scripts/figma_js.py`](scripts/figma_js.py) renders the J
 | `figma_js.py flow-kit --tokens t.json` | builds the design-mode flow kit (Flow/Node, Flow/Decision, Flow/Marker, Flow/Element Row) from your tokens |
 | `figma_js.py flow --spec flow.json` | UI → flow → UI: element on screen → kit steps → next screen, lines routed around everything (A*) |
 | `figma_js.py state --spec state.json` | target state screen: copy + dialog overlay, or captured page + accurate sidebar |
-| `figma_js.py make-room` | shift a section right and widen its label so a flow fits (ask first) |
+| `figma_js.py make-room` | shift a section right and widen its label so a flow fits (ask first); `--y-from/--y-to` limit it to one row band |
 | `figma_js.py extract` + `design_graph.py` | design knowledge graph: `build`, `dupes`, `impact`, `tour`, `gaps` |
+| `figma_js.py images` | fill the raster images `capture.py` split into `<slug>.images.json` (run right after the import) |
 | `figma_js.py autolayout` | absolute frames → auto layout (rows and columns inferred, deepest first) |
 | `figma_js.py tokenize` | raw values → the file's variables and text styles |
 | `figma_js.py place` | new screen → placeholder slot (replace) or old screen slot (version card + old at 0.5) |
