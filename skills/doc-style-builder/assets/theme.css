@@ -1,0 +1,79 @@
+/* doc-style-builder theme: the one source of truth for fonts, sizes and colors.
+   build_doc.py reads the :root tokens for the DOCX; the rules below style the HTML and the PDF.
+   Change a value here and both outputs follow. */
+:root {
+  --font-body: 'TH Sarabun New', 'TH SarabunPSK', 'Sarabun Scaled', sans-serif;
+  --font-heading: 'TH Sarabun New', 'TH SarabunPSK', 'Sarabun Scaled', sans-serif;
+  --font-code: Consolas, 'Courier New', monospace;
+
+  --size-title: 26pt;
+  --size-subtitle: 18pt;
+  --size-h1: 20pt;
+  --size-h2: 17pt;
+  --size-h3: 16pt;
+  --size-body: 16pt;
+  --size-caption: 14pt;
+  --size-code: 10.5pt;
+  --size-code-block: 8.5pt;
+
+  --color-text: #000000;
+  --color-caption: #404040;
+  --color-muted: #808080;
+  --color-rule: #000000;
+  --color-border: #BFBFBF;
+  --color-header-bg: #E7E6E6;
+  --color-code-bg: #F5F5F5;
+  --color-pass: #1A7F37;
+  --color-fail: #CC0000;
+  --color-added: #C6EFCE;
+  --color-edited: #FFF2CC;
+  --color-removed: #FFC7CE;
+}
+
+/* TH Sarabun draws small: 16pt TH Sarabun New reads like 12pt Sarabun, so the Sarabun fallback is scaled to match */
+@font-face { font-family: 'Sarabun Scaled'; src: local('Sarabun'), local('Sarabun-Regular'); size-adjust: 75%; }
+@font-face { font-family: 'Sarabun Scaled'; src: local('Sarabun Bold'), local('Sarabun-Bold'); font-weight: bold; size-adjust: 75%; }
+
+@page { size: A4; margin: 18mm 20mm; }  /* build_doc.py uses the same A4 margins for the DOCX */
+
+body { font-family: var(--font-body); font-size: var(--size-body); color: var(--color-text); line-height: 1.25;
+       max-width: 170mm; margin: 0 auto; padding: 0 16px; background: #fff; }
+@media print { body { padding: 0; max-width: none; } }
+
+#title-block-header { margin-bottom: 10pt; text-align: center; }
+h1.title { font-family: var(--font-heading); font-size: var(--size-title); margin: 0; }
+.subtitle { font-size: var(--size-subtitle); font-weight: bold; margin: 0; }
+.author, .date { margin: 0; color: var(--color-caption); }
+
+h1, h2, h3 { font-family: var(--font-heading); break-after: avoid; }
+h1 { font-size: var(--size-h1); margin: 14pt 0 4pt; }
+h2 { font-size: var(--size-h2); margin: 10pt 0 2pt; }
+h3 { font-size: var(--size-h3); margin: 8pt 0 2pt; }
+p, li { margin: 0 0 4pt; }
+p:has(+ pre, + div.sourceCode, + table) { break-after: avoid; }  /* a label stays with what it introduces */
+
+table { border-collapse: collapse; width: 100%; margin: 2pt 0 6pt; }
+th, td { border: 1px solid var(--color-rule); padding: 1pt 6pt; vertical-align: top; text-align: left; }
+th { background: var(--color-header-bg); }
+table:not(:has(thead)) td:first-child { background: var(--color-header-bg); }  /* empty header = key/value table */
+thead { display: table-header-group; }   /* header row repeats on every page */
+tr { break-inside: avoid; }              /* a row never splits across pages */
+tr.added td { background: var(--color-added); }
+tr.edited td { background: var(--color-edited); }
+tr.removed td { background: var(--color-removed); text-decoration: line-through; }
+
+code { font-family: var(--font-code); font-size: var(--size-code); }
+pre { font-family: var(--font-code); font-size: var(--size-code-block); line-height: 1.3; background: var(--color-code-bg);
+      border: 1px solid var(--color-border); padding: 4pt 6pt; white-space: pre-wrap; word-break: break-all;
+      margin: 2pt 0 4pt; break-inside: avoid; }
+pre code { font-size: inherit; }
+
+figure { margin: 4pt 0 10pt; break-inside: avoid; }
+figure img, p > img { display: block; margin: 0 auto; max-width: 90%; border: 1px solid var(--color-border); }
+figcaption { text-align: center; font-style: italic; font-size: var(--size-caption); color: var(--color-caption); margin-top: 2pt; }
+
+blockquote { margin: 4pt 0; padding: 2pt 10pt; border-left: 3px solid var(--color-border); color: var(--color-caption); }
+.pass { color: var(--color-pass); font-weight: bold; }
+.fail { color: var(--color-fail); font-weight: bold; }
+.none { color: var(--color-muted); }
+.pagebreak { break-before: page; }
