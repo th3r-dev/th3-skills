@@ -2,11 +2,14 @@
 // Make horizontal room for UI → flow → UI inside a section: move every top-level node whose left edge is at or
 // right of P.from_x by P.dx (connectors follow their endpoints, so they're skipped), and widen the section label
 // P.label by P.dx. Nothing is deleted; relative layouts inside moved sections stay intact.
+// Pages laid out in rows (a label at the left, screens to its right) take P.y_from / P.y_to: only nodes whose
+// top edge is inside that band move, so the other rows keep their place.
 const P = __PARAMS__;
 await figma.setCurrentPageAsync(await figma.getNodeByIdAsync(P.page));
 const moved = [], skipped = [];
 for (const n of figma.currentPage.children) {
   if (n.x < P.from_x) continue;
+  if ((P.y_from != null && n.y < P.y_from) || (P.y_to != null && n.y >= P.y_to)) continue;
   if (n.type === 'CONNECTOR') { skipped.push(n.id); continue; }
   n.x += P.dx; moved.push(n.id);
 }

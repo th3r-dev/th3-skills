@@ -27,7 +27,7 @@ scripts run.
 """
 from __future__ import annotations
 
-import argparse, base64, functools, http.server, json, os, re, shutil, subprocess, sys, tempfile, threading
+import argparse, base64, functools, hashlib, http.server, json, os, re, shutil, subprocess, sys, tempfile, threading
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -47,7 +47,7 @@ def html_figma_bundle():
     """Browser IIFE of html-figma (global htmlFigma.htmlToFigma), built once with npm + esbuild."""
     out = CACHE / f"{HTML_FIGMA.replace('@', '-')}.js"
     if out.exists():
-        return out.read_text(encoding="utf-8")
+        return patch_bundle(out.read_text(encoding="utf-8"))
     if not shutil.which("npx") or not shutil.which("npm"):
         sys.exit("--to layers needs node (npm, npx) once to bundle html-figma; install node or use --to figma")
     CACHE.mkdir(parents=True, exist_ok=True)
@@ -57,7 +57,72 @@ def html_figma_bundle():
         run(["npm", "i", "--ignore-scripts", "--no-audit", "--no-fund", HTML_FIGMA])
         run(["npx", "-y", "esbuild@0.24.0", "node_modules/html-figma/browser/index.js", "--bundle",
              "--format=iife", "--global-name=htmlFigma", "--platform=browser", f"--outfile={out}"])
-    return out.read_text(encoding="utf-8")
+    return patch_bundle(out.read_text(encoding="utf-8"))
+
+
+# Patches to html-figma 0.3.1, applied to the bundle as text (each hook must exist, else the upgrade broke it):
+#  - it keeps a text's family and size but not its weight, so every bold label imports as Regular; the bridge
+#    plugin already maps a numeric fontWeight to Bold/SemiBold/Medium.
+#  - it names every layer "Frame", but ui-samples / swap find components by layer name ("Button", "Badge",
+#    "Input"…). Name each frame from the DOM: data-figma-name, then common framework class words, role, tag.
+#  - it drops any element under 1px together with its whole subtree, so a fixed sidebar inside a 0px-high
+#    wrapper (common in app shells) vanishes. Keep such an element when it has children, as a 1px frame.
+LAYER_NAMER = r"""
+  var __layerName = (el) => {
+    if (el.dataset && el.dataset.figmaName) return el.dataset.figmaName;
+    const cls = typeof el.className === "string" ? el.className : "";
+    const words = [[/(^|\s)\S*-control(\s|$)/, "Select"], [/flatpickr-input/, "Date Input"], [/(^|\s)(badge|status|chip|pill)(\s|-|$)/, "Badge"],
+      [/(^|\s)btn(\s|-|$)/, "Button"], [/(^|\s)nav-link(\s|$)/, "Nav Link"], [/(^|\s)(panel|card)(\s|$)/, "Panel"],
+      [/breadcrumb/, "Breadcrumbs"], [/(^|\s)pagination(\s|$)/, "Pagination"], [/(^|\s)form-(input|control)(\s|$)/, "Input"],
+      [/(^|\s)form-select(\s|$)/, "Select"], [/(^|\s)form-textarea(\s|$)/, "Textarea"], [/(^|\s)form-checkbox(\s|$)/, "Checkbox"],
+      [/(^|\s)(modal|dialog)(\s|-|$)/, "Dialog"]];
+    for (const [rx, name] of words) if (rx.test(cls)) return name;
+    const role = el.getAttribute && el.getAttribute("role");
+    const roles = { dialog: "Dialog", button: "Button", tab: "Tab", tablist: "Tabs", checkbox: "Checkbox", radio: "Radio", switch: "Switch" };
+    if (role && roles[role]) return roles[role];
+    const type = (el.getAttribute && el.getAttribute("type")) || "";
+    const tags = { BUTTON: "Button", A: "Link", TEXTAREA: "Textarea", SELECT: "Select", TABLE: "Table", THEAD: "Table Head",
+      TBODY: "Table Body", TR: "Table Row", TH: "Table Header Cell", TD: "Table Cell", NAV: "Nav", HEADER: "Header",
+      FOOTER: "Footer", UL: "List", OL: "List", LI: "List Item", IMG: "Image", LABEL: "Label", FORM: "Form",
+      H1: "Heading", H2: "Heading", H3: "Heading", H4: "Heading", H5: "Heading", H6: "Heading",
+      INPUT: type === "checkbox" ? "Checkbox" : type === "radio" ? "Radio" : "Input" };
+    return tags[el.tagName] || "Frame";
+  };
+  var elementToFigma = (el, pseudo) => {"""
+
+BUNDLE_PATCHES = [
+    ("  var elementToFigma = (el, pseudo) => {", LAYER_NAMER),
+    ('    const rectNode = {\n      type: "FRAME",\n      ref: el,', '    const rectNode = {\n      type: "FRAME",\n      name: __layerName(el),\n      ref: el,'),
+    ("textNode.fontFamily = computedStyles.fontFamily;",
+     "textNode.fontFamily = computedStyles.fontFamily; textNode.fontWeight = parseInt(computedStyles.fontWeight, 10) || 400;"),
+    ("if (rect.width < 1 || rect.height < 1) {\n      return;",
+     "if ((rect.width < 1 || rect.height < 1) && !el.children.length) {\n      return;"),
+    ("      width: Math.round(rect.width),\n      height: Math.round(rect.height),\n      clipsContent: !!overflowHidden,",
+     "      width: Math.max(1, Math.round(rect.width)),\n      height: Math.max(1, Math.round(rect.height)),\n      clipsContent: !!overflowHidden && rect.width >= 1 && rect.height >= 1,"),
+]
+
+
+def patch_bundle(bundle):
+    for hook, new in BUNDLE_PATCHES:
+        if hook not in bundle:
+            sys.exit(f"html-figma bundle changed: patch hook not found ({hook[:40]}...), check {HTML_FIGMA}")
+        bundle = bundle.replace(hook, new, 1)
+    return bundle
+
+
+# next/font serves a family as `__Prompt_a1b2c3, __Prompt_Fallback_a1b2c3`: no installed font has that name,
+# so the plugin falls back to Roboto. Map the hashed names back to the real family and drop the metric fallback.
+NEXT_FONT = re.compile(r"^__(.+?)_[0-9a-f]{6}$")
+
+
+def real_families(families):
+    out = []
+    for f in (x.strip().strip("'\"") for x in families.split(",")):
+        m = NEXT_FONT.match(f)
+        f = m.group(1).replace("_", " ") if m else f
+        if f and not f.endswith(" Fallback") and f not in out:
+            out.append(f)
+    return ", ".join(out)
 
 
 SVG_COLOR = re.compile(r'style="[^"]*?(?<![-\w])color:\s*([^;"]+)')
@@ -70,10 +135,21 @@ def fix_svg(svg):
     return svg.replace("currentColor", m.group(1).strip()) if m else svg
 
 
+def is_one_line(text):
+    lh = (text.get("lineHeight") or {}).get("value") or (text.get("fontSize") or 0) * 1.2
+    return bool(lh) and text.get("height", 0) < lh * 1.5 and "\n" not in text.get("characters", "")
+
+
 def fix_layers(node):
     if isinstance(node, dict):
         if isinstance(node.get("svg"), str):
             node["svg"] = fix_svg(node["svg"])
+        if isinstance(node.get("fontFamily"), str):
+            node["fontFamily"] = real_families(node["fontFamily"])
+        if node.get("type") == "TEXT" and is_one_line(node) and node.get("textAlignHorizontal", "LEFT") == "LEFT":
+            # Figma's metrics run a little wider than Chrome's, so a fixed-width one-line label wraps in Figma, and
+            # in Thai the break can land inside a cluster (tofu). Let it size to its text; left edge stays put.
+            node["textAutoResize"] = "WIDTH_AND_HEIGHT"
         for c in node.get("children") or []:
             fix_layers(c)
     return node
@@ -92,6 +168,34 @@ FLATTEN_GRADIENTS = r"""() => { let n = 0;
   return n; }"""
 
 
+# html-figma ignores CSS transforms, so a chevron rotated to point left imports pointing down. Bake a pure
+# rotation/flip on the svg or on an icon-only wrapper (no text) into the svg as a <g transform> about its centre.
+BAKE_ROTATIONS = r"""() => { let n = 0;
+  for (const svg of document.querySelectorAll('svg')) {
+    if (svg.parentElement && svg.parentElement.closest('svg')) continue;
+    let m = new DOMMatrix(), e = svg, hops = [];
+    for (let d = 0; e && d < 4; d++, e = e.parentElement) {
+      if (d > 0 && e.textContent.trim()) break;
+      const t = getComputedStyle(e).transform;
+      if (t === 'none') continue;
+      const k = new DOMMatrix(t);
+      if (Math.abs(k.e) > 0.01 || Math.abs(k.f) > 0.01) break;
+      m = k.multiply(m); hops.push(e);
+    }
+    if (!hops.length) continue;
+    const vb = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width ? svg.viewBox.baseVal
+      : { x: 0, y: 0, width: svg.width.baseVal.value, height: svg.height.baseVal.value };
+    const cx = vb.x + vb.width / 2, cy = vb.y + vb.height / 2;
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('transform', `translate(${cx} ${cy}) matrix(${m.a} ${m.b} ${m.c} ${m.d} 0 0) translate(${-cx} ${-cy})`);
+    while (svg.firstChild) g.appendChild(svg.firstChild);
+    svg.appendChild(g);
+    for (const h of hops) h.style.transform = 'none';
+    n++;
+  }
+  return n; }"""
+
+
 def inline_images(node, fetch, cache):
     """IMAGE fills keep a remote url the Figma plugin can't fetch; embed them as data URIs."""
     if isinstance(node, dict):
@@ -102,8 +206,38 @@ def inline_images(node, fetch, cache):
                     cache[url] = fetch(url)
                 if cache[url]:
                     f["url"] = cache[url]
+        # Figma's createImage takes PNG/JPEG/GIF only: an <img src="*.svg"> becomes an SVG layer instead
+        svgs = [f for f in node.get("fills") or [] if isinstance(f, dict) and f.get("type") == "IMAGE"
+                and str(f.get("url", "")).startswith("data:image/svg+xml;base64,")]
+        for f in svgs:
+            node["fills"].remove(f)
+            svg = base64.b64decode(f["url"].split(",", 1)[1]).decode("utf-8", "replace")
+            node.setdefault("children", []).insert(0, {"type": "SVG", "svg": svg[svg.find("<svg"):], "x": 0, "y": 0,
+                                                       "width": node.get("width", 0), "height": node.get("height", 0)})
         for c in node.get("children") or []:
             inline_images(c, fetch, cache)
+    return node
+
+
+def split_images(node, images):
+    """The bridge plugin only turns an IMAGE fill into pixels when it carries a Uint8Array, which JSON can't hold:
+    a data-URI fill imports as an empty frame. Move each raster image to `images` (key -> base64), tag the layer
+    with data.image = key (the importer keeps `data` as shared plugin data), and let `figma_js.py images` fill it."""
+    if isinstance(node, dict):
+        keep = []
+        for f in node.get("fills") or []:
+            url = f.get("url", "") if isinstance(f, dict) and f.get("type") == "IMAGE" else ""
+            m = re.match(r"data:image/(png|jpe?g|gif);base64,(.+)", url, re.S)
+            if not m:
+                keep.append(f)
+                continue
+            key = hashlib.sha1(m.group(2).encode()).hexdigest()[:12]
+            images[key] = {"b64": m.group(2), "scaleMode": f.get("scaleMode") or "FILL"}
+            node["data"] = {**(node.get("data") or {}), "image": key}
+        if "fills" in node:
+            node["fills"] = keep
+        for c in node.get("children") or []:
+            split_images(c, images)
     return node
 
 
@@ -180,6 +314,7 @@ def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, a
                         row["result"] = page.evaluate(SUBMIT.replace("SEL", json.dumps(j.get("selector") or selector)), j["captureId"])
                     else:
                         row["flattened"] = page.evaluate(FLATTEN_GRADIENTS)
+                        row["rotations"] = page.evaluate(BAKE_ROTATIONS)
                         sel = j.get("selector") or selector
                         layers = page.evaluate("(sel) => htmlFigma.htmlToFigma(document.querySelector(sel))", sel)
 
@@ -194,8 +329,14 @@ def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, a
                                 return None
                         layers = inline_images(layers, fetch, {})
                         path = Path(out_dir) / f"{slug(j.get('name') or urlsplit(page.url).path)}.json"
-                        path.write_text(json.dumps(fix_layers(layers), ensure_ascii=False), encoding="utf-8")
+                        images = {}
+                        layers = split_images(fix_layers(layers), images)
+                        path.write_text(json.dumps(layers, ensure_ascii=False), encoding="utf-8")
                         row["layers"] = str(path)
+                        if images:
+                            img_path = path.with_suffix(".images.json")
+                            img_path.write_text(json.dumps(images), encoding="utf-8")
+                            row["images"] = str(img_path)  # after import: figma_js.py images --root <frame> --images this
                     results.append(row)
                     print(json.dumps(row, ensure_ascii=False), flush=True)
                 except Exception as exc:  # one bad step or selector must not stop the rest of the batch
@@ -256,6 +397,21 @@ def self_test():
     assert t["fills"][0]["url"].startswith("data:") and t["children"][0]["fills"][0]["url"].startswith("data:")
     bad = '<svg style="color: rgb(1, 2, 3);"fill="rgb(0, 0, 0)">><path stroke="currentColor"/></svg>'
     good = fix_svg(bad)
+    assert real_families("__Prompt_a1b2c3, __Prompt_Fallback_a1b2c3") == "Prompt"
+    assert real_families("__IBM_Plex_Sans_Thai_a1b2c3, Arial, sans-serif") == "IBM Plex Sans Thai, Arial, sans-serif"
+    svg_node = inline_images({"width": 4, "height": 4, "fills": [{"type": "IMAGE", "url": "data:image/svg+xml;base64,"
+                              + base64.b64encode(b'<?xml version="1.0"?><svg/>').decode()}]}, None, {})
+    assert svg_node["fills"] == [] and svg_node["children"][0] == {"type": "SVG", "svg": "<svg/>", "x": 0, "y": 0, "width": 4, "height": 4}
+    one = fix_layers({"type": "TEXT", "characters": "บริษัท", "height": 20, "lineHeight": {"value": 20}})
+    two = fix_layers({"type": "TEXT", "characters": "a b", "height": 40, "lineHeight": {"value": 20}})
+    right = fix_layers({"type": "TEXT", "characters": "21.40", "height": 20, "fontSize": 14, "textAlignHorizontal": "RIGHT"})
+    assert one["textAutoResize"] == "WIDTH_AND_HEIGHT" and "textAutoResize" not in two and "textAutoResize" not in right
+    imgs = {}
+    tagged = split_images({"fills": [{"type": "IMAGE", "url": "data:image/png;base64,QUJD", "scaleMode": "FIT"},
+                                     {"type": "SOLID"}]}, imgs)
+    assert tagged["fills"] == [{"type": "SOLID"}] and imgs[tagged["data"]["image"]] == {"b64": "QUJD", "scaleMode": "FIT"}
+    patched = patch_bundle(" ".join(h for h, _ in BUNDLE_PATCHES))
+    assert "__layerName(el)" in patched and "fontWeight = parseInt" in patched and "!el.children.length" in patched and "Math.max(1" in patched
     assert '" fill=' in good and ">>" not in good and 'stroke="rgb(1, 2, 3)"' in good, good
     blocked, calls = [], []
 
