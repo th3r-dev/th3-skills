@@ -1,0 +1,13 @@
+# figma-mcp-bridge server (https://github.com/gethopp/figma-mcp-bridge, MIT) in a container.
+# The Figma desktop plugin connects to ws://localhost:1994 on the host; bridge.py publishes it
+# on 127.0.0.1 only. MCP clients attach with `podman exec -i` (stdio).
+FROM docker.io/library/node:22.11.0-alpine3.20
+ARG BRIDGE_VERSION=0.0.25
+RUN npm install -g --no-audit --no-fund @gethopp/figma-mcp-bridge@${BRIDGE_VERSION}
+ENV FIGMA_BRIDGE_HOST=0.0.0.0 \
+    FIGMA_BRIDGE_PORT=1994
+WORKDIR /work
+USER node
+EXPOSE 1994
+# Keep the container alive; each MCP session runs the server through exec.
+CMD ["sleep", "infinity"]
