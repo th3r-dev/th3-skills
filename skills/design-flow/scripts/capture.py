@@ -44,13 +44,12 @@ SUBMIT = """(c) => Promise.race([
 
 
 def inside_work(p, what="path"):
-    """CLI paths come from an agent, so every file this script writes stays inside the working folder:
-    the current directory, or $DESIGN_FLOW_ROOT when set (the bridge's --work folder)."""
-    root = os.path.realpath(os.environ.get("DESIGN_FLOW_ROOT") or os.getcwd())
+    """CLI paths come from an agent, so this script only reads and writes inside the folder it runs from."""
+    root = os.path.realpath(os.getcwd())
     full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
-    if os.path.commonpath([root, full]) != root:
-        sys.exit(f"{what} {p!r} is outside the working folder {root}; run from that folder or set DESIGN_FLOW_ROOT")
-    return full
+    if os.path.commonpath([root, full]) == root:
+        return full
+    raise ValueError(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
 
 
 def html_figma_bundle():
@@ -443,15 +442,13 @@ def self_test():
     for url, m in [("https://app.test/api/x", "POST"), ("https://mcp.figma.com/x", "POST"), ("https://cdn.test/a.js", "GET")]:
         req = R(url, m); h(req, req)
     assert calls == ["abort", "continue", "continue"] and blocked == ["POST /api/x"], (calls, blocked)
-    root = os.path.realpath(os.getcwd())
-    assert inside_work("captures") == os.path.join(root, "captures")
-    for bad in ("../outside", "/etc"):
+    assert inside_work("captures") == os.path.join(os.path.realpath(os.getcwd()), "captures")
+    for bad in ("../outside.json", "/etc/hosts"):
         try:
             inside_work(bad)
-        except SystemExit:
-            pass
-        else:
-            raise AssertionError(f"{bad} accepted")
+        except ValueError:
+            continue
+        raise AssertionError(f"{bad} accepted")
     print("self-test ok")
 
 
@@ -483,4 +480,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ValueError as exc:  # a path outside the working folder: a clear message, not a traceback
+        sys.exit(f"error: {exc}")

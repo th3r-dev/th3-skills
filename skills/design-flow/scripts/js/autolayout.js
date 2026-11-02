@@ -29,6 +29,11 @@ const frames = [root, ...root.findAllWithCriteria({ types: ['FRAME'] })]
 const depth = n => { let d = 0; for (let p = n.parent; p; p = p.parent) d++; return d; };
 frames.sort((a, b) => depth(b) - depth(a));
 
+// fonts load once up front: a text that the layout lets grow needs its font loaded before textAutoResize changes
+const fontsOf = k => (k.fontName === figma.mixed ? k.getStyledTextSegments(['fontName']).map(s => s.fontName) : [k.fontName]);
+const fontKeys = new Map(root.findAllWithCriteria({ types: ['TEXT'] }).flatMap(fontsOf).map(fn => [`${fn.family}|${fn.style}`, fn]));
+await Promise.all([...fontKeys.values()].map(fn => figma.loadFontAsync(fn)));
+
 const out = { converted: [], skipped: [] };
 for (const f of frames) {
   const kids = f.children.filter(k => k.visible);
@@ -81,8 +86,6 @@ for (const f of frames) {
     if (k.type !== 'TEXT' || k.textAutoResize === 'WIDTH_AND_HEIGHT' || k.fontSize === figma.mixed) continue;
     const lh = k.lineHeight !== figma.mixed && k.lineHeight.unit === 'PIXELS' ? k.lineHeight.value : k.fontSize * 1.2;
     if (k.height < lh * 1.5 && !k.characters.includes('\n')) {
-      const fonts = k.fontName === figma.mixed ? k.getStyledTextSegments(['fontName']).map(s => s.fontName) : [k.fontName];
-      await Promise.all(fonts.map(fn => figma.loadFontAsync(fn)));
       k.textAutoResize = 'WIDTH_AND_HEIGHT';
     }
   }
