@@ -43,9 +43,9 @@ def inside_work(p, what="path"):
     """CLI paths come from an agent, so this script only reads and writes inside the folder it runs from."""
     root = os.path.realpath(os.getcwd())
     full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
-    if os.path.commonpath([root, full]) == root:
-        return full
-    raise ValueError(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
+    if full != root and not full.startswith(root + os.sep):
+        raise ValueError(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
+    return full
 
 
 def read_json(p, what):
