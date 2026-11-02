@@ -300,18 +300,74 @@ def slug(text):
     return re.sub(r"[^\w-]+", "-", text, flags=re.UNICODE).strip("-")[:80] or "page"
 
 
+def open_page(page, j, wait):
+    """Load the job's page and put it in the requested state (steps)."""
+    page.goto(j["url"], wait_until="domcontentloaded", timeout=60_000)
+    try:
+        page.wait_for_load_state("networkidle", timeout=30_000)
+    except Exception:
+        pass  # long-polling apps never go idle
+    page.wait_for_timeout(wait)
+    run_steps(page, j.get("steps") or [])
+
+
+def layers_row(page, ctx, j, selector, out_dir):
+    """--to layers: html-figma JSON of the selected element, images inlined then split out. Returns the row fields."""
+    row = {"flattened": page.evaluate(FLATTEN_GRADIENTS), "rotations": page.evaluate(BAKE_ROTATIONS)}
+    layers = page.evaluate("(sel) => htmlFigma.htmlToFigma(document.querySelector(sel))", j.get("selector") or selector)
+
+    def fetch(url, req=ctx.request):
+        try:
+            r = req.get(url, timeout=20_000)
+            if not r.ok:
+                return None
+            mime = (r.headers.get("content-type") or "image/png").split(";")[0]
+            return f"data:{mime};base64," + base64.b64encode(r.body()).decode()
+        except Exception:
+            return None
+    layers = inline_images(layers, fetch, {})
+    path = Path(out_dir) / f"{slug(j.get('name') or urlsplit(page.url).path)}.json"
+    images = {}
+    layers = split_images(fix_layers(layers), images)
+    path.write_text(json.dumps(layers, ensure_ascii=False), encoding="utf-8")
+    row["layers"] = str(path)
+    if images:
+        img_path = path.with_suffix(".images.json")
+        img_path.write_text(json.dumps(images), encoding="utf-8")
+        row["images"] = str(img_path)  # after import: figma_js.py images --root <frame> --images this
+    return row
+
+
+def capture_job(page, ctx, j, to, script, selector, out_dir, wait):
+    """One job: page in its state, then submitted to Figma (--to figma) or written as layer JSON (--to layers)."""
+    try:
+        open_page(page, j, wait)
+        page.add_script_tag(content=script)
+        row = {"url": j["url"], "landed": page.url, "title": page.title()}
+        if to == "figma":
+            page.wait_for_timeout(500)
+            row["captureId"] = j["captureId"]
+            row["result"] = page.evaluate(SUBMIT.replace("SEL", json.dumps(j.get("selector") or selector)), j["captureId"])
+        else:
+            row.update(layers_row(page, ctx, j, selector, out_dir))
+    except Exception as exc:  # one bad step or selector must not stop the rest of the batch
+        row = {"url": j["url"], "name": j.get("name"), "error": str(exc).splitlines()[0][:300]}
+    print(json.dumps(row, ensure_ascii=False), flush=True)
+    return row
+
+
 def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, allow_post=None, fake_ok=None, fake_body="{}"):
     from playwright.sync_api import sync_playwright
     w, h = map(int, viewport.lower().split("x"))
     script = html_figma_bundle() if to == "layers" else None
     if out_dir:
         Path(out_dir).mkdir(parents=True, exist_ok=True)
+    groups = {}
+    for j in jobs:
+        groups.setdefault(j.get("state"), []).append(j)
     results = []
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel="chrome", headless=not headed)
-        groups = {}
-        for j in jobs:
-            groups.setdefault(j.get("state"), []).append(j)
         for state, group in groups.items():
             ctx = browser.new_context(viewport={"width": w, "height": h}, storage_state=state)
             blocked = []
@@ -321,52 +377,7 @@ def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, a
             if to == "figma":
                 script = script or ctx.request.get(CAPTURE_JS).text()
             page = ctx.new_page()
-            for j in group:
-                try:
-                    page.goto(j["url"], wait_until="domcontentloaded", timeout=60_000)
-                    try:
-                        page.wait_for_load_state("networkidle", timeout=30_000)
-                    except Exception:
-                        pass  # long-polling apps never go idle
-                    page.wait_for_timeout(wait)
-                    run_steps(page, j.get("steps") or [])
-                    page.add_script_tag(content=script)
-                    row = {"url": j["url"], "landed": page.url, "title": page.title()}
-                    if to == "figma":
-                        page.wait_for_timeout(500)
-                        row["captureId"] = j["captureId"]
-                        row["result"] = page.evaluate(SUBMIT.replace("SEL", json.dumps(j.get("selector") or selector)), j["captureId"])
-                    else:
-                        row["flattened"] = page.evaluate(FLATTEN_GRADIENTS)
-                        row["rotations"] = page.evaluate(BAKE_ROTATIONS)
-                        sel = j.get("selector") or selector
-                        layers = page.evaluate("(sel) => htmlFigma.htmlToFigma(document.querySelector(sel))", sel)
-
-                        def fetch(url, req=ctx.request):
-                            try:
-                                r = req.get(url, timeout=20_000)
-                                if not r.ok:
-                                    return None
-                                mime = (r.headers.get("content-type") or "image/png").split(";")[0]
-                                return f"data:{mime};base64," + base64.b64encode(r.body()).decode()
-                            except Exception:
-                                return None
-                        layers = inline_images(layers, fetch, {})
-                        path = Path(out_dir) / f"{slug(j.get('name') or urlsplit(page.url).path)}.json"
-                        images = {}
-                        layers = split_images(fix_layers(layers), images)
-                        path.write_text(json.dumps(layers, ensure_ascii=False), encoding="utf-8")
-                        row["layers"] = str(path)
-                        if images:
-                            img_path = path.with_suffix(".images.json")
-                            img_path.write_text(json.dumps(images), encoding="utf-8")
-                            row["images"] = str(img_path)  # after import: figma_js.py images --root <frame> --images this
-                    results.append(row)
-                    print(json.dumps(row, ensure_ascii=False), flush=True)
-                except Exception as exc:  # one bad step or selector must not stop the rest of the batch
-                    row = {"url": j["url"], "name": j.get("name"), "error": str(exc).splitlines()[0][:300]}
-                    results.append(row)
-                    print(json.dumps(row, ensure_ascii=False), flush=True)
+            results += [capture_job(page, ctx, j, to, script, selector, out_dir, wait) for j in group]
             if blocked:
                 print(json.dumps({"blocked_writes": blocked[:30]}), flush=True)
             ctx.close()
@@ -452,7 +463,8 @@ def self_test():
     faked = []
 
     class F(R):
-        def fulfill(s, **kw): faked.append(kw["status"])
+        def fulfill(self, **kw):
+            faked.append(kw["status"])
     h = router({"app.test"}, False, blocked, None, re.compile(r"/destroy$"))
     for url, m in [("https://app.test/api/1/destroy", "DELETE"), ("https://app.test/api/1/update", "PATCH")]:
         req = F(url, m); h(req, req)
