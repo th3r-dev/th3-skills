@@ -210,7 +210,8 @@ def main():
             "title_style": a.title_style, "body_style": a.body_style}.items() if v is not None}
     code = render(a.cmd, params)
     if a.out:
-        Path(inside_work(a.out, "--out")).write_text(code, encoding="utf-8")
+        with open(inside_work(a.out, "--out"), "w", encoding="utf-8") as fh:
+            fh.write(code)
         print(f"wrote {a.out} ({len(code)} chars)")
     else:
         sys.stdout.write(code)
