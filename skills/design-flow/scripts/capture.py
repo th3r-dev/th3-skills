@@ -21,6 +21,7 @@
   --self-test
 
 Options: --viewport 1920x1080  --selector body  --wait 2500  --allow-writes  --allow-post REGEX  --headed
+         --fake-ok REGEX [--fake-body JSON]   answer matching writes with HTTP 200 in the browser (success states)
 Every non-GET request to the target host is aborted unless --allow-writes (read-only browsing);
 only mcp.figma.com may POST (the capture submit). CSP is stripped from documents so injected
 scripts run.
@@ -272,13 +273,17 @@ def run_steps(page, steps):
         page.wait_for_timeout(int(st.get("wait", 1200)))
 
 
-def router(hosts, allow_writes, blocked, allow_post=None):
+def router(hosts, allow_writes, blocked, allow_post=None, fake_ok=None, fake_body="{}"):
     """Read-only browsing: block non-GET to the target host, except POSTs that only read (allow_post regex on the
-    path), e.g. report endpoints that fetch rows by POST to keep long filters out of the URL."""
+    path), e.g. report endpoints that fetch rows by POST to keep long filters out of the URL. A write whose path
+    matches fake_ok never leaves the browser: it gets HTTP 200 with fake_body, so the app shows its real success
+    state (a "saved" dialog) without touching the server's data."""
     def handle(route, request):
         host = urlsplit(request.url).netloc
         if host == FIGMA:
             return route.continue_()
+        if fake_ok and host in hosts and request.method not in ("GET", "HEAD", "OPTIONS") and fake_ok.search(urlsplit(request.url).path):
+            return route.fulfill(status=200, content_type="application/json", body=fake_body)
         if request.resource_type == "document" and request.method == "GET" and host in hosts:
             resp = route.fetch()
             return route.fulfill(response=resp, headers={k: v for k, v in resp.headers.items() if k.lower() not in DROP})
@@ -295,7 +300,7 @@ def slug(text):
     return re.sub(r"[^\w-]+", "-", text, flags=re.UNICODE).strip("-")[:80] or "page"
 
 
-def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, allow_post=None):
+def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, allow_post=None, fake_ok=None, fake_body="{}"):
     from playwright.sync_api import sync_playwright
     w, h = map(int, viewport.lower().split("x"))
     script = html_figma_bundle() if to == "layers" else None
@@ -310,7 +315,9 @@ def capture(jobs, to, out_dir, viewport, selector, wait, allow_writes, headed, a
         for state, group in groups.items():
             ctx = browser.new_context(viewport={"width": w, "height": h}, storage_state=state)
             blocked = []
-            ctx.route("**/*", router({urlsplit(j["url"]).netloc for j in group}, allow_writes, blocked, re.compile(allow_post) if allow_post else None))
+            ctx.route("**/*", router({urlsplit(j["url"]).netloc for j in group}, allow_writes, blocked,
+                                     re.compile(allow_post) if allow_post else None,
+                                     re.compile(fake_ok) if fake_ok else None, fake_body))
             if to == "figma":
                 script = script or ctx.request.get(CAPTURE_JS).text()
             page = ctx.new_page()
@@ -442,6 +449,14 @@ def self_test():
     for url, m in [("https://app.test/api/x", "POST"), ("https://mcp.figma.com/x", "POST"), ("https://cdn.test/a.js", "GET")]:
         req = R(url, m); h(req, req)
     assert calls == ["abort", "continue", "continue"] and blocked == ["POST /api/x"], (calls, blocked)
+    faked = []
+
+    class F(R):
+        def fulfill(s, **kw): faked.append(kw["status"])
+    h = router({"app.test"}, False, blocked, None, re.compile(r"/destroy$"))
+    for url, m in [("https://app.test/api/1/destroy", "DELETE"), ("https://app.test/api/1/update", "PATCH")]:
+        req = F(url, m); h(req, req)
+    assert faked == [200] and blocked[-1] == "PATCH /api/1/update", (faked, blocked)
     assert inside_work("captures") == os.path.join(os.path.realpath(os.getcwd()), "captures")
     for bad in ("../outside.json", "/etc/hosts"):
         try:
@@ -468,6 +483,8 @@ def main():
     ap.add_argument("--wait", type=int, default=2500, help="ms to let the page settle before capture")
     ap.add_argument("--allow-writes", action="store_true", help="let the page POST/PUT/DELETE to its own host")
     ap.add_argument("--allow-post", help="regex of POST paths that only read (e.g. report data endpoints) to let through")
+    ap.add_argument("--fake-ok", help="regex of write paths answered in the browser with HTTP 200 (success states, no data change)")
+    ap.add_argument("--fake-body", default="{}", help="JSON body for --fake-ok replies (default {})")
     ap.add_argument("--headed", action="store_true")
     a = ap.parse_args()
     if a.cmd == "login":
@@ -475,7 +492,9 @@ def main():
     if a.to == "layers" and not a.out:
         sys.exit("--to layers needs --out DIR")
     out_dir = inside_work(a.out, "--out") if a.out else None
-    capture(build_jobs(a), a.to, out_dir, a.viewport, a.selector, a.wait, a.allow_writes, a.headed, a.allow_post)
+    json.loads(a.fake_body)  # fail early on a bad body
+    capture(build_jobs(a), a.to, out_dir, a.viewport, a.selector, a.wait, a.allow_writes, a.headed, a.allow_post,
+            a.fake_ok, a.fake_body)
 
 
 if __name__ == "__main__":

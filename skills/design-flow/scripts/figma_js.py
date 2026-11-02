@@ -22,6 +22,7 @@ the output verbatim as `code`.
   figma_js.py flow --page 1:2 --spec flow.json                  (UI → flow → UI: element on screen → kit nodes → target screen)
   figma_js.py state --page 1:2 --spec state.json                (target state screen: copy + dialog overlay, or imported page + sidebar)
   figma_js.py make-room --page 1:2 --from-x 24900 --dx 10000 [--label <section label id>] [--y-from Y --y-to Y]   (shift a section right)
+  figma_js.py make-room --page 1:2 --from-y 7000 --dy 1500    (shift everything below y down: room for a band of state screens)
   figma_js.py redraw-connectors --page 1:2 [--ids a,b] [--slack 400]   (fix stale connector routes after moves)
   figma_js.py images --page 1:2 --root 10:20 --images capture.images.json   (raster images of an html-figma import)
   figma_js.py place-check --page 1:2                          (stage 1 check: screens overlapping, on a title? read-only)
@@ -125,8 +126,10 @@ def main():
     im.add_argument("--page", required=True); im.add_argument("--root", required=True, help="the imported frame")
     im.add_argument("--images", required=True, help="the <capture>.images.json capture.py wrote"); im.add_argument("-o", "--out")
     mr = sub.add_parser("make-room")
-    mr.add_argument("--page", required=True); mr.add_argument("--from-x", type=float, required=True)
-    mr.add_argument("--dx", type=float, required=True); mr.add_argument("--label"); mr.add_argument("-o", "--out")
+    mr.add_argument("--page", required=True); mr.add_argument("--from-x", type=float)
+    mr.add_argument("--dx", type=float); mr.add_argument("--label"); mr.add_argument("-o", "--out")
+    mr.add_argument("--from-y", type=float, help="vertical room: nodes whose top is at or below this y move down by --dy")
+    mr.add_argument("--dy", type=float)
     mr.add_argument("--y-from", type=float, help="row band: only nodes whose top is at or below this y move")
     mr.add_argument("--y-to", type=float, help="row band: ... and above this y")
     for name in ("flow-kit", "flow", "extract", "state", "componentize", "ui-samples", "usage", "place-check"):
@@ -181,7 +184,10 @@ def main():
     elif a.cmd == "images":
         params = {"page": a.page, "root": a.root, "images": read_json(a.images, "--images")}
     elif a.cmd == "make-room":
-        a.cmd, params = "make_room", {"page": a.page, "from_x": a.from_x, "dx": a.dx, "label": a.label, "y_from": a.y_from, "y_to": a.y_to}
+        if (a.from_x is None or a.dx is None) == (a.from_y is None or a.dy is None):
+            raise SystemExit("make-room takes either --from-x/--dx (horizontal) or --from-y/--dy (vertical)")
+        a.cmd, params = "make_room", {"page": a.page, "from_x": a.from_x, "dx": a.dx, "label": a.label, "y_from": a.y_from,
+                                      "y_to": a.y_to, "from_y": a.from_y, "dy": a.dy}
     elif a.cmd == "place-check":
         a.cmd, params = "place_check", {"page": a.page}
     elif a.cmd == "usage":

@@ -4,17 +4,21 @@
 // P.label by P.dx. Nothing is deleted; relative layouts inside moved sections stay intact.
 // Pages laid out in rows (a label at the left, screens to its right) take P.y_from / P.y_to: only nodes whose
 // top edge is inside that band move, so the other rows keep their place.
+// Vertical room (P.from_y + P.dy): every top-level node whose top edge is at or below P.from_y moves down by P.dy,
+// e.g. a band of result-state screens under a row; the rows below shift together and keep their spacing.
 const P = __PARAMS__;
 await figma.setCurrentPageAsync(await figma.getNodeByIdAsync(P.page));
 const moved = [], skipped = [];
+const vertical = P.dy != null;
 for (const n of figma.currentPage.children) {
-  if (n.x < P.from_x) continue;
-  if ((P.y_from != null && n.y < P.y_from) || (P.y_to != null && n.y >= P.y_to)) continue;
+  if (vertical ? n.y < P.from_y : n.x < P.from_x) continue;
+  if (!vertical && ((P.y_from != null && n.y < P.y_from) || (P.y_to != null && n.y >= P.y_to))) continue;
   if (n.type === 'CONNECTOR') { skipped.push(n.id); continue; }
-  n.x += P.dx; moved.push(n.id);
+  if (vertical) n.y += P.dy; else n.x += P.dx;
+  moved.push(n.id);
 }
 let label = null;
-if (P.label) {
+if (P.label && !vertical) {
   label = await figma.getNodeByIdAsync(P.label);
   if (label) label.resize(label.width + P.dx, label.height);
 }

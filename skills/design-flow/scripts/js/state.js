@@ -4,6 +4,7 @@
 //   mode "page":    the imported page P.overlay itself, optionally with the sidebar of P.sidebar_from moved in
 // Position: P.x/P.y, or P.near {screen, dx, dy?, margin?} = first free slot right of that screen, sliding down
 //                   (imports lose gradient/image shells; the accurate screen's sidebar replaces the blank one)
+// P.max_height crops any state to that height (e.g. 1080: one viewport), top kept
 const P = __PARAMS__;
 await figma.setCurrentPageAsync(await figma.getNodeByIdAsync(P.page));
 const ov = await figma.getNodeByIdAsync(P.overlay);
@@ -23,7 +24,11 @@ if (P.mode === 'overlay') {
   scrim.opacity = P.scrim_opacity ?? 0.45;  // layer opacity: a bound paint drops its own opacity
   // html-figma keeps page coordinates, so a captured dialog sits offset inside its wrapper (and gets clipped):
   // shift the content to 0,0 and shrink the wrapper to it
-  if ('children' in ov && ov.children.length) {
+  if ('children' in ov && ov.children.length && ov.layoutMode && ov.layoutMode !== 'NONE') {
+    // after `autolayout` that offset is padding, and moving children does nothing: drop the padding, hug the content
+    ov.paddingLeft = ov.paddingRight = ov.paddingTop = ov.paddingBottom = 0;
+    ov.primaryAxisSizingMode = 'AUTO'; ov.counterAxisSizingMode = 'AUTO';
+  } else if ('children' in ov && ov.children.length) {
     const bs = ov.children.map(c => c.absoluteBoundingBox), ob = ov.absoluteBoundingBox;
     const minX = Math.min(...bs.map(b => b.x)) - ob.x, minY = Math.min(...bs.map(b => b.y)) - ob.y;
     const maxX = Math.max(...bs.map(b => b.x + b.width)) - ob.x, maxY = Math.max(...bs.map(b => b.y + b.height)) - ob.y;
@@ -53,6 +58,12 @@ screen.name = P.name;
 if (P.clip_to && P.mode !== 'overlay') {
   const ref = await figma.getNodeByIdAsync(P.clip_to);
   if (ref && screen.height > ref.height + 1) { screen.clipsContent = true; screen.resizeWithoutConstraints(screen.width, Math.max(1080, ref.height)); }
+}
+// any state (overlay included) can be cropped to one viewport, so a band of states under a tall source stays one row
+if (P.max_height && screen.height > P.max_height) {
+  if (screen.layoutMode === 'VERTICAL') { screen.primaryAxisSizingMode = 'FIXED'; screen.primaryAxisAlignItems = 'MIN'; }  // keep the top
+  if (screen.layoutMode === 'HORIZONTAL') screen.counterAxisSizingMode = 'FIXED';
+  screen.clipsContent = true; screen.resizeWithoutConstraints(screen.width, P.max_height);
 }
 if (P.near) {
   // auto place: right of the source screen past its flow lane, first free slot going down (nothing overlaps)
