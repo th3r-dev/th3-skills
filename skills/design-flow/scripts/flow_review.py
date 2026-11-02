@@ -68,33 +68,37 @@ def inside_work(p, what="path"):
     """CLI paths come from an agent, so this script only reads and writes inside the folder it runs from."""
     root = os.path.realpath(os.getcwd())
     full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
-    if os.path.commonpath([root, full]) == root:
-        return full
-    raise ValueError(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
+    if full != root and not full.startswith(root + os.sep):
+        raise ValueError(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
+    return full
+
+
+def self_test():
+    ok = {"missing": [], "orphans": [], "forced": [], "backward": [],
+          "nodes": [{"id": "a", "kind": "anchor"}, {"id": "n", "kind": "process"}, {"id": "s", "kind": "screen"}],
+          "edges": [{"from": "a", "to": "n", "drawn": True}, {"from": "n", "to": "s", "drawn": True}]}
+    assert score(ok, {})[0] == 10
+    to_marker = {**ok, "nodes": ok["nodes"][:2] + [{"id": "m", "kind": "marker"}], "edges": ok["edges"][:1] + [{"from": "n", "to": "m"}]}
+    assert score(to_marker, {})[0] == 5 and score(to_marker, {}, allow_markers=True)[0] == 10
+    to_end = {**ok, "nodes": ok["nodes"][:2] + [{"id": "e", "kind": "end"}], "edges": ok["edges"][:1] + [{"from": "n", "to": "e"}]}
+    assert score(to_end, {})[0] == 5 and dead_anchors(to_end) == ["a"] and score(to_end, {}, allow_markers=True)[0] == 5
+    assert score({**ok, "orphans": ["n1"]}, {})[0] == 6
+    assert score({**ok, "forced": ["a→b"]}, {"crossings": 1})[0] == 8
+    assert score(ok, {"crossings": 20})[0] == 8 and score(ok, {"crossOther": 1})[0] == 8
+    assert score({**ok, "nested": ["a⊂b"]}, {})[0] == 8 and score(ok, {"headInner": 2})[0] == 9
+    assert score(ok, {"lineOverObjects": 2, "labelOverlaps": 1})[0] == 7.5
+    for bad in ("../outside", "/etc"):
+        try:
+            inside_work(bad)
+        except ValueError:
+            continue
+        raise AssertionError(f"{bad} accepted")
+    print("self-test ok")
 
 
 def main():
     if "--self-test" in sys.argv:
-        ok = {"missing": [], "orphans": [], "forced": [], "backward": [],
-              "nodes": [{"id": "a", "kind": "anchor"}, {"id": "n", "kind": "process"}, {"id": "s", "kind": "screen"}],
-              "edges": [{"from": "a", "to": "n", "drawn": True}, {"from": "n", "to": "s", "drawn": True}]}
-        assert score(ok, {})[0] == 10
-        to_marker = {**ok, "nodes": ok["nodes"][:2] + [{"id": "m", "kind": "marker"}], "edges": ok["edges"][:1] + [{"from": "n", "to": "m"}]}
-        assert score(to_marker, {})[0] == 5 and score(to_marker, {}, allow_markers=True)[0] == 10
-        to_end = {**ok, "nodes": ok["nodes"][:2] + [{"id": "e", "kind": "end"}], "edges": ok["edges"][:1] + [{"from": "n", "to": "e"}]}
-        assert score(to_end, {})[0] == 5 and dead_anchors(to_end) == ["a"] and score(to_end, {}, allow_markers=True)[0] == 5
-        assert score({**ok, "orphans": ["n1"]}, {})[0] == 6
-        assert score({**ok, "forced": ["a→b"]}, {"crossings": 1})[0] == 8
-        assert score(ok, {"crossings": 20})[0] == 8 and score(ok, {"crossOther": 1})[0] == 8
-        assert score({**ok, "nested": ["a⊂b"]}, {})[0] == 8 and score(ok, {"headInner": 2})[0] == 9
-        assert score(ok, {"lineOverObjects": 2, "labelOverlaps": 1})[0] == 7.5
-        for bad in ("../outside", "/etc"):
-            try:
-                inside_work(bad)
-            except ValueError:
-                continue
-            raise AssertionError(f"{bad} accepted")
-        print("self-test ok"); return
+        return self_test()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("dir"); ap.add_argument("--min", type=float, default=9); ap.add_argument("--json")
     ap.add_argument("--allow-markers", action="store_true", help="the user asked for on-page connector markers")
