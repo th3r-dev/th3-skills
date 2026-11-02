@@ -128,9 +128,10 @@ for (const s of P.screens || []) { const n = await figma.getNodeByIdAsync(s.node
 // on-page connectors (flowchart convention): a target screen with another screen between it and this flow is
 // "far". Instead of a long line looping past those screens (and crossing everything on the way), the chain ends in
 // a lettered marker, and the same letter sits right before the target with a short arrow in. One letter per target
-// screen on the page (`Marker · <screen id>`), shared by every flow that goes there. Off with markers: false.
+// screen on the page (`Marker · <screen id>`), shared by every flow that goes there. Off by default: a flow joins
+// UI to UI, so the line lands on the screen. Only `markers: true` (the user asked for them) turns this on.
 const markersPlaced = [];
-if (P.markers !== false && P.components.marker) {
+if (P.markers === true && P.components.marker) {
   const MK = await figma.getNodeByIdAsync(P.components.marker);
   const scr = figma.currentPage.children.filter(n => n.type === 'FRAME' && n.width >= 1000 && n.height >= 600 && n.id !== src.id);
   // a screen between the two, on the target's band, in either direction (a "back to list" target sits to the LEFT)

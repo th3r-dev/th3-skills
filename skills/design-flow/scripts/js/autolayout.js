@@ -42,10 +42,14 @@ for (const f of frames) {
   // a lone child centred in its box (a badge label, an icon in a button) keeps its centre, not its left edge
   // (never for a child larger than its box: that is a scroll container or a 0px wrapper, keep it at the start)
   const centred = (start, len, total) => len <= total && Math.abs(start - (total - start - len)) <= tol;
-  const align = kids.length === 1 ? (centred(cs(kids[0]), cl(kids[0]), cross) ? 'CENTER' : 'MIN')
-    : same(kids.map(cs)) ? 'MIN'
-    : same(kids.map(k => cs(k) + cl(k) / 2)) ? 'CENTER'
-    : same(kids.map(k => cs(k) + cl(k))) ? 'MAX' : null;
+  const crossAlign = () => {
+    if (kids.length === 1) return centred(cs(kids[0]), cl(kids[0]), cross) ? 'CENTER' : 'MIN';
+    if (same(kids.map(cs))) return 'MIN';
+    if (same(kids.map(k => cs(k) + cl(k) / 2))) return 'CENTER';
+    if (same(kids.map(k => cs(k) + cl(k)))) return 'MAX';
+    return null;
+  };
+  const align = crossAlign();
   if (!align) { out.skipped.push(f.id); continue; }
   const first = order[0], minCross = Math.min(...kids.map(k => H ? k.y : k.x));
   const maxEnd = Math.max(...kids.map(k => H ? k.x + k.width : k.y + k.height));
@@ -71,13 +75,14 @@ for (const f of frames) {
   }
   // a one-line text that is centred / right-aligned by the layout may grow: Figma's metrics run wider than the
   // browser's, and an instance label longer than the sample ("Waiting" in a badge made from "Draft") must fit
-  const hAlign = H ? (mainCentre ? 'CENTER' : 'MIN') : align;
+  const mainAlign = mainCentre ? 'CENTER' : 'MIN';
+  const hAlign = H ? mainAlign : align;
   if (hAlign !== 'MIN') for (const k of kids) {
     if (k.type !== 'TEXT' || k.textAutoResize === 'WIDTH_AND_HEIGHT' || k.fontSize === figma.mixed) continue;
     const lh = k.lineHeight !== figma.mixed && k.lineHeight.unit === 'PIXELS' ? k.lineHeight.value : k.fontSize * 1.2;
     if (k.height < lh * 1.5 && !k.characters.includes('\n')) {
       const fonts = k.fontName === figma.mixed ? k.getStyledTextSegments(['fontName']).map(s => s.fontName) : [k.fontName];
-      for (const fn of fonts) await figma.loadFontAsync(fn);
+      await Promise.all(fonts.map(fn => figma.loadFontAsync(fn)));
       k.textAutoResize = 'WIDTH_AND_HEIGHT';
     }
   }

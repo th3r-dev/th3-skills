@@ -43,6 +43,16 @@ SUBMIT = """(c) => Promise.race([
   new Promise(r => setTimeout(() => r('timeout-60s'), 60000))])"""  # the promise often never settles; the submit still lands
 
 
+def inside_work(p, what="path"):
+    """CLI paths come from an agent, so every file this script writes stays inside the working folder:
+    the current directory, or $DESIGN_FLOW_ROOT when set (the bridge's --work folder)."""
+    root = os.path.realpath(os.environ.get("DESIGN_FLOW_ROOT") or os.getcwd())
+    full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
+    if os.path.commonpath([root, full]) != root:
+        sys.exit(f"{what} {p!r} is outside the working folder {root}; run from that folder or set DESIGN_FLOW_ROOT")
+    return full
+
+
 def html_figma_bundle():
     """Browser IIFE of html-figma (global htmlFigma.htmlToFigma), built once with npm + esbuild."""
     out = CACHE / f"{HTML_FIGMA.replace('@', '-')}.js"
@@ -219,25 +229,33 @@ def inline_images(node, fetch, cache):
     return node
 
 
+def image_entry(fill):
+    """(key, {b64, scaleMode}) for a raster data-URI IMAGE fill, else None."""
+    url = fill.get("url", "") if isinstance(fill, dict) and fill.get("type") == "IMAGE" else ""
+    m = re.match(r"data:image/(png|jpe?g|gif);base64,(.+)", url, re.S)
+    if not m:
+        return None
+    return hashlib.sha1(m.group(2).encode()).hexdigest()[:12], {"b64": m.group(2), "scaleMode": fill.get("scaleMode") or "FILL"}
+
+
 def split_images(node, images):
     """The bridge plugin only turns an IMAGE fill into pixels when it carries a Uint8Array, which JSON can't hold:
     a data-URI fill imports as an empty frame. Move each raster image to `images` (key -> base64), tag the layer
     with data.image = key (the importer keeps `data` as shared plugin data), and let `figma_js.py images` fill it."""
-    if isinstance(node, dict):
-        keep = []
-        for f in node.get("fills") or []:
-            url = f.get("url", "") if isinstance(f, dict) and f.get("type") == "IMAGE" else ""
-            m = re.match(r"data:image/(png|jpe?g|gif);base64,(.+)", url, re.S)
-            if not m:
-                keep.append(f)
-                continue
-            key = hashlib.sha1(m.group(2).encode()).hexdigest()[:12]
-            images[key] = {"b64": m.group(2), "scaleMode": f.get("scaleMode") or "FILL"}
-            node["data"] = {**(node.get("data") or {}), "image": key}
-        if "fills" in node:
-            node["fills"] = keep
-        for c in node.get("children") or []:
-            split_images(c, images)
+    if not isinstance(node, dict):
+        return node
+    keep = []
+    for f in node.get("fills") or []:
+        hit = image_entry(f)
+        if hit is None:
+            keep.append(f)
+            continue
+        images[hit[0]] = hit[1]
+        node["data"] = {**(node.get("data") or {}), "image": hit[0]}
+    if "fills" in node:
+        node["fills"] = keep
+    for c in node.get("children") or []:
+        split_images(c, images)
     return node
 
 
@@ -379,7 +397,7 @@ def serve(target):
 
 def build_jobs(a):
     if a.cmd == "jobs":
-        return json.loads(Path(a.targets[0]).read_text(encoding="utf-8"))
+        return json.loads(Path(inside_work(a.targets[0], "jobs file")).read_text(encoding="utf-8"))
     urls = a.targets
     if a.cmd == "html":
         if len(a.targets) != 1:
@@ -425,6 +443,15 @@ def self_test():
     for url, m in [("https://app.test/api/x", "POST"), ("https://mcp.figma.com/x", "POST"), ("https://cdn.test/a.js", "GET")]:
         req = R(url, m); h(req, req)
     assert calls == ["abort", "continue", "continue"] and blocked == ["POST /api/x"], (calls, blocked)
+    root = os.path.realpath(os.getcwd())
+    assert inside_work("captures") == os.path.join(root, "captures")
+    for bad in ("../outside", "/etc"):
+        try:
+            inside_work(bad)
+        except SystemExit:
+            pass
+        else:
+            raise AssertionError(f"{bad} accepted")
     print("self-test ok")
 
 
@@ -450,6 +477,8 @@ def main():
         return login(a.url, a.state)
     if a.to == "layers" and not a.out:
         sys.exit("--to layers needs --out DIR")
+    if a.out:
+        a.out = inside_work(a.out, "--out")
     capture(build_jobs(a), a.to, a.out, a.viewport, a.selector, a.wait, a.allow_writes, a.headed, a.allow_post)
 
 

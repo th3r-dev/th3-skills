@@ -33,10 +33,36 @@ the output verbatim as `code`.
 
 stdlib only. Output goes to stdout or -o FILE.
 """
-import argparse, json, sys
+import argparse, json, os, sys
 from pathlib import Path
 
 JS = Path(__file__).with_name("js")
+
+
+def inside_work(p, what="path"):
+    """CLI paths come from an agent, so every file this script reads or writes stays inside the working folder:
+    the current directory, or $DESIGN_FLOW_ROOT when set."""
+    root = os.path.realpath(os.environ.get("DESIGN_FLOW_ROOT") or os.getcwd())
+    full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
+    if os.path.commonpath([root, full]) != root:
+        raise SystemExit(f"{what} {p!r} is outside the working folder {root}; run from that folder or set DESIGN_FLOW_ROOT")
+    return Path(full)
+
+
+def read_json(p, what):
+    return json.loads(inside_work(p, what).read_text(encoding="utf-8"))
+
+
+def ui_to_ui(spec):
+    """A flow joins real UI to real UI: every anchor's chain must end on a screen (another page, or a state copy of
+    this one: dialog open, alert shown). Returns the anchors whose chain never reaches one."""
+    screens = {s["id"] for s in spec.get("screens") or []}
+    nxt = {}
+    for e in spec.get("edges") or []:
+        nxt.setdefault(e["from"], []).append(e["to"])
+    def reaches(v, seen):
+        return v in screens or any(t not in seen and reaches(t, seen | {t}) for t in nxt.get(v, []))
+    return [a["id"] for a in spec.get("anchors") or [] if not reaches(a["id"], {a["id"]})]
 TOKEN = "__PARAMS__"
 
 
@@ -76,6 +102,16 @@ def self_test():
         pass
     else:
         raise AssertionError("bad --font-map accepted")
+    spec = {"anchors": [{"id": "a"}, {"id": "b"}], "screens": [{"id": "s"}],
+            "edges": [{"from": "a", "to": "n"}, {"from": "n", "to": "s"}, {"from": "b", "to": "x"}, {"from": "x", "to": "b"}]}
+    assert ui_to_ui(spec) == ["b"]
+    for bad in ("../x.json", "/etc/hosts"):
+        try:
+            inside_work(bad)
+        except SystemExit:
+            pass
+        else:
+            raise AssertionError(f"{bad} accepted")
     print("self-test ok")
 
 
@@ -136,25 +172,28 @@ def main():
     a = ap.parse_args()
 
     if a.cmd == "flow-kit":
-        a.cmd, params = "flow_kit", {"page": a.page, "tokens": json.loads(Path(a.tokens).read_text(encoding="utf-8"))}
+        a.cmd, params = "flow_kit", {"page": a.page, "tokens": read_json(a.tokens, "--tokens")}
     elif a.cmd == "flow":
-        a.cmd, params = "flow_render", {"page": a.page, **json.loads(Path(a.spec).read_text(encoding="utf-8"))}
+        a.cmd, params = "flow_render", {"page": a.page, **read_json(a.spec, "--spec")}
+        if dead := ui_to_ui(params):
+            raise SystemExit(f"anchors {dead} never reach a screen. Build the result state first (capture.py jobs "
+                             "with steps/selector, then figma_js.py state), list it in `screens`, and end the chain on it")
     elif a.cmd == "redraw-connectors":
         a.cmd, params = "connector_redraw", {"page": a.page, "slack": a.slack, **({"ids": [i.strip() for i in a.ids.split(",")]} if a.ids else {})}
     elif a.cmd == "images":
-        params = {"page": a.page, "root": a.root, "images": json.loads(Path(a.images).read_text(encoding="utf-8"))}
+        params = {"page": a.page, "root": a.root, "images": read_json(a.images, "--images")}
     elif a.cmd == "make-room":
         a.cmd, params = "make_room", {"page": a.page, "from_x": a.from_x, "dx": a.dx, "label": a.label, "y_from": a.y_from, "y_to": a.y_to}
     elif a.cmd == "place-check":
         a.cmd, params = "place_check", {"page": a.page}
     elif a.cmd == "usage":
-        a.cmd, params = "component_usage", {"pages": [a.page], **(json.loads(Path(a.spec).read_text(encoding="utf-8")) if a.spec else {})}
+        a.cmd, params = "component_usage", {"pages": [a.page], **(read_json(a.spec, "--spec") if a.spec else {})}
     elif a.cmd == "ui-samples":
-        a.cmd, params = "ui_samples", {"page": a.page, **json.loads(Path(a.spec).read_text(encoding="utf-8"))}
+        a.cmd, params = "ui_samples", {"page": a.page, **read_json(a.spec, "--spec")}
     elif a.cmd == "componentize":
-        a.cmd, params = "componentize", {"page": a.page, **json.loads(Path(a.spec).read_text(encoding="utf-8"))}
+        a.cmd, params = "componentize", {"page": a.page, **read_json(a.spec, "--spec")}
     elif a.cmd == "state":
-        a.cmd, params = "state", {"page": a.page, **json.loads(Path(a.spec).read_text(encoding="utf-8"))}
+        a.cmd, params = "state", {"page": a.page, **read_json(a.spec, "--spec")}
     elif a.cmd == "extract":
         a.cmd, params = "graph_extract", {"page": a.page}
     elif a.cmd == "swap":
@@ -173,7 +212,7 @@ def main():
             "title_style": a.title_style, "body_style": a.body_style}.items() if v is not None}
     code = render(a.cmd, params)
     if a.out:
-        Path(a.out).write_text(code, encoding="utf-8")
+        inside_work(a.out, "--out").write_text(code, encoding="utf-8")
         print(f"wrote {a.out} ({len(code)} chars)")
     else:
         sys.stdout.write(code)
