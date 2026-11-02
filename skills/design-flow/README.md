@@ -99,7 +99,9 @@ Read `SKILL.md` first. It holds the rules. This is the order of operations.
 
 ```
 0  bridge.py status → up if needed;  bridge.py call list_files → plugin connected?
+   load design-core; run every script from the work folder (paths outside it are refused)
 1  inventory: variables, text/paint/effect styles, components (run_script or search_design_system)
+   + design-core: each screen's job in one sentence, the product's terms and capitalization
    → anything missing that the task needs: STOP, list it, ask
 2  capture
      live page / HTML :  capture.py url|html|jobs --to layers --out <work>/captures [--state FILE]
@@ -120,12 +122,19 @@ Read `SKILL.md` first. It holds the rules. This is the order of operations.
      match = same layer structure + height + radius + fill token + vector geometry, so icons never get swapped
      for a different icon. Text is carried over; other per-instance art (photos, charts) is not, so leave those
      layers as frames
-6  flow (UI → flow → UI): figma_js.py flow-kit once → capture target states (capture.py jobs with steps/selector)
-         → figma_js.py state (overlay or page) → write flow.json from the app source → figma_js.py flow → run (allowRemove)
-         no room in the section? ask, then figma_js.py make-room
+6  flow (UI → flow → UI): figma_js.py flow-kit once
+         → capture EVERY result state (capture.py jobs with steps/selector): dialog open, success shown, page opened,
+           back on the list. No state screen = no flow; never end a chain on an `end` text box instead
+         → figma_js.py state (overlay or page), each state right after its source in the same row
+         → write flow.json from the app source; every anchor's chain ends on a screen in `screens`
+         → figma_js.py flow (refuses specs that never reach a screen) → run (allowRemove)
+         no room in the section? ask, then figma_js.py make-room. Lettered markers only if the user asks (markers: true)
+         → flow_review.py flows/  (a line ending on a marker or never reaching a screen caps at 5)
 6b graph: design_graph.py extract/build → dupes (next components), impact (before token edits), gaps
-7  one screenshot of the result (get_screenshot), fix if needed, stop
-8  report: placed screens, counts bound/styled, unmatched values, anything blocked
+7  one screenshot per row; check every line lands on a picture; score it with design-core's review table;
+   fix the top findings, at most three rounds, stop
+8  report: placed screens, state screens, flow_review pass count and mean, design-core scores,
+   counts bound/styled, unmatched values, anything blocked
 ```
 
 Without the MCP tools loaded in the session, every bridge tool is reachable from the shell:

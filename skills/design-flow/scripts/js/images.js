@@ -11,7 +11,7 @@ const out = { filled: 0, missing: [], mutatedNodeIds: [] };
 for (const n of [root, ...root.findAll(n => 'fills' in n)]) {
   let d;
   try { d = JSON.parse(n.getSharedPluginData('builder', 'data') || '{}'); } catch (e) { continue; }
-  if (!d || !d.image) continue;
+  if (!d?.image) continue;
   const img = P.images[d.image];
   if (!img) { out.missing.push(d.image); continue; }
   hashes[d.image] = hashes[d.image] || figma.createImage(figma.base64Decode(img.b64)).hash;
