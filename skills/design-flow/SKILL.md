@@ -72,13 +72,13 @@ can't write nodes. So [`scripts/figma_js.py`](scripts/figma_js.py) renders the J
 | `bridge.py up --work DIR --run-script` | builds and starts the bridge container (podman or docker): `127.0.0.1:1994` for the plugin, `DIR` mounted at `/work` |
 | `bridge.py mcp` | the MCP command; each session `exec -i`s into the container (first = leader, others follow) |
 | `bridge.py status / logs / down` | container lifecycle |
-| `capture.py ... --to layers --out DIR` | page → html-figma JSON for `import_html_layers` (no quota; absolute layout) |
+| `capture.py ... --to layers --out DIR` | page → html-figma JSON for `import_html_layers` (no quota; absolute layout). `--fake-ok REGEX` answers matching writes with HTTP 200 inside the browser, so success dialogs can be captured without changing data |
 | `capture.py ... --to figma --capture ID` | page → Figma via `generate_figma_design` capture ids (auto layout, binds variables; uses quota) |
 | `figma_js.py swap` | layers that match a component variant (structure, size, radius, fill token, vector geometry) → instances, texts carried over |
 | `figma_js.py flow-kit --tokens t.json` | builds the design-mode flow kit (Flow/Node, Flow/Decision, Flow/Marker, Flow/Element Row) from your tokens |
 | `figma_js.py flow --spec flow.json` | UI → flow → UI: element on screen → kit steps → next screen, lines routed around everything (A*) |
-| `figma_js.py state --spec state.json` | target state screen: copy + dialog overlay, or captured page + accurate sidebar |
-| `figma_js.py make-room` | shift a section right and widen its label so a flow fits (ask first); `--y-from/--y-to` limit it to one row band |
+| `figma_js.py state --spec state.json` | target state screen: copy + dialog overlay, or captured page + accurate sidebar; `max_height: 1080` crops it to one viewport |
+| `figma_js.py make-room` | shift a section right and widen its label so a flow fits (ask first); `--y-from/--y-to` limit it to one row band; `--from-y/--dy` instead shift everything below a y down (room for a band of state screens) |
 | `figma_js.py extract` + `design_graph.py` | design knowledge graph: `build`, `dupes`, `impact`, `tour`, `gaps` |
 | `figma_js.py images` | fill the raster images `capture.py` split into `<slug>.images.json` (run right after the import) |
 | `figma_js.py autolayout` | absolute frames → auto layout (rows and columns inferred, deepest first) |
@@ -270,6 +270,9 @@ When a check fails, fix that stage. Don't carry the problem into the next one.
      opened edit page are screens on the canvas, not text boxes. A step chain that ends in an `end` box ("close the
      dialog", "open in edit mode") is a state screen you haven't built yet. `figma_js.py flow` refuses a spec whose
      anchors never reach a screen, and `flow_review.py` caps it at 5.
+   - **Steps sit beside their source when states go in a band below it** (`align_to_target: false`): otherwise
+     the step row lines up with the first state and lands inside the band. Order the band by the buttons that lead
+     to it, and leave a bottom button on the side facing its chain (`side`), so neighbouring lines don't cross.
    - **Every line lands on its screen.** Keep targets close instead of hiding the distance: put each state right after
      its own steps, and for "back to the list" use a copy of the list as a state in the same row (`figma_js.py state`
      with `page`) rather than a line back across the page. Don't `make-room` screens thousands of px apart to fit
