@@ -474,9 +474,8 @@ def main():
         return login(a.url, a.state)
     if a.to == "layers" and not a.out:
         sys.exit("--to layers needs --out DIR")
-    if a.out:
-        a.out = inside_work(a.out, "--out")
-    capture(build_jobs(a), a.to, a.out, a.viewport, a.selector, a.wait, a.allow_writes, a.headed, a.allow_post)
+    out_dir = inside_work(a.out, "--out") if a.out else None
+    capture(build_jobs(a), a.to, out_dir, a.viewport, a.selector, a.wait, a.allow_writes, a.headed, a.allow_post)
 
 
 if __name__ == "__main__":
