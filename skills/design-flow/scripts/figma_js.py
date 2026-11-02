@@ -40,17 +40,16 @@ JS = Path(__file__).with_name("js")
 
 
 def inside_work(p, what="path"):
-    """CLI paths come from an agent, so every file this script reads or writes stays inside the working folder:
-    the current directory, or $DESIGN_FLOW_ROOT when set."""
-    root = os.path.realpath(os.environ.get("DESIGN_FLOW_ROOT") or os.getcwd())
+    """CLI paths come from an agent, so this script only reads and writes inside the folder it runs from."""
+    root = os.path.realpath(os.getcwd())
     full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
-    if os.path.commonpath([root, full]) != root:
-        raise SystemExit(f"{what} {p!r} is outside the working folder {root}; run from that folder or set DESIGN_FLOW_ROOT")
-    return Path(full)
+    if os.path.commonpath([root, full]) == root:
+        return full
+    raise ValueError(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
 
 
 def read_json(p, what):
-    return json.loads(inside_work(p, what).read_text(encoding="utf-8"))
+    return json.loads(Path(inside_work(p, what)).read_text(encoding="utf-8"))
 
 
 def ui_to_ui(spec):
@@ -105,13 +104,12 @@ def self_test():
     spec = {"anchors": [{"id": "a"}, {"id": "b"}], "screens": [{"id": "s"}],
             "edges": [{"from": "a", "to": "n"}, {"from": "n", "to": "s"}, {"from": "b", "to": "x"}, {"from": "x", "to": "b"}]}
     assert ui_to_ui(spec) == ["b"]
-    for bad in ("../x.json", "/etc/hosts"):
+    for bad in ("../outside.json", "/etc/hosts"):
         try:
             inside_work(bad)
-        except SystemExit:
-            pass
-        else:
-            raise AssertionError(f"{bad} accepted")
+        except ValueError:
+            continue
+        raise AssertionError(f"{bad} accepted")
     print("self-test ok")
 
 
@@ -212,11 +210,14 @@ def main():
             "title_style": a.title_style, "body_style": a.body_style}.items() if v is not None}
     code = render(a.cmd, params)
     if a.out:
-        inside_work(a.out, "--out").write_text(code, encoding="utf-8")
+        Path(inside_work(a.out, "--out")).write_text(code, encoding="utf-8")
         print(f"wrote {a.out} ({len(code)} chars)")
     else:
         sys.stdout.write(code)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ValueError as exc:  # a path outside the working folder: a clear message, not a traceback
+        sys.exit(f"error: {exc}")

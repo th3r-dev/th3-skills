@@ -93,8 +93,8 @@ Then in Figma desktop: Plugins › Development › Import plugin from manifest (
 from the bridge release), and run it in each file. `run_script` executes arbitrary code in the open
 file, so it stays off unless `--run-script` is passed. Pass `allowRemove: true` for `place`.
 Write `--to layers` output inside the `--work` folder and give `import_html_layers` the path relative to `/work`.
-`capture.py` and `figma_js.py` only read and write files inside the current folder (or `$DESIGN_FLOW_ROOT`), so
-run them from the work folder.
+`capture.py`, `figma_js.py` and `flow_review.py` only read and write files inside the folder they run from, so run them from the work
+folder.
 
 ## Converting things into Figma (all with auto layout)
 
