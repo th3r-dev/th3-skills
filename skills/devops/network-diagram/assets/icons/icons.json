@@ -1,0 +1,15 @@
+{
+  "_doc": "Icon library for system/network diagrams. Order of preference: 'team' = a real product logo already embedded in the team's .drawio, saved as a file here; 'builtin' = draw.io's own shape/image library (style only); 'fetched' = the official logo downloaded from the product's own site/repo. match = regex (case-insensitive) on the label nearest the icon; the first rule that matches wins. Add your own customer / product logos as 'team' rows. Never take an icon out of a PDF, never draw a product logo from an emoji.",
+  "icons": [
+    {"slug": "user",            "source": "builtin", "match": "^user$",                      "style": "shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;"},
+    {"slug": "mobile",          "source": "builtin", "match": "^mobile$",                    "style": "sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.mobile_client;"},
+    {"slug": "vpn",             "source": "builtin", "match": "vpn",                         "style": "points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.vpn_gateway;"},
+    {"slug": "firewall",        "source": "builtin", "match": "firewall",                    "style": "image;html=1;image=img/lib/clip_art/networking/Firewall_02_128x128.png;"},
+    {"slug": "avi-controller",  "source": "team",    "match": "avi controller",              "file": "avi-controller.png"},
+    {"slug": "avi-service",     "source": "team",    "match": "avi virtual service|^avi",    "file": "avi-service.png"},
+    {"slug": "tanzu-supervisor","source": "team",    "match": "supervisor|control plan",     "file": "tanzu-supervisor.png"},
+    {"slug": "argo",            "source": "team",    "match": "^argo",                       "file": "argo.png"},
+    {"slug": "container",       "source": "team",    "match": "^(kafka|minio|vault|redis)$", "file": "container.png"},
+    {"slug": "server",          "source": "builtin", "match": "server|master|worker|database|postgres|db\\d|hostname", "style": "image;points=[];aspect=fixed;html=1;align=left;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Server_Desktop.svg;imageBackground=default;"}
+  ]
+}
