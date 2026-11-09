@@ -48,12 +48,22 @@ import argparse
 import csv
 import html
 import json
+import os
 import re
 import shutil
 import sys
 import time
 from datetime import date
 from pathlib import Path
+
+def inside_work(p, what="path"):
+    """CLI paths come from an agent, so this script only reads and writes inside the folder it runs from."""
+    root = os.path.realpath(os.getcwd())
+    full = os.path.realpath(os.path.join(root, os.path.expanduser(str(p))))
+    if full != root and not full.startswith(root + os.sep):
+        raise SystemExit(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
+    return full
+
 
 DEFAULT_BUTTON = {"csv": r"CSV", "excel": r"Excel", "pdf": r"PDF|Print"}
 EXT = {"csv": ".csv", "excel": ".xlsx", "pdf": ".pdf"}
@@ -426,9 +436,9 @@ def main():
     ap.add_argument("--cdp", default="http://127.0.0.1:9222", help="CDP endpoint of the signed-in Chrome")
     ap.add_argument("--index-only", action="store_true", help="rewrite index.csv / environment.csv without a browser")
     a = ap.parse_args()
-    spec = json.loads(Path(a.cases).read_text(encoding="utf-8"))
+    spec = json.loads(Path(inside_work(a.cases, "cases")).read_text(encoding="utf-8"))
     ui = deep_merge(DEFAULT_UI, spec.get("ui", {}))
-    out = Path(a.out).resolve()
+    out = Path(inside_work(a.out, "evidence dir"))
     out.mkdir(parents=True, exist_ok=True)
     if a.index_only:
         write_index(out, spec, ui["captions"])

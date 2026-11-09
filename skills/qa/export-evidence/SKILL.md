@@ -30,6 +30,8 @@ uv run $S/make_qa_report.py $RUN/evidence --out $RUN/<name>.xlsx \
     [--only-sheets "reports export excel"] [--labels references/labels-th.json]
 ```
 
+Both scripts only read and write **inside the folder they run from** (`cases.json`, the evidence dir, `--out`, `--labels`); run them from the repo root.
+
 1. **Inventory from source, not from clicking around.** The app's menu / route config plus the page
    templates show which pages carry an export bar. Write the list down with the kind of export each
    one uses (see below) — the page set changes between releases, so re-check before each run.
