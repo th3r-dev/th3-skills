@@ -1,0 +1,15 @@
+[
+  {"id": "R1", "file": "R1_real_doc_truck.xlsx", "company": 1, "mode": "submit",
+   "expect": {"status": "VALIDATED", "detailCount": 2, "errors": []},
+   "note": "real document, two details, two partners", "source": "sheet row 12 · scan p.3",
+   "scenario": "Happy Case", "trace": "slide 4 · truck use case 1"},
+  {"id": "V1", "file": "V1_OUT_all_pairs.xlsx", "company": 1, "mode": "validate",
+   "expect": {"status": "VALIDATED", "detailCount": 8, "errors": []},
+   "note": "every valid OUT pair once", "scenario": "Happy Case", "trace": "decision table R01–R08"},
+  {"id": "N1", "file": "N1_OUT_invalid_pairs.xlsx", "company": 1, "mode": "validate",
+   "expect": {"status": "VALIDATION_ERROR", "detailCount": 0, "errors": ["does not match", "row 10"]},
+   "note": "dead values + cross pairs", "scenario": "Negative", "trace": "decision table X1–X4"},
+  {"id": "B1", "file": "B1_qty_zero.xlsx", "company": 1, "mode": "validate",
+   "expect": {"status": "VALIDATION_ERROR", "detailCount": 0, "errors": ["quantity must be a number greater than 0"]},
+   "note": "stage-2 boundary, its own file", "scenario": "Edge Case", "trace": "importer stage 2"}
+]
