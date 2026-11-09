@@ -23,12 +23,22 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from pathlib import Path
 
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.styles import Font, PatternFill
 from PIL import Image
+
+def inside_work(p, what="path"):
+    """CLI paths come from an agent, so this script only reads and writes inside the folder it runs from."""
+    root = os.path.realpath(os.getcwd())
+    full = os.path.realpath(os.path.join(root, os.path.expanduser(str(p))))
+    if full != root and not full.startswith(root + os.sep):
+        raise SystemExit(f"{what} {p!r} is outside the working folder {root}; run the script from that folder")
+    return full
+
 
 W = 900                      # rendered screenshot width, px
 COLS = (2, 17)               # B and Q: two screenshots per grid row
@@ -169,9 +179,9 @@ def main():
     ap.add_argument("--only-sheets", nargs="*", help="keep only cases whose sheet is listed (split one run into several workbooks)")
     ap.add_argument("--labels", help="JSON file overriding caption words (keys: " + ", ".join(LABELS) + ")")
     a = ap.parse_args()
-    labels = {**LABELS, **(json.loads(Path(a.labels).read_text(encoding="utf-8")) if a.labels else {})}
-    out = Path(a.out).resolve()
-    wb = build(Path(a.evidence).resolve(), out, a, labels)
+    labels = {**LABELS, **(json.loads(Path(inside_work(a.labels, "labels")).read_text(encoding="utf-8")) if a.labels else {})}
+    out = Path(inside_work(a.out, "output"))
+    wb = build(Path(inside_work(a.evidence, "evidence dir")), out, a, labels)
     print(out, out.stat().st_size, "bytes,", len(wb.sheetnames), "sheets")
 
 
