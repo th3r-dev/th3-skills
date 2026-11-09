@@ -1,0 +1,18 @@
+{
+  "ui": {
+    "date_placeholder": "วว/ดด/ปปปป",
+    "refresh": "รีเฟรช|Refresh",
+    "success_words": ["สำเร็จ"],
+    "failure_words": ["ไม่สำเร็จ", "ล้มเหลว", "FAILED"],
+    "captions": {
+      "open-page": "เปิดหน้า", "fill-filter": "กรอกช่วงวันที่", "query-result": "กด", "select-rows": "เลือกรายการ",
+      "export-button": "ปุ่ม Export", "queued-alert": "กดปุ่ม → เข้าคิว", "queue-success": "คิวรายงาน",
+      "downloaded-file": "เปิดไฟล์ที่ดาวน์โหลด", "viewer-button": "ปุ่มพิมพ์ของแถวแรก", "viewer": "หน้าต่างแสดงแบบฟอร์ม",
+      "save-menu": "กด Save แล้วเลือก Adobe PDF", "export-form": "ตั้งค่าส่งออก PDF แล้วกด OK",
+      "no-response": "กดแล้วไม่มีอะไรเกิดขึ้น", "alert": "กดปุ่มแล้วมีแจ้งเตือน", "error": "หยุดกลางทาง",
+      "pass_text": "ส่งออกเป็นไฟล์ได้ ({detail})", "fail_text": "ส่งออกไม่สำเร็จ: {reason}",
+      "empty_file": "ไฟล์ว่าง 0 byte", "not_pdf": "ไม่ใช่ PDF", "not_xlsx": "ไม่ใช่ xlsx",
+      "pages": "หน้า", "sheets": "ชีต", "rows": "แถวที่มีค่า", "on_screen": "บนจอ {n} แถว"
+    }
+  }
+}
