@@ -31,6 +31,8 @@ npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
 
 - [`design-flow`](skills/design-flow/README.md) — puts real screens into Figma with their flowchart beside them. It captures live pages or HTML as editable auto-layout layers, binds every value to the file's variables and text styles (and asks before adding missing ones), fills placeholder slots or versions changed screens on the canvas, and builds flows from the file's own flow kit. Runs through a containerized [figma-mcp-bridge](https://github.com/gethopp/figma-mcp-bridge), so Figma's API and MCP call limits don't apply. Python tools, guide in its README.
 
+- [`devops`](skills/devops/SKILL.md) — DevOps toolkit, one skill with three sub-skills and their scripts: `change` (infra work on real machines in a fixed order — triage, read-only investigation, evidence, approved plan, stepwise change, same-command verification, blameless review — closed with a before / steps / after / rollback report; `jssh.py` jump-host ssh from an ini, `snapshot_haproxy.sh` for the config a container is *really* running), `release-scope` (what ships in the next release vs what prod runs, by ticket keys across every repo plus the issue boards, written as the PM list and checked against the customer message) and `network-diagram` (one draw.io file with a board per version → clean one-page PDF; rebuild a drawio from a final PDF; benchmark text / layout / pixels). Generalised from a Thai-government integration project.
+
 ## Related
 
 - [kien-thai (เขียนไทย)](https://github.com/chakrit/kien-thai) by chakrit — a skill for writing Thai that Thai readers find easy to read. Pairs with `thai-mock-naming`: that skill handles the Thai prose in free-text fields, this one handles the identity fields.
