@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Kanit"; font-weight: 500; src: url(fonts/Kanit-Medium.ttf); }
+  @font-face { font-family: "Kanit"; font-weight: 700; src: url(fonts/Kanit-Bold.ttf); }
+  @font-face { font-family: "JB"; font-weight: 100 800; src: url(fonts/JetBrainsMono.ttf); }
+
+  :root { --bg: #15132b; --panel: #232046; --ink: #1d1a2e; --white: #fff; --red: #ff4d5e; --gold: #f2c14e;
+          --mint: #6ee7b7; --muted: #a9a3d6; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; color: var(--white);
+               font-family: "Kanit", sans-serif; font-weight: 700;
+               background: var(--bg) repeating-linear-gradient(0deg, #ffffff06 0 4px, transparent 4px 8px); }
+  section { position: absolute; inset: 0; }
+  section::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+                    background: radial-gradient(circle at 50% 40%, var(--glow, #3b3a8a55), transparent 65%); }
+  section.tense { --glow: #ff4d5e40; }
+  section.calm  { --glow: #6ee7b733; }
+  section.bright{ --glow: #f2c14e33; }
+  svg { display: block; shape-rendering: crispEdges; overflow: visible; }
+  code, .mono { font-family: "JB", monospace; font-weight: 700; }
+
+  /* the guard, the same sprite in every scene */
+  .stage { position: absolute; left: 50%; width: 400px; margin-left: -200px; top: 1040px;
+           animation: pop .5s steps(5) both .3s; transform-origin: 50% 100%; }
+  .bob   { animation: bob 1s steps(1) infinite; }
+  .shut  { animation: blink 3.4s steps(1) infinite 1.4s; opacity: 0; }
+  .talk  { animation: talk .3s steps(1) infinite; }
+  .shock, .sweat { display: none; }
+  [data-scene="surprise"] .shock { display: inline; }
+  [data-scene="surprise"] .sweat { display: inline; animation: drip 1.2s steps(6) infinite; }
+  [data-scene="surprise"] .stage { animation: pop .5s steps(5) both .3s, shake .24s steps(2) 6 calc(var(--scene-dur) * .4); }
+
+  .in   { animation: drop .45s steps(4) both; }
+  .popn { animation: pop .4s steps(4) both; }
+
+  /* hook */
+  .siren { position: absolute; left: 50%; top: 110px; width: 160px; height: 60px; margin-left: -80px;
+           background: var(--red); box-shadow: 0 0 0 10px var(--ink), 0 0 80px 30px #ff4d5e88;
+           animation: flash .5s steps(1) infinite .1s; }
+  .kicker { position: absolute; top: 250px; left: 0; right: 0; text-align: center; font-size: 64px; color: var(--muted); }
+  .crit { position: absolute; top: 320px; left: 0; right: 0; text-align: center; font-size: 190px; line-height: 1.1;
+          color: var(--red); text-shadow: 10px 10px 0 var(--ink); }
+  .score { position: absolute; top: 560px; left: 0; right: 0; text-align: center; font-size: 300px; line-height: 1;
+           text-shadow: 12px 12px 0 #000a; }
+  .score small { font-size: 90px; color: var(--muted); }
+  .chip { position: absolute; top: 900px; left: 50%; transform: translateX(-50%); padding: 10px 34px; font-size: 44px;
+          background: var(--red); color: var(--white); box-shadow: 8px 8px 0 var(--ink); white-space: nowrap; }
+
+  /* door */
+  .node { position: absolute; left: 50%; width: 600px; margin-left: -300px; padding: 22px 0; text-align: center;
+          font-size: 58px; background: var(--panel); border: 8px solid var(--white); box-shadow: 10px 10px 0 #0008; }
+  .node small { display: block; font-size: 34px; color: var(--muted); font-weight: 500; }
+  .node.trusted { border-color: var(--gold); }
+  .wire { position: absolute; left: 50%; width: 12px; margin-left: -6px;
+          background: repeating-linear-gradient(var(--muted) 0 20px, transparent 20px 36px); }
+  .req { position: absolute; left: 50%; top: 150px; width: 640px; margin-left: -320px; z-index: 2; padding: 18px 0;
+         text-align: center; background: var(--white); color: var(--ink); font-size: 38px; box-shadow: 10px 10px 0 #000a;
+         animation: drop .4s steps(4) both calc(var(--scene-dur) * .12), travel 2.4s steps(12) forwards calc(var(--scene-dur) * .2); }
+  .req b { color: #c2304a; }
+  .ask { position: absolute; top: 885px; right: 40px; padding: 14px 28px; font-size: 50px; background: var(--gold); color: var(--ink);
+         box-shadow: 8px 8px 0 #000a; animation: pop .4s steps(4) both calc(var(--scene-dur) * .45); transform-origin: 0 100%; }
+
+  /* typo */
+  .label { position: absolute; top: 170px; left: 0; right: 0; text-align: center; font-size: 58px; color: var(--muted); }
+  .code { position: absolute; left: 60px; right: 60px; padding: 34px 30px 34px 140px; font-size: 64px;
+          background: var(--panel); border: 8px solid var(--white); box-shadow: 10px 10px 0 #000a; white-space: nowrap; }
+  .code::before { position: absolute; left: 34px; top: 50%; margin-top: -40px; width: 80px; height: 80px; line-height: 80px;
+                  text-align: center; font-family: "Kanit"; font-size: 64px; color: var(--ink); }
+  .code.bad  { top: 300px; border-color: var(--red); }
+  .code.bad::before  { content: "✗"; background: var(--red); }
+  .code.good { top: 520px; border-color: var(--mint); }
+  .code.good::before { content: "✓"; background: var(--mint); }
+  .code b { padding: 0 6px; animation: blinkbg .6s steps(1) infinite calc(var(--scene-dur) * .45); }
+  .bad b  { color: var(--red); }
+  .good b { color: var(--mint); }
+  .note { position: absolute; top: 760px; left: 0; right: 0; text-align: center; font-size: 54px; color: var(--gold); }
+  .note small { display: block; font-size: 38px; color: var(--muted); font-weight: 500; }
+
+  /* surprise */
+  .lbl { position: absolute; top: 110px; left: 0; right: 0; text-align: center; font-size: 50px; color: var(--muted); }
+  .count { position: absolute; top: 170px; left: 0; right: 0; text-align: center; font-size: 104px; color: var(--mint); }
+  .count.all { color: var(--red); }
+  .grid { position: absolute; top: 340px; left: 50%; width: 624px; margin-left: -312px;
+          display: grid; grid-template-columns: repeat(16, 36px); gap: 3px; }
+  .grid i { height: 36px; background: #ffffff14; }
+  .grid i.ok { background: var(--mint); }
+  .grid i.on { background: var(--red); }
+  .legend { position: absolute; top: 985px; left: 0; right: 0; text-align: center; font-size: 36px; color: var(--muted); font-weight: 500; }
+  .legend i { display: inline-block; width: 30px; height: 30px; background: var(--mint); vertical-align: -4px; margin-right: 10px; }
+  .x256 { position: absolute; top: 540px; left: 50%; margin-left: -230px; width: 460px; padding: 10px 0; text-align: center;
+          font-size: 150px; color: var(--white); background: var(--red); box-shadow: 0 0 0 12px var(--ink), 14px 14px 0 12px #000a;
+          transform: rotate(-8deg); animation: stamp .3s steps(3) both calc(var(--scene-dur) * .8); }
+
+  /* attack */
+  .log { position: absolute; top: 110px; left: 60px; right: 60px; background: #f6efd9; color: var(--ink);
+         box-shadow: 0 0 0 8px var(--ink), 14px 14px 0 8px #000a; padding: 22px 36px; font-size: 44px; }
+  .log h3 { margin: 0 0 10px; font-size: 44px; }
+  .log .row { display: flex; gap: 40px; padding: 6px 0; border-top: 4px dashed #1d1a2e33; font-size: 42px; }
+  .log .row.new { color: #c2304a; }
+  .log .typed { display: inline-block; overflow: hidden; white-space: nowrap; width: 0; vertical-align: bottom;
+                --n: 8; animation: typing .8s steps(8) forwards calc(var(--scene-dur) * .62); }
+  .fake { margin-left: auto; padding: 0 18px; background: var(--red); color: var(--white); font-family: "Kanit";
+          animation: pop .35s steps(3) both calc(var(--scene-dur) * .8); }
+  .sign { position: absolute; top: 560px; left: 50px; width: 520px; padding: 20px 24px; background: var(--white); color: var(--ink);
+          box-shadow: 0 0 0 8px var(--ink), 12px 12px 0 8px #000a; font-size: 40px; text-align: center;
+          animation: drop .45s steps(4) both calc(var(--scene-dur) * .08); }
+  .sign .mono { font-size: 40px; color: #c2304a; }
+  .sign small { display: block; font-size: 36px; font-weight: 500; }
+  .stamp { position: absolute; top: 1150px; left: 120px; z-index: 3; padding: 6px 30px; font-size: 76px; color: var(--mint);
+           border: 10px solid var(--mint); background: #15132bcc; transform: rotate(-12deg);
+           animation: stamp .3s steps(3) both calc(var(--scene-dur) * .42); }
+  .hacker { position: absolute; left: 90px; top: 905px; width: 360px; animation: drop .45s steps(4) both; }
+  .hacker .sneak { animation: sneak 1.6s steps(1) infinite; }
+  .hacker .hshut { animation: blink 2.6s steps(1) infinite .8s; opacity: 0; }
+  [data-scene="attack"] .stage { left: auto; right: 70px; margin-left: 0; width: 380px; top: 1050px; }
+
+  /* us */
+  .title { position: absolute; top: 150px; left: 0; right: 0; text-align: center; font-size: 66px; }
+  .check { position: absolute; left: 60px; right: 60px; display: flex; gap: 34px; align-items: center; padding: 26px 30px;
+           background: var(--panel); box-shadow: 10px 10px 0 #000a; font-size: 50px; line-height: 1.25; }
+  .check .ic { flex: none; width: 96px; height: 96px; line-height: 96px; text-align: center; font-size: 66px; color: var(--ink); }
+  .check.warn .ic { background: var(--gold); }
+  .check.safe .ic { background: var(--mint); }
+  .check small { display: block; font-size: 36px; color: var(--muted); font-weight: 500; }
+  .c1 { top: 300px; } .c2 { top: 520px; } .c3 { top: 740px; }
+
+  /* fix */
+  .term { position: absolute; top: 140px; left: 60px; right: 60px; background: #0c0b18; box-shadow: 0 0 0 8px var(--white), 14px 14px 0 8px #000a;
+          font-size: 46px; padding: 0 0 30px; }
+  .term .bar { height: 54px; background: var(--white); display: flex; gap: 14px; align-items: center; padding: 0 20px; margin-bottom: 26px; }
+  .term .bar i { width: 22px; height: 22px; background: var(--ink); }
+  .term p { margin: 8px 36px; white-space: nowrap; }
+  .term .cmd { display: inline-block; overflow: hidden; width: 0; vertical-align: bottom; --n: 22;
+               animation: typing 1.3s steps(22) forwards calc(var(--scene-dur) * .1); }
+  .term .ok { color: var(--mint); }
+  .rule { position: absolute; top: 560px; left: 60px; right: 60px; padding: 30px 40px; background: var(--panel);
+          box-shadow: 0 0 0 8px var(--mint), 14px 14px 0 8px #000a; text-align: center;
+          animation: pop .4s steps(4) both calc(var(--scene-dur) * .55); }
+  .rule .k { font-size: 44px; color: var(--muted); font-weight: 500; }
+  .rule .yes { font-size: 96px; color: var(--mint); }
+  .rule .no { font-size: 48px; color: #ffffff66; text-decoration: line-through; text-decoration-thickness: 6px; }
+
+  #caption { position: absolute; left: 60px; right: 60px; bottom: 150px; padding: 26px 36px; z-index: 5;
+             background: var(--white); color: var(--ink); box-shadow: 0 0 0 8px var(--ink), 12px 12px 0 8px #0008;
+             text-align: center; font-size: 52px; line-height: 1.4; }
+  #caption:empty { display: none }
+
+  @keyframes pop    { from { transform: scale(0) } }
+  @keyframes drop   { from { opacity: 0; transform: translateY(-60px) } }
+  @keyframes bob    { 50% { transform: translateY(-1px) } }
+  @keyframes blink  { 0% { opacity: 0 } 94% { opacity: 1 } }
+  @keyframes talk   { 0% { opacity: 1 } 50% { opacity: 0 } }
+  @keyframes drip   { from { transform: translateY(0) } to { transform: translateY(4px) } }
+  @keyframes shake  { 50% { transform: translateX(-12px) } }
+  @keyframes flash  { 50% { opacity: .25 } }
+  @keyframes travel { to { transform: translateY(520px) } }
+  @keyframes blinkbg{ 50% { background: #ffffff22 } }
+  @keyframes stamp  { from { opacity: 0; scale: 2.2 } }
+  @keyframes typing { to { width: calc(var(--n) * 1ch) } }
+  @keyframes sneak  { 50% { transform: translateX(1px) } }
+</style>
+</head>
+<body>
+  <section data-scene="hook" class="tense">
+    <div class="siren" data-sfx="buzz"></div>
+    <div class="kicker in" style="animation-delay:.3s">ช่องโหว่ระดับ</div>
+    <div class="crit popn" style="animation-delay:.5s">วิกฤต</div>
+    <div class="score"><span id="score">0.0</span><small>/10</small></div>
+    <div class="chip in mono" style="animation-delay:calc(var(--scene-dur) * .45)">CVSS 9.1 · proxy-addr</div>
+    <div class="stage" data-sfx="pop"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <section data-scene="door">
+    <div class="wire" style="top:300px; height:200px"></div>
+    <div class="wire" style="top:570px; height:200px"></div>
+    <div class="node in" style="top:200px; animation-delay:.1s">ผู้ใช้</div>
+    <div class="node trusted in" style="top:470px; animation-delay:.3s">พร็อกซี<small>ที่เราไว้ใจ</small></div>
+    <div class="node in" style="top:770px; animation-delay:.5s">เซิร์ฟเวอร์</div>
+    <div class="req mono" data-sfx="whoosh">X-Forwarded-For: <b>203.0.113.7</b></div>
+    <div class="ask" data-sfx="pop">ใครส่งมา?</div>
+    <div class="stage" style="top:1080px; width:360px; margin-left:-180px"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <section data-scene="typo" class="tense">
+    <div class="label in">รายชื่อพร็อกซีที่ไว้ใจ</div>
+    <div class="code bad popn" style="animation-delay:calc(var(--scene-dur) * .08)" data-sfx="pop"><code>::ffff:10.0.0.0<b>/8</b></code></div>
+    <div class="code good popn" style="animation-delay:calc(var(--scene-dur) * .3)" data-sfx="pop"><code>::ffff:10.0.0.0<b>/104</b></code></div>
+    <div class="note in" style="animation-delay:calc(var(--scene-dur) * .7)">ระบบไม่เตือนสักคำ<small>ไม่มี error · รันได้ปกติ</small></div>
+    <div class="stage"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <section data-scene="surprise" class="tense">
+    <div class="lbl">ไอพีที่ระบบเชื่อ</div>
+    <div class="count mono" id="count">16,777,216</div>
+    <div class="grid" id="grid"></div>
+    <div class="legend"><i></i>1 ช่อง = 16.7 ล้านที่อยู่ (10.0.0.0/8)</div>
+    <div class="x256 mono" data-sfx="thud">×256</div>
+    <div class="stage"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <section data-scene="attack" class="tense">
+    <div class="log in">
+      <h3>สมุดบันทึก</h3>
+      <div class="row mono"><span>09:41</span><span>203.0.113.7</span></div>
+      <div class="row mono"><span>09:42</span><span>198.51.100.4</span></div>
+      <div class="row mono new"><span>09:43</span><span class="typed" data-sfx="type">10.0.0.5</span><span class="fake">ปลอม!</span></div>
+    </div>
+    <div class="sign"><span class="mono">X-Forwarded-For: 10.0.0.5</span><small>“ฉันมาจากในออฟฟิศนะ”</small></div>
+    <div class="stamp" data-sfx="thud">เชื่อเลย ✓</div>
+    <div class="hacker"><svg data-sprite="hacker" data-character="hacker"></svg></div>
+    <div class="stage"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <section data-scene="us" class="calm">
+    <div class="title in">เซิร์ฟเวอร์ของเราตอนนี้</div>
+    <div class="check warn popn c1" style="animation-delay:calc(var(--scene-dur) * .08)" data-sfx="pop">
+      <div class="ic">!</div><div><span class="mono">proxy-addr 2.0.7</span><small>รุ่นที่มีช่องโหว่ ติดมากับ Express</small></div></div>
+    <div class="check safe popn c2" style="animation-delay:calc(var(--scene-dur) * .3)" data-sfx="chime">
+      <div class="ic">✓</div><div><span class="mono">trust proxy</span> ยังปิดอยู่<small>จึงยังโจมตีแบบนี้ไม่ได้</small></div></div>
+    <div class="check warn popn c3" style="animation-delay:calc(var(--scene-dur) * .62)" data-sfx="pop">
+      <div class="ic">!</div><div>เราจดไอพีลงล็อก<small>ถ้าวันหนึ่งเปิด trust proxy ผิด ล็อกจะโดนปลอม</small></div></div>
+    <div class="stage"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <section data-scene="fix" class="bright">
+    <div class="term">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <p class="mono">$ <span class="cmd" data-sfx="type">npm update proxy-addr</span></p>
+      <p class="mono ok in" style="animation-delay:calc(var(--scene-dur) * .35)" data-sfx="chime">+ proxy-addr@2.0.8 ✓</p>
+    </div>
+    <div class="rule">
+      <div class="k">เขียนซับเน็ต IPv4 แบบนี้</div>
+      <div class="yes mono">10.0.0.0/8 ✓</div>
+      <div class="no mono">::ffff:10.0.0.0/8</div>
+    </div>
+    <div class="stage"><svg data-sprite="guard" data-character="guard"></svg></div>
+  </section>
+
+  <div id="caption"></div>
+
+<script>
+const C = { K: "#1d1a2e", N: "#2f4b8f", n: "#22386b", Y: "#f2c14e", S: "#f6c9a0", s: "#dda27a", E: "#1d1a2e",
+            W: "#ffffff", P: "#d9776b", L: "#a9cdfb", H: "#4a4466", h: "#35304d", F: "#14111f", G: "#6ee7b7", B: "#7cc7ff" };
+
+const GUARD = [
+  "......KKKKKKKKKK......",
+  ".....KNNNNNNNNNNK.....",
+  "....KNNNNNYYNNNNNK....",
+  "....KNNNNNYYNNNNNK....",
+  "...KKKKKKKKKKKKKKKK...",
+  "..KnnnnnnnnnnnnnnnnK..",
+  "....KSSSSSSSSSSSSK....",
+  "....KSSSSSSSSSSSSK....",
+  "....KSSEESSSSEESSK....",
+  "....KSSEESSSSEESSK....",
+  "...KSSSSSSssSSSSSSK...",
+  "...KSSSKKKKKKKKSSSK...",
+  "....KSSSSSSSSSSSSK....",
+  ".....KSSSSSSSSSSK.....",
+  "......KKKKKKKKKK......",
+  "....KKLLLKNNKLLLKK....",
+  "...KNNLLLKNNKLLLNNK...",
+  "..KNNNNNNNNNNNNNNNNK..",
+  "..KNNYYNNNNNNNNNNNNK..",
+  "..KNNYYNNNNYNNNNNNNK..",
+  "..KNNNNNNNNNNNNNNNNK..",
+  "..KnNNNNNNNNNNNNNNnK..",
+  "..KKKKKKKKKKKKKKKKKK..",
+];
+const ARM_L = ["KN", "KN", "KN", "KN", "KS", "KK"];
+const ARM_R = ["NK", "NK", "NK", "NK", "SK", "KK"];
+const SHUT  = ["SS....SS", "EE....EE"];                                 // over the eyes at (7, 8)
+const MOUTH = ["KPPK"];                                                // at (9, 12)
+const SHOCK = ["WWWW..WWWW", "WEEW..WEEW", "WEEW..WEEW", "WWWW..WWWW"];  // wide eyes at (6, 7)
+const SWEAT = [".B", "BB", "BB"];                                      // at (19, 6)
+
+const HACKER = [
+  ".....KKKK.....",
+  "...KKHHHHKK...",
+  "..KHHHHHHHHK..",
+  ".KHHHFFFFHHHK.",
+  ".KHHFFFFFFHHK.",
+  ".KHHFGFFGFHHK.",
+  ".KHHFFFFFFHHK.",
+  ".KHHHFFFFHHHK.",
+  "..KHHHHHHHHK..",
+  ".KHHHHHHHHHHK.",
+  "KHHHHHHHHHHHHK",
+  "KHHhHHHHHHhHHK",
+  "KHHhHHHHHHhHHK",
+  "KHHhHHHHHHhHHK",
+  "KHHhhhhhhhhHHK",
+  "KHHHHHHHHHHHHK",
+  ".KKKKKKKKKKKK.",
+  "..KhhK..KhhK..",
+  "..KhhK..KhhK..",
+  ".KKKKK..KKKKK.",
+];
+const HSHUT = ["F..F"];                                                // at (5, 5)
+
+function px(map, x0 = 0, y0 = 0, cls = "") {
+  let out = "";
+  map.forEach((row, y) => {
+    for (let x = 0; x < row.length;) {
+      let n = 1;
+      while (row[x + n] === row[x]) n++;
+      if (row[x] !== ".") out += `<rect x="${x0 + x}" y="${y0 + y}" width="${n}" height="1" fill="${C[row[x]]}"/>`;
+      x += n;
+    }
+  });
+  return `<g class="${cls}">${out}</g>`;
+}
+
+const guard = `<g class="bob">
+    ${px(ARM_L, 0, 17)}${px(ARM_R, 20, 17)}${px(GUARD)}
+    ${px(SHUT, 7, 8, "shut")}${px(MOUTH, 9, 12, "talk")}
+    ${px(SHOCK, 6, 7, "shock")}${px(SWEAT, 19, 6, "sweat")}
+  </g>`;
+const hacker = `<g class="sneak">${px(HACKER)}${px(HSHUT, 5, 5, "hshut")}</g>`;
+const sprites = { guard: [guard, "0 0 22 23"], hacker: [hacker, "0 0 14 20"] };
+document.querySelectorAll("[data-sprite]").forEach(svg => {
+  const [body, box] = sprites[svg.dataset.sprite];
+  svg.setAttribute("viewBox", box);
+  svg.innerHTML = body;
+});
+
+// 256 cells: one /8 block each, so the whole grid is every IPv4 address
+const grid = document.getElementById("grid");
+for (let i = 0; i < 256; i++) grid.appendChild(document.createElement("i"));
+const cells = [...grid.children];
+
+const dur = id => parseFloat(document.querySelector(`[data-scene="${id}"]`).style.getPropertyValue("--scene-dur")) || 6;
+const clamp = v => Math.max(0, Math.min(1, v));
+window.bloomSeek = (id, t) => {
+  const f = t / dur(id);
+  if (id === "hook") {
+    const k = clamp((f - .12) / .25);
+    document.getElementById("score").textContent = (Math.round(k * 12) / 12 * 9.1).toFixed(1);
+  }
+  if (id === "surprise") {
+    const n = f < .3 ? 1 : 1 + Math.round(clamp((f - .3) / .42) * 255);
+    cells.forEach((c, i) => { c.className = i === 0 ? "ok" : i < n ? "on" : ""; });
+    const el = document.getElementById("count");
+    el.textContent = (n * 16777216).toLocaleString("en-US");
+    el.classList.toggle("all", n > 1);
+  }
+};
+
+document.fonts.forEach(f => f.load());
+</script>
+</body>
+</html>
