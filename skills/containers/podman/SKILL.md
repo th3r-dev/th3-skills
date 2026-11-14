@@ -1,9 +1,9 @@
 ---
-name: podman-disk-reclaim
+name: containers-podman
 description: Use this skill when Podman eats too much disk on Windows, macOS, or Linux. Triggers include "podman storage too big", a Podman machine disk or ext4.vhdx that keeps growing, a drive filling up, too many container images, or any request to prune, clean up, shrink, or compact Podman. One cross-platform Python script prunes unused images (stopped containers and volumes only on request), runs fstrim inside the Podman machine, and on Windows compacts the WSL vhdx with diskpart so the space actually returns to the host. Pruning alone does NOT shrink a WSL vhdx; this skill handles every step.
 ---
 
-# Podman Disk Reclaim
+# Podman: disk reclaim
 
 `scripts/reclaim.py` uses only the Python standard library (3.9+). What it does depends on the OS:
 
@@ -40,7 +40,7 @@ Pruning images is destructive. Public images are cheap to pull again, but locall
 `diskpart` needs Administrator rights. If the current shell is not elevated, give the user the exact command to run in an Administrator terminal:
 
 ```powershell
-python <repo>\skills\podman-disk-reclaim\scripts\reclaim.py
+python <repo>\skills\containers\podman\scripts\reclaim.py
 ```
 
 Warn the user that the script calls `wsl --shutdown`. That **stops every WSL distro** (Ubuntu, Docker Desktop, and others), not just Podman. If they do not want that, `--skip-compact` prunes without admin rights, but the host file stays the same size.

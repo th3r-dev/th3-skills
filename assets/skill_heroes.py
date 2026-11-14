@@ -81,9 +81,9 @@ SKILLS = {
         [("Merge", "many PDFs into one"), ("Split", "one PDF into its pages"),
          ("Reorder", "rotate, delete, duplicate"), ("Overlay", "text and shape stamps")],
         ["one clean PDF,", "no new pipeline written"]),
-    "podman-disk-reclaim": (
+    "containers": (
         ["Podman ate the disk.", "Get it back."],
-        ["Windows, macOS and Linux,", "one stdlib Python script."],
+        ["Sub-skill podman: Windows, macOS", "and Linux, one stdlib script."],
         [("Measure", "what takes the space, first"), ("Confirm", "before anything is deleted"),
          ("Prune", "unused images"), ("Trim", "fstrim in the Podman machine"),
          ("Compact", "the WSL disk, on Windows")],

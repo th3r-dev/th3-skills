@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-A collection of Claude Code skills in `skills/`, shipped as one plugin (`.claude-plugin/`) and installable per skill via `npx skills`. `devops` and `qa` are umbrella skills with sub-skills in subdirs.
+A collection of Claude Code skills in `skills/`, shipped as one plugin (`.claude-plugin/`) and installable per skill via `npx skills`. `devops`, `qa` and `containers` are umbrella skills with sub-skills in subdirs.
 
 ## Git
 
@@ -16,8 +16,9 @@ No root test config. Run pytest from inside the skill dir, and run the script se
 - `cd skills/qa && python -m pytest -q`, then `python answer-review/scripts/qa.py selfcheck`, `python excel-import/scripts/run_web.py selftest`, `python ticket-report/scripts/ticket_report.py --selftest`
 - `cd skills/devops && python -m pytest -q`, then `python release-scope/scripts/release_scope.py --selftest`
 - `cd skills/thai-mock-naming && python -m pytest -q`
+- `cd skills/containers && python -m pytest -q`, then `python podman/scripts/reclaim.py --help`
 
-Each skill has its own path-filtered workflow in `.github/workflows/<skill>.yml`. devops/qa run Python 3.10–3.13; thai-mock-naming runs 3.8–3.13, so keep its code 3.8-compatible. CI installs pinned versions with `--only-binary :all:` (SonarCloud rules) — pin only versions that have wheels for every matrix Python, and quote the `pip install` line in YAML.
+Each skill has its own path-filtered workflow in `.github/workflows/<skill>.yml`. devops/qa/containers run Python 3.10–3.13; thai-mock-naming runs 3.8–3.13, so keep its code 3.8-compatible. CI installs pinned versions with `--only-binary :all:` (SonarCloud rules) — pin only versions that have wheels for every matrix Python, and quote the `pip install` line in YAML.
 
 ## Skill conventions
 
