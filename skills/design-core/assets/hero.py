@@ -7,13 +7,14 @@ until the score crosses the bar. The author's own score shows once and is set as
 Run: ~/.venvs/diagram-design/bin/python hero.py [--check]   (needs fonttools + brotli)
 Fonts: Archivo + JetBrains Mono (OFL) from ../examples/github-profile/src/fonts.
 """
-import base64, io, os, sys
+import base64, importlib.util, io, os, sys
 from html import escape
 from fontTools import subset
 from fontTools.ttLib import TTFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONTS = os.path.join(HERE, "..", "examples", "github-profile", "src", "fonts")
+ICONS = os.path.join(HERE, "..", "..", "..", "assets", "icons.py")  # repo-level: one drawing per skill
 
 # tokens: same system as the github-profile example
 Y, INK, INK2, INK3 = "#FFD60A", "#0A0A0A", "#2B2B2B", "#5E5200"
@@ -164,6 +165,11 @@ def build():
 
     # ---- left column: copy written first, then placed
     L, COL = 64, 500
+    if os.path.exists(ICONS):  # building outside the repo (an installed copy) just leaves the icon out
+        spec = importlib.util.spec_from_file_location("icons", ICONS)
+        icons = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(icons)
+        out.append(icons.icon("design-core", L, 60, 100, cls=d.show(0.0)))
     out.extend([
         d.t(L, 236, "design-core", 80, INK, 800, cls=d.show(0.1), maxw=COL),
         d.t(L, 296, "Design from references,", 32, INK, 800, cls=d.show(0.3), maxw=COL),

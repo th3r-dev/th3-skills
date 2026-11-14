@@ -27,3 +27,4 @@ Each skill has its own path-filtered workflow in `.github/workflows/<skill>.yml`
 - devops and qa were generalised from a client project: no real hosts, IPs, company names or client data in any skill.
 - Mock/sample data uses the thai-mock-naming markers (ทดสอบ นามสมมุติ), never real-looking common Thai names. The linter is `skills/thai-mock-naming/scripts/check_mock_names.py`; a PostToolUse hook runs it on edited files. Files that must contain the blocklist go in that skill's `.mocknamesignore`.
 - A new skill needs a README entry and, if it has tests, its own workflow. `/new-skill <name>` scaffolds this.
+- Every skill has an icon and a hero: add its drawing to `assets/icons.py` (it refuses to build while a skill lacks one) and its steps to `assets/skill_heroes.py` (plus the index in `assets/hero.py`), then run them with `~/.venvs/diagram-design/bin/python` and check with `assets/check_heroes.py`.
