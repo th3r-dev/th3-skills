@@ -63,6 +63,12 @@ On top of [writing.md](writing.md) and the AI tells in [interface-quality.md](in
   runs of negations, a number pair in every heading. Once is a choice; three times is a tic.
 - Leftovers: lorem ipsum, "Sample text", `TODO`, template names.
 
+Visual slop, banned unless the user or the product asks for it (from cook's ban list):
+eyebrow labels over every heading, monospace uppercase text as decoration, a random serif,
+purple gradients or purple as the default accent, beige grounds, 01 / 02 / 03 counters,
+glowing orbs, decorative particles, long thin decorative lines, icons floating for no reason.
+Judge density, not single hits: one is a choice, a page full of them is a template.
+
 ## 6. Check like a gate
 
 - Give every check an id (`hero-fold`, `tap-size`, `copy-buttons`) so a finding is traceable and
