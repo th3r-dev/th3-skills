@@ -15,7 +15,10 @@ _spec = importlib.util.spec_from_file_location(
     "dc_hero", os.path.join(HERE, "..", "skills", "design-core", "assets", "hero.py"))
 dc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(dc)
-Doc, embed_fonts, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.Y, dc.INK, dc.INK2, dc.INK3
+Doc, embed_fonts, width, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.width, dc.Y, dc.INK, dc.INK2, dc.INK3
+import sys  # noqa: E402
+sys.path.insert(0, HERE)
+from icons import icon  # noqa: E402  the skill's own drawing
 
 W, H = 1280, 720
 SLIDE = 2.8
@@ -87,7 +90,10 @@ def build():
         base = 1 if i == 0 else 0
         part = lambda dt: d.window(t0 + dt, t0 + SLIDE, base=base)
         g = []
-        g.append(f'<g class="{part(0)}">' + d.t(PX, top + 64, name, 30, INK, 800, maxw=SW - 56) + "</g>")
+        tw = SW - 56 - 84                       # leave the top right for the skill's icon
+        tz = next(z for z in (30, 26, 22) if width(name, z, "arc-800") <= tw)
+        g.append(f'<g class="{part(0)}">' + d.t(PX, top + 64, name, tz, INK, 800, maxw=tw)
+                 + icon(name, X1 - 28 - 68, top + 18, 68) + "</g>")
         # in
         iy = top + 104
         box = f'<rect x="{PX}" y="{iy}" width="{SW - 56}" height="96" fill="none" stroke="{INK}" stroke-width="1.5"/>'
