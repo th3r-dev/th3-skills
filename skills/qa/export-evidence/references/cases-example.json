@@ -1,0 +1,26 @@
+{
+  "env": {
+    "environment": "UAT",
+    "app": "https://app.example.com (reports module)",
+    "login": "<account name, never the password>",
+    "browser": "CDP Chrome headless 127.0.0.1:9222"
+  },
+  "ui": {
+    "date_placeholder": "dd/mm/yyyy",
+    "success_words": ["Completed", "Success"],
+    "failure_words": ["Failed", "Error"],
+    "captions": {"open-page": "open the page", "downloaded-file": "open the downloaded file"}
+  },
+  "cases": [
+    {"no": 1, "slug": "daily-report-excel", "title": "Daily summary report · Excel", "sheet": "reports export excel",
+     "url": "https://app.example.com/reports/daily-summary", "kind": "auto", "format": "excel",
+     "dates": ["01/10/2026", "27/10/2026"], "query": "Load data"},
+    {"no": 2, "slug": "orders-list-excel", "title": "Orders list · Excel", "sheet": "lists export excel",
+     "url": "https://app.example.com/orders", "kind": "auto", "format": "excel", "select_rows": 2},
+    {"no": 3, "slug": "meters-print-pdf", "title": "Meters master · Print (PDF)", "sheet": "master export pdf",
+     "url": "https://app.example.com/master/meters", "kind": "auto", "format": "pdf", "button": "Print"},
+    {"no": 4, "slug": "invoice-viewer-pdf", "title": "Invoice form · PDF from the viewer", "sheet": "viewer export pdf",
+     "url": "https://app.example.com/invoices", "kind": "stimulsoft", "format": "pdf", "open": "Print form",
+     "note": "one example of a viewer export; the viewer's Save menu is the download"}
+  ]
+}

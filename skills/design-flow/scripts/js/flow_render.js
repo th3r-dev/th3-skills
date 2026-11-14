@@ -128,12 +128,15 @@ for (const s of P.screens || []) { const n = await figma.getNodeByIdAsync(s.node
 // on-page connectors (flowchart convention): a target screen with another screen between it and this flow is
 // "far". Instead of a long line looping past those screens (and crossing everything on the way), the chain ends in
 // a lettered marker, and the same letter sits right before the target with a short arrow in. One letter per target
-// screen on the page (`Marker · <screen id>`), shared by every flow that goes there. Off with markers: false.
+// screen on the page (`Marker · <screen id>`), shared by every flow that goes there. Off by default: a flow joins
+// UI to UI, so the line lands on the screen. Only `markers: true` (the user asked for them) turns this on.
 const markersPlaced = [];
-if (P.markers !== false && P.components.marker) {
+if (P.markers === true && P.components.marker) {
   const MK = await figma.getNodeByIdAsync(P.components.marker);
   const scr = figma.currentPage.children.filter(n => n.type === 'FRAME' && n.width >= 1000 && n.height >= 600 && n.id !== src.id);
-  const far = T => scr.some(n => { const b = box(n); return n.id !== T.id && b.x >= S0.x + S0.w - 1 && b.x + b.w <= T.box.x + 1 && b.y < T.box.y + T.box.h && b.y + b.h > T.box.y; });
+  // a screen between the two, on the target's band, in either direction (a "back to list" target sits to the LEFT)
+  const between = (b, T) => (b.x >= S0.x + S0.w - 1 && b.x + b.w <= T.box.x + 1) || (b.x >= T.box.x + T.box.w - 1 && b.x + b.w <= S0.x + 1);
+  const far = T => scr.some(n => { const b = box(n); return n.id !== T.id && between(b, T) && b.y < T.box.y + T.box.h && b.y + b.h > T.box.y; });
   const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   const setNum = (m, v) => { const k = Object.keys(m.componentProperties).find(p => p.startsWith('Number')); if (k) m.setProperties({ [k]: v }); };
   const rewritten = [];

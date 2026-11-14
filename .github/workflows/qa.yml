@@ -1,0 +1,40 @@
+name: qa
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/qa/**'
+      - '.github/workflows/qa.yml'
+  pull_request:
+    paths:
+      - 'skills/qa/**'
+      - '.github/workflows/qa.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: skills/qa
+
+jobs:
+  test:
+    name: pytest (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: "python -m pip install --only-binary :all: pytest==9.2.0 openpyxl==3.1.5 pillow==12.3.0 requests==2.34.2"
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Script self-checks
+        run: |
+          python answer-review/scripts/qa.py selfcheck
+          python excel-import/scripts/run_web.py selftest
+          python ticket-report/scripts/ticket_report.py --selftest

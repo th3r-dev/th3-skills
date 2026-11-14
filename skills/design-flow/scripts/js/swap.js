@@ -53,11 +53,14 @@ for (const rootId of P.roots) {
       if (auto) { inst.layoutSizingHorizontal = c.layoutSizingHorizontal === 'HUG' ? 'HUG' : c.layoutSizingHorizontal; inst.layoutGrow = c.layoutGrow; }
       const src = texts(c), dst = texts(inst);
       for (let i = 0; i < Math.min(src.length, dst.length); i++) {
-        if (dst[i].characters === src[i].characters) continue;
-        if (i === 0 && labelKey) { inst.setProperties({ [labelKey]: src[i].characters }); continue; }
         const fonts = dst[i].fontName === figma.mixed ? dst[i].getStyledTextSegments(['fontName']).map(s => s.fontName) : [dst[i].fontName];
         for (const f of fonts) await figma.loadFontAsync(f);
-        dst[i].characters = src[i].characters;
+        if (dst[i].characters !== src[i].characters) {
+          if (i === 0 && labelKey) inst.setProperties({ [labelKey]: src[i].characters });
+          else dst[i].characters = src[i].characters;
+        }
+        // the text's color is per copy too: a field holding a value is dark, the same field's placeholder is grey
+        if (src[i].fills !== figma.mixed && JSON.stringify(src[i].fills) !== JSON.stringify(dst[i].fills)) dst[i].fills = src[i].fills;
       }
       inst.name = c.name;
       c.remove();

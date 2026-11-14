@@ -29,7 +29,12 @@ its Part 3 before the first Figma call in a session.
    - Tool order and limits come from https://github.com/figma/mcp-server-guide.
 4. **Principles.** Load the `design-core` skill. Its composition, writing and interface-quality
    rules apply to every screen, state screen and flow step this skill makes, and its review
-   table is the design half of every check below. The file's own system still comes first.
+   table is the design half of every check below (stage 5 of the pipeline). For a new page or
+   a gap the file's system doesn't cover, also apply its `references/taste.md`: name the kind
+   (usually tool or product app here), write the copy before placing, and decide open style
+   choices on purpose instead of by habit. The file's own
+   system still comes first. If `design-core` isn't installed, say so and install it
+   (`npx skills@latest add th3r-dev/th3-skills --skill design-core`) rather than skipping it.
 5. **Privacy.** File contents are the user's. Don't copy real labels, node IDs, or
    screenshots into this skill, into commits, or into any public artifact. Examples
    use mock labels; see [references/flow-conventions.md](references/flow-conventions.md#mock-labels).
@@ -70,19 +75,20 @@ can't write nodes. So [`scripts/figma_js.py`](scripts/figma_js.py) renders the J
 | `bridge.py up --work DIR --run-script` | builds and starts the bridge container (podman or docker): `127.0.0.1:1994` for the plugin, `DIR` mounted at `/work` |
 | `bridge.py mcp` | the MCP command; each session `exec -i`s into the container (first = leader, others follow) |
 | `bridge.py status / logs / down` | container lifecycle |
-| `capture.py ... --to layers --out DIR` | page → html-figma JSON for `import_html_layers` (no quota; absolute layout) |
+| `capture.py ... --to layers --out DIR` | page → html-figma JSON for `import_html_layers` (no quota; absolute layout). `--fake-ok REGEX` answers matching writes with HTTP 200 inside the browser, so success dialogs can be captured without changing data |
 | `capture.py ... --to figma --capture ID` | page → Figma via `generate_figma_design` capture ids (auto layout, binds variables; uses quota) |
 | `figma_js.py swap` | layers that match a component variant (structure, size, radius, fill token, vector geometry) → instances, texts carried over |
 | `figma_js.py flow-kit --tokens t.json` | builds the design-mode flow kit (Flow/Node, Flow/Decision, Flow/Marker, Flow/Element Row) from your tokens |
 | `figma_js.py flow --spec flow.json` | UI → flow → UI: element on screen → kit steps → next screen, lines routed around everything (A*) |
-| `figma_js.py state --spec state.json` | target state screen: copy + dialog overlay, or captured page + accurate sidebar |
-| `figma_js.py make-room` | shift a section right and widen its label so a flow fits (ask first) |
+| `figma_js.py state --spec state.json` | target state screen: copy + dialog overlay, or captured page + accurate sidebar; `max_height: 1080` crops it to one viewport |
+| `figma_js.py make-room` | shift a section right and widen its label so a flow fits (ask first); `--y-from/--y-to` limit it to one row band; `--from-y/--dy` instead shift everything below a y down (room for a band of state screens) |
 | `figma_js.py extract` + `design_graph.py` | design knowledge graph: `build`, `dupes`, `impact`, `tour`, `gaps` |
+| `figma_js.py images` | fill the raster images `capture.py` split into `<slug>.images.json` (run right after the import) |
 | `figma_js.py autolayout` | absolute frames → auto layout (rows and columns inferred, deepest first) |
 | `figma_js.py tokenize` | raw values → the file's variables and text styles |
 | `figma_js.py place` | new screen → placeholder slot (replace) or old screen slot (version card + old at 0.5) |
 | `ui_scan.py` + `ui_components.py` | code scan → component plan → build/extend components with simple `State`/`Label`/`Icon` controls → swap copies for instances |
-| `flow_review.py DIR` | strict 1–10 review of rendered flows from their graph JSON (hard gates: orphans/missing ≤6; forced, backward, ANY line crossing a line, nested anchors ≤8; pass ≥9) |
+| `flow_review.py DIR` | strict 1–10 review of rendered flows from their graph JSON (hard gates: a line ending on a marker or an anchor that never reaches a screen ≤5; orphans/missing ≤6; forced, backward, ANY line crossing a line, nested anchors ≤8; pass ≥9) |
 | `*.py --self-test` | built-in checks |
 
 One-time setup: `claude mcp add figma-bridge -s user -- python3 <skill>/scripts/bridge.py mcp`.
@@ -90,6 +96,8 @@ Then in Figma desktop: Plugins › Development › Import plugin from manifest (
 from the bridge release), and run it in each file. `run_script` executes arbitrary code in the open
 file, so it stays off unless `--run-script` is passed. Pass `allowRemove: true` for `place`.
 Write `--to layers` output inside the `--work` folder and give `import_html_layers` the path relative to `/work`.
+`capture.py`, `figma_js.py` and `flow_review.py` only read and write files inside the folder they run from, so run them from the work
+folder.
 
 ## Converting things into Figma (all with auto layout)
 
@@ -249,10 +257,11 @@ the end. When something is wrong in a single batch run, it's wrong everywhere an
 
 | Stage | Do | Check (show the user, wait for OK) |
 |---|---|---|
-| 1. Place | capture + build the state screens, make room | `figma_js.py place-check`: 0 screens overlapping (title strip included), none on a band title. Screenshot one row with screens only, no lines |
-| 2. Lines, one row | render the flows of that one row | screenshot of the row with lines, plus `flow_review.py`: no crossings, no missing edges |
+| 1. Place + states | capture the source screens **and every result state** (`capture.py jobs` with `steps`/`selector` → `figma_js.py state`), each state right after its source in the same row | `figma_js.py place-check`: 0 overlaps, none on a band title. Every spec's anchors reach a state screen (`figma_js.py flow` refuses otherwise). Screenshot one row with screens only, no lines |
+| 2. Lines, one row | render the flows of that one row | screenshot of the row with lines: every line lands on a screen, not on a letter or a text box. `flow_review.py`: no crossings, no missing edges |
 | 3. Lines, everywhere | render the rest | `flow_review.py` on everything, plus screenshots of the worst-scoring rows |
 | 4. Components | `ui_components.py sync` | `figma_js.py usage`: nothing unused |
+| 5. Design | `design-core` review table on each row screenshot | every row ≥ 8; copy, states and hierarchy findings fixed or listed |
 
 When a check fails, fix that stage. Don't carry the problem into the next one.
 
@@ -260,11 +269,20 @@ When a check fails, fix that stage. Don't carry the problem into the next one.
 2. **State:** capture the target states (`capture.py jobs` with `steps`/`selector`; reports that read by POST need
    `--allow-post <read-only regex>`). Build them with `figma_js.py state` in **one row per source**: source | its
    steps | state 1 | its steps | state 2 … Sources never move. Crop page states to the source height (`clip_to`).
-   - **Near targets get a line, far targets get a connector marker.** When another screen sits between a flow and its
-     target state, a long line would loop past those screens and cross everything on the way. Instead, the step
-     chain ends in a lettered `Flow/Marker` (A, B…), and the same letter sits right before the target with a short
-     arrow in (`Marker · <screen id>`). That marker is created once and shared by every flow that goes there. This is
-     the standard flowchart on-page connector. Off with `markers: false`.
+   - **This stage is not optional.** A flow joins picture to picture: the confirm dialog, the success alert, the
+     opened edit page are screens on the canvas, not text boxes. A step chain that ends in an `end` box ("close the
+     dialog", "open in edit mode") is a state screen you haven't built yet. `figma_js.py flow` refuses a spec whose
+     anchors never reach a screen, and `flow_review.py` caps it at 5.
+   - **Steps sit beside their source when states go in a band below it** (`align_to_target: false`): otherwise
+     the step row lines up with the first state and lands inside the band. Order the band by the buttons that lead
+     to it, and leave a bottom button on the side facing its chain (`side`), so neighbouring lines don't cross.
+   - **Every line lands on its screen.** Keep targets close instead of hiding the distance: put each state right after
+     its own steps, and for "back to the list" use a copy of the list as a state in the same row (`figma_js.py state`
+     with `page`) rather than a line back across the page. Don't `make-room` screens thousands of px apart to fit
+     flows; that makes every target far.
+   - **Lettered markers are opt-in.** `markers: true` ends a chain in a lettered `Flow/Marker` (A, B…) with the same
+     letter in front of the far target. Use it only when the user asks for on-page connectors, and review with
+     `flow_review.py --allow-markers`. Without that, a marker caps the flow at 5.
    - **A flow stays beside its own screen.** When the next band of steps would run below the screen, beside the next
      screen down, it starts a new column of bands to the right, back at the top (`wrap: false` to turn off). Size
      the gap before the first state for it.
@@ -275,11 +293,14 @@ When a check fails, fix that stage. Don't carry the problem into the next one.
 3. **Graph:** every `flow` render returns `graph`: what was actually drawn (nodes, edges, `drawn`/`forced`,
    `orphans`, `missing`, `backward`). Save it as `<name>.graph.json` with `<name>.qa.json`.
 4. **Strict review:** `flow_review.py DIR` scores every flow 1–10.
-   - Hard gates: a missing edge or orphan step caps the score at **6**; a `forced` line (the router fell back) or a
+   - Hard gates: a line ending on a marker, or an anchor whose chain never reaches a screen, caps the score at **5**;
+     a missing edge or orphan step caps it at **6**; a `forced` line (the router fell back) or a
      line reading backward (right→left, bottom→top; returns to a screen are allowed) caps it at **8**.
    - Deductions: lines over objects, label overlaps, crossings.
    - **Pass ≥ 9.** Fix what the notes name (anchor text, states, room, spec fan-out), re-render, and review again,
      for a few rounds at most. Report the pass count and mean, never just "done".
+   - The score checks geometry, not intent. Before reporting, look at the row screenshot: if a line doesn't land on
+     the picture of what happens next, the flow isn't done, whatever the score says.
 
 Reading order is **left → right, top → down**: bands in the order elements sit on the screen, columns by step
 depth, a decision's True to the right and False below. Every node is connected: an edge the router can't place
@@ -388,5 +409,6 @@ step 4), then write:
 - **Gaps:** decisions with a missing branch, alerts with no exit, and screens that are
   still placeholders.
 
+Use `design-core`'s handoff list (states, behavior, tokens and components, edge cases, gaps) as the frame.
 Return the checklist in chat or as a doc the user picks. Code comes from
 `figma-design-to-code`. This skill only supplies the behavior side.

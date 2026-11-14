@@ -19,3 +19,6 @@ htmlcov/
 
 # prompt-cache-kit
 .pcache/
+
+# Claude Code personal
+CLAUDE.local.md

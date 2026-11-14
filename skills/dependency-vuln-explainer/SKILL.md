@@ -1,6 +1,6 @@
 ---
 name: dependency-vuln-explainer
-description: Explain a vulnerable dependency so a person can see how the attack works and whether it touches their app. Use when the user hands over a Dependabot alert (github.com/<org>/<repo>/security/dependabot/<n>), a GHSA or CVE id, an `npm audit` / `pip-audit` / `govulncheck` finding, or asks "is this CVE real for us", "how does this vulnerability work", "explain this alert", "do we need to fix this", or "summarize the vulnerabilities for the team". Traces the package from the lockfile to the code that loads it, rates real reachability instead of repeating the CVSS score, ranks fix options, draws the exploit and the dependency path with the diagram-design skill, and writes a vuln card that other agents and reviewers can pick up without redoing the research. Explains and recommends. It changes no code until the user approves a fix.
+description: Explain a vulnerable dependency so a person can see how the attack works and whether it touches their app. Use when the user hands over a Dependabot alert (github.com/ORG/REPO/security/dependabot/N), a GHSA or CVE id, an `npm audit` / `pip-audit` / `govulncheck` finding, or asks "is this CVE real for us", "how does this vulnerability work", "explain this alert", "do we need to fix this", or "summarize the vulnerabilities for the team", or wants it explained on video ("make a video about this alert", "ทำวิดีโออธิบายช่องโหว่"). Traces the package from the lockfile to the code that loads it, rates real reachability instead of repeating the CVSS score, ranks fix options, draws the exploit and the dependency path with the diagram-design skill, writes a vuln card that other agents and reviewers can pick up without redoing the research, and on request turns the card into an anonymized one-minute explainer video with Bloom. Explains and recommends. It changes no code until the user approves a fix.
 ---
 
 # Dependency Vuln Explainer
@@ -136,9 +136,17 @@ Running a repro, applying a fix, or touching a machine or network path ends with
 
 A pure reachability read that ends in a verdict needs no separate report — the vuln card already is one. The report is for work that *changed state* or *ran target code*. In chat, lead with the one-line result and link the report.
 
+## 9. Explainer video (only when the user asks)
+
+When the user wants the team to *watch* it ("ทำวิดีโอ", "explain it on video", "something to post in the channel"), turn the finished card into a one-minute Bloom video: a pixel character narrates in Thai, a counter makes the impact land, and the last scene says what it means for us and how to fix it. Read [references/video.md](references/video.md) for the seven-scene story, the analogies by vulnerability class, the layout bands and the build and review loop.
+
+- Make it after steps 1–4. The video retells the verdict, so it can't come first.
+- It's anonymous by default: no product, repo, org, file, column, ticket or alert names. Package names, versions and GHSA/CVE ids are fine. Build it outside any public repo, and grep the project and the `.srt` for private names before handing it over.
+- The safety rules hold. Show what the attacker sends and what the app believes, never a working exploit chain.
+
 ## Reply to the user
 
-Lead with the verdict in one line (`R1 installed, not loaded: liquidjs 10.21.0 via @nestjs-modules/mailer, which the app never imports`). Then give the diagram link or path, the ranked fix options, and the question of which option to apply.
+Lead with the verdict in one line (`R1 installed, not loaded: liquidjs 10.21.0 via @nestjs-modules/mailer, which the app never imports`). Then give the diagram link or path, the video path if one was made, the ranked fix options, and the question of which option to apply.
 
 ## Credits
 
