@@ -1,5 +1,7 @@
 # th3-skills
 
+<p align="center"><img src="assets/hero.svg" width="100%" alt="th3-skills: all eleven skills with the job each one does, and an animated stage showing what goes in and what comes out of each"></p>
+
 Skills for Claude Code, installable via [`npx skills`](https://dev.to/baltz/sharing-skills-with-npx-2nbc).
 
 ## Install as a Claude Code plugin (all skills)
