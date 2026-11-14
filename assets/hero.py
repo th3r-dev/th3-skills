@@ -45,11 +45,11 @@ SKILLS = [
     ("podman-disk-reclaim", "wins back Podman disk",
      ["a disk full of old images"], ["pruned, trimmed, the WSL", "disk compacted: space back"]),
 ]
-CYCLE = SLIDE * len(SKILLS)
+CYCLE = round(SLIDE * len(SKILLS), 3)
 
 
 def build():
-    d = Doc()
+    d = Doc(CYCLE)
     out = []
     L = 64
 
@@ -65,7 +65,7 @@ def build():
         out.append(d.t(NX, y, name, 15, INK, 800, mono=True, maxw=JX - NX - 14))
         out.append(d.t(JX, y, job, 16, INK2, 500, maxw=RIGHT - JX))
         # the highlight that follows the stage
-        hl = d.window(i * SLIDE, (i + 1) * SLIDE, CYCLE, base=1 if i == 0 else 0, rise=0)
+        hl = d.window(i * SLIDE, (i + 1) * SLIDE, base=1 if i == 0 else 0, rise=0)
         out.append(f'<g class="{hl}"><rect x="{L - 10}" y="{y - 25}" width="{RIGHT - L + 20}" height="36" fill="{INK}"/>'
                    + d.t(NX, y, name, 15, Y, 800, mono=True) + d.t(JX, y, job, 16, Y, 500) + "</g>")
 
@@ -81,7 +81,7 @@ def build():
     for i, (name, job, src, res) in enumerate(SKILLS):
         t0 = i * SLIDE
         base = 1 if i == 0 else 0
-        part = lambda dt: d.window(t0 + dt, t0 + SLIDE, CYCLE, base=base)
+        part = lambda dt: d.window(t0 + dt, t0 + SLIDE, base=base)
         g = []
         g.append(f'<g class="{part(0)}">' + d.t(PX, top + 64, name, 30, INK, 800, maxw=SW - 56) + "</g>")
         # in
@@ -108,7 +108,7 @@ def build():
     for i in range(len(SKILLS)):
         x = PX + i * (tw + 6)
         out.append(f'<rect x="{x:.1f}" y="{py}" width="{tw:.1f}" height="4" fill="{INK}" opacity=".2"/>')
-        on = d.window(i * SLIDE, (i + 1) * SLIDE, CYCLE, base=1 if i == 0 else 0, rise=0)
+        on = d.window(i * SLIDE, (i + 1) * SLIDE, base=1 if i == 0 else 0, rise=0)
         out.append(f'<rect class="{on}" x="{x:.1f}" y="{py}" width="{tw:.1f}" height="4" fill="{INK}"/>')
 
     label = ("th3-skills: Claude Code skills, each doing a whole job. "

@@ -100,21 +100,23 @@ def fit(s, maxw, key, sizes=(72, 64, 56, 50, 44, 40, 36, 32)):
 
 def build(name):
     claim, sub, steps, result = SKILLS[name]
-    d = Doc()
     out = []
     n = len(steps)
-    T0, STEP, HOLD = 1.8, 0.9, 3.2
-    cycle = T0 + n * STEP + HOLD
-    end = cycle - 0.5
+    # The left column and the step rows enter once. Only the run loops: it starts after the entrance
+    # (delay) and every looping part shares one cycle, so nothing drifts from loop to loop.
+    ENTER, LEAD, STEP, HOLD, MOVE = 2.0, 0.4, 1.2, 2.8, 0.25
+    cycle = LEAD + n * STEP + HOLD
+    end = cycle - 0.4
+    d = Doc(cycle, delay=ENTER)
 
     # left column
     L, COL = 64, 520
     nz = fit(name, COL, "arc-800")
-    out.append(d.t(L, 214, name, nz, INK, 800, cls=d.show(0.1, end), maxw=COL))
+    out.append(d.t(L, 214, name, nz, INK, 800, cls=d.enter(0.1), maxw=COL))
     for i, s in enumerate(claim):
-        out.append(d.t(L, 278 + i * 40, s, 32, INK, 800, cls=d.show(0.3 + i * 0.1, end), maxw=COL))
+        out.append(d.t(L, 278 + i * 40, s, 32, INK, 800, cls=d.enter(0.3 + i * 0.1), maxw=COL))
     for i, s in enumerate(sub):
-        out.append(d.t(L, 378 + i * 30, s, 21, INK2, 500, cls=d.show(0.6 + i * 0.1, end), maxw=COL))
+        out.append(d.t(L, 378 + i * 30, s, 21, INK2, 500, cls=d.enter(0.6 + i * 0.1), maxw=COL))
     out.append(d.t(L, 600, f"npx skills@latest add th3r-dev/th3-skills --skill {name}", 14, INK3, 500,
                    mono=True, maxw=W - 2 * L))
 
@@ -130,24 +132,24 @@ def build(name):
     out.append(f'<path d="M{rail} {ry(0) + RH / 2}V{oy + 48}" stroke="{INK}" stroke-width="2" opacity=".25"/>')
     for i, (step, detail) in enumerate(steps):
         y = ry(i)
-        t = T0 + i * STEP
+        t = LEAD + i * STEP
         cy = y + RH / 2
         row = (f'<rect x="{RX}" y="{y}" width="{RW}" height="{RH}" fill="none" stroke="{INK}" stroke-width="1.5"/>'
                + d.t(RX + 16, cy + 6, step, 16, INK, 800, mono=True)
                + d.t(RX + 182, cy + 6, detail, 16, INK2, 500, maxw=RW - 182 - 44))
-        out.append(f'<g class="{d.show(1.0 + i * 0.08, end)}">{row}</g>')
-        # running: inverted
-        run = d.window(t, t + STEP, cycle, base=0, rise=0)
+        out.append(f'<g class="{d.enter(0.9 + i * 0.08)}">{row}</g>')
+        # running: inverted from the moment the marker lands until it leaves
+        run = d.window(t, t + STEP, base=0, rise=0, fin=0.12, fout=MOVE)
         out.append(f'<g class="{run}"><rect x="{RX}" y="{y}" width="{RW}" height="{RH}" fill="{INK}"/>'
                    + d.t(RX + 16, cy + 6, step, 16, Y, 800, mono=True)
                    + d.t(RX + 182, cy + 6, detail, 16, Y, 500) + "</g>")
         # done: tick, kept to the end of the cycle
-        tick = d.show(t + STEP - 0.1, end, rise=0)
+        tick = d.show(t + STEP - MOVE, end, rise=0, fin=0.2)
         out.append(f'<path class="{tick}" d="M{RX + RW - 30} {cy}l6 6l11-12" stroke="{INK}" stroke-width="3" fill="none"/>')
         out.append(f'<circle cx="{rail}" cy="{cy}" r="5" fill="{Y}" stroke="{INK}" stroke-width="2"/>')
 
     # output
-    oc = d.show(T0 + n * STEP, end)
+    oc = d.show(LEAD + n * STEP, end)
     out.append(f'<g class="{oc}"><rect x="{RX}" y="{oy}" width="{RW}" height="96" fill="{INK}"/>'
                + d.t(RX + 16, oy + 26, "out", 13, Y, 500, mono=True)
                + "".join(d.t(RX + 16, oy + 56 + k * 24, s, 17, Y, 800, mono=True, maxw=RW - 32)
@@ -156,16 +158,16 @@ def build(name):
     # the marker walking down the rail; its still position is the output
     stops = [ry(i) + RH / 2 for i in range(n)] + [oy + 48]
     final = stops[-1]
-    p = lambda t: round(t / cycle * 100, 2)
-    kf = f"0%,{p(T0 - 0.2)}%{{transform:translateY({stops[0] - final:.0f}px);opacity:0}}"
-    kf += f"{p(T0)}%{{transform:translateY({stops[0] - final:.0f}px);opacity:1}}"
+    p = d.p
+    kf = f"0%{{transform:translateY({stops[0] - final:.0f}px);opacity:0}}"
+    kf += f"{p(LEAD)}%{{transform:translateY({stops[0] - final:.0f}px);opacity:1}}"
     for i in range(1, n + 1):
-        t = T0 + i * STEP
-        kf += f"{p(t - 0.25)}%{{transform:translateY({stops[i - 1] - final:.0f}px);opacity:1}}"
+        t = LEAD + i * STEP
+        kf += f"{p(t - MOVE)}%{{transform:translateY({stops[i - 1] - final:.0f}px);opacity:1}}"
         kf += f"{p(t)}%{{transform:translateY({stops[i] - final:.0f}px);opacity:1}}"
     kf += f"{p(end)}%{{transform:none;opacity:1}}100%{{transform:none;opacity:0}}"
-    d.css.append(f"@keyframes walk{{{kf}}}.walk{{animation:walk {cycle}s {dc.EASE} infinite}}")
-    out.append(f'<circle class="walk" cx="{rail}" cy="{final}" r="9" fill="{INK}"/>')
+    walk = d.loop("walk", kf)
+    out.append(f'<circle class="{walk}" cx="{rail}" cy="{final}" r="9" fill="{INK}"/>')
 
     label = (f"{name}: {' '.join(claim)} {' '.join(sub)} Steps: "
              + "; ".join(f"{s}, {dt}" for s, dt in steps) + f". Output: {' '.join(result)}.")

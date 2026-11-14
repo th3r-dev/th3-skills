@@ -55,9 +55,18 @@ def embed_fonts(text):
 
 
 class Doc:
-    def __init__(self):
+    """SVG text plus CSS animation classes. Every looping class runs on one `cycle`, so nothing drifts."""
+
+    def __init__(self, cycle=CYCLE, delay=0.0):
         self.body, self.css, self.text = [], [], {"arc": "", "jbm": ""}
-        self.n = 0
+        self.n, self.cycle, self.delay, self._enter = 0, cycle, delay, False
+
+    def p(self, t):
+        return round(t / self.cycle * 100, 2)
+
+    def loop(self, name, keyframes, base=""):
+        self.css.append(f"@keyframes {name}{{{keyframes}}}.{name}{{{base}animation:{name} {self.cycle:g}s {EASE} {self.delay:.2f}s infinite both}}")
+        return name
 
     def t(self, x, y, s, size, fill, w=500, mono=False, anchor=None, cls="", maxw=None):
         key = "jbm" if mono else "arc"
@@ -70,54 +79,55 @@ class Doc:
         return (f'<text{c} x="{x}" y="{y}" font-size="{size}" font-weight="{w}" fill="{fill}"{a}>'
                 f'{escape(s)}</text>')
 
-    def window(self, t_in, t_out, cycle, base=0, rise=6):
-        """A class shown only inside [t_in, t_out] of each `cycle`; `base` is the static opacity."""
+    def enter(self, t_in, rise=8, dur=0.6):
+        """A class that enters once at t_in and then stays (not looped)."""
+        if not self._enter:
+            self.css.append("@keyframes enter{from{opacity:0;transform:translateY(var(--rise,8px))}to{opacity:1;transform:none}}")
+            self._enter = True
         self.n += 1
-        name = f"w{self.n}"
-        p = lambda t: round(t / cycle * 100, 2)
-        a, a2, b, b2 = p(t_in), p(t_in + 0.3), p(t_out - 0.25), p(t_out)
+        name = f"e{self.n}"
+        self.css.append(f".{name}{{--rise:{rise}px;animation:enter {dur}s {EASE} {t_in:.2f}s both}}")
+        return name
+
+    def window(self, t_in, t_out, base=0, rise=6, fin=0.3, fout=0.25):
+        """A class shown only inside [t_in, t_out] of each cycle; `base` is the static opacity."""
+        self.n += 1
+        p = self.p
+        a, a2, b, b2 = p(t_in), p(t_in + fin), p(t_out - fout), p(t_out)
         lead = f"0%,{a}%" if a > 0 else "0%"
-        self.css.append(
-            f"@keyframes {name}{{{lead}{{opacity:0;transform:translateY({rise}px)}}{a2}%,{b}%{{opacity:1;transform:none}}"
-            f"{b2}%,100%{{opacity:0;transform:none}}}}"
-            f".{name}{{opacity:{base};animation:{name} {cycle}s {EASE} infinite}}")
-        return name
+        return self.loop(f"w{self.n}",
+                         f"{lead}{{opacity:0;transform:translateY({rise}px)}}{a2}%,{b}%{{opacity:1;transform:none}}"
+                         f"{b2}%,100%{{opacity:0;transform:none}}", f"opacity:{base};")
 
-    def show(self, t_in, t_out=CYCLE - 0.7, rise=8, to=1.0):
-        """A class that is hidden until t_in, visible until t_out, every cycle."""
+    def show(self, t_in, t_out=None, rise=8, to=1.0, fin=0.48):
+        """A class that is hidden until t_in and visible until t_out, every cycle."""
         self.n += 1
-        name = f"s{self.n}"
-        p = lambda t: round(t / CYCLE * 100, 2)
+        p = self.p
+        t_out = self.cycle - 0.7 if t_out is None else t_out
         a, b = p(t_in), p(t_out)
-        a2 = min(round(a + 4, 2), b)
-        self.css.append(
-            f"@keyframes {name}{{0%,{a}%{{opacity:0;transform:translateY({rise}px)}}"
-            f"{a2}%,{b}%{{opacity:{to};transform:none}}100%{{opacity:0;transform:none}}}}"
-            f".{name}{{animation:{name} {CYCLE}s {EASE} infinite}}")
-        return name
+        a2 = min(p(t_in + fin), b)
+        return self.loop(f"s{self.n}",
+                         f"0%,{a}%{{opacity:0;transform:translateY({rise}px)}}"
+                         f"{a2}%,{b}%{{opacity:{to};transform:none}}100%{{opacity:0;transform:none}}")
 
-    def draw(self, t_in, t_out=CYCLE - 0.7, dur=0.6):
-        """A class for a path (pathLength=1) that draws itself at t_in."""
+    def draw(self, t_in, t_out=None, dur=0.6):
+        """A class for a path (pathLength=1) that draws itself at t_in, every cycle."""
         self.n += 1
-        name = f"d{self.n}"
-        p = lambda t: round(t / CYCLE * 100, 2)
+        p = self.p
+        t_out = self.cycle - 0.7 if t_out is None else t_out
         a, a2, b = p(t_in), p(t_in + dur), p(t_out)
-        self.css.append(
-            f"@keyframes {name}{{0%,{a}%{{stroke-dashoffset:1}}{a2}%,{b}%{{stroke-dashoffset:0;opacity:1}}"
-            f"100%{{stroke-dashoffset:0;opacity:0}}}}"
-            f".{name}{{stroke-dasharray:1;animation:{name} {CYCLE}s {EASE} infinite}}")
-        return name
+        return self.loop(f"d{self.n}",
+                         f"0%,{a}%{{stroke-dashoffset:1}}{a2}%,{b}%{{stroke-dashoffset:0;opacity:1}}"
+                         f"100%{{stroke-dashoffset:0;opacity:0}}", "stroke-dasharray:1;")
 
-    def fade_to(self, t_at, to, t_out=CYCLE - 0.7):
+    def fade_to(self, t_at, to, t_out=None):
         """A class that is fully visible, then fades to `to` at t_at (the base state is `to`)."""
         self.n += 1
-        name = f"f{self.n}"
-        p = lambda t: round(t / CYCLE * 100, 2)
+        p = self.p
+        t_out = self.cycle - 0.7 if t_out is None else t_out
         a, a2, b = p(t_at), p(t_at + 0.5), p(t_out)
-        self.css.append(
-            f"@keyframes {name}{{0%,{a}%{{opacity:1}}{a2}%,{b}%{{opacity:{to}}}100%{{opacity:0}}}}"
-            f".{name}{{opacity:{to};animation:{name} {CYCLE}s {EASE} infinite}}")
-        return name
+        return self.loop(f"f{self.n}", f"0%,{a}%{{opacity:1}}{a2}%,{b}%{{opacity:{to}}}100%{{opacity:0}}",
+                         f"opacity:{to};")
 
 
 def arrow(d, x, y1, y2, t):
