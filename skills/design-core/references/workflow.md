@@ -8,6 +8,8 @@ harder to find later.
 
 - **Who and where.** Who uses this screen, on which device, in what situation (at a desk, on
   the move, under time pressure). This sets density, tone and target size.
+- **The kind.** Tool, product app, tech page or business page ([taste.md](taste.md#1-classify-the-work-first)).
+  It decides what may lead the screen and whether effects belong at all.
 - **The job.** One sentence: "On this screen, a <role> can <do what> so that <outcome>."
   If you can't write it, ask before designing.
 - **Behavior from the source.** Take actions, validation, messages and role gates from the
@@ -38,7 +40,9 @@ Write the plan as text and show it:
 - The one focal point and the primary action.
 - The states: default, empty, loading, error, long content (see [interface-quality.md](interface-quality.md)).
 - Any flow as `[step] → <decision?> --True--> [step]`.
-- The visible text, in the product's words (see [writing.md](writing.md)).
+- The visible text, in the product's words (see [writing.md](writing.md)), written before the layout.
+- Every style choice the product leaves open, with its options and one sentence on the pick
+  ([taste.md](taste.md#3-decide-open-choices-on-purpose)).
 
 Check: the user agrees with the plan, or the request already fixed it. Skip the wait for a
 one-element change.
