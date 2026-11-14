@@ -40,6 +40,10 @@ When the product leaves a choice open (palette, type pairing, hero layout, card 
   comes from.
 - Record the pick in the plan so sibling screens or pages stay consistent, or differ on purpose.
 - Violet/lavender accents, glow gradients and a three-card feature row need a product reason.
+- When the user hands over a reference, take its technique, not its composition. List what it
+  does (layout, metaphor, motion) and name which of those you are not taking, before building.
+  The reference counts as the first idea. Worked example, including the version rejected for
+  copying: [examples/github-profile](../examples/github-profile/README.md).
 
 ## 4. Composition rules worth keeping
 
