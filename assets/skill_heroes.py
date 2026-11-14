@@ -145,8 +145,10 @@ def build(name):
                    + d.t(RX + 182, cy + 6, detail, 16, Y, 500) + "</g>")
         # done: tick, kept to the end of the cycle
         tick = d.show(t + STEP - MOVE, end, rise=0, fin=0.2)
-        out.append(f'<path class="{tick}" d="M{RX + RW - 30} {cy}l6 6l11-12" stroke="{INK}" stroke-width="3" fill="none"/>')
-        out.append(f'<circle cx="{rail}" cy="{cy}" r="5" fill="{Y}" stroke="{INK}" stroke-width="2"/>')
+        out.extend([
+            f'<path class="{tick}" d="M{RX + RW - 30} {cy}l6 6l11-12" stroke="{INK}" stroke-width="3" fill="none"/>',
+            f'<circle cx="{rail}" cy="{cy}" r="5" fill="{Y}" stroke="{INK}" stroke-width="2"/>',
+        ])
 
     # output
     oc = d.show(LEAD + n * STEP, end)

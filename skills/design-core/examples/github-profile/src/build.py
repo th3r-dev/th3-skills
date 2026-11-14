@@ -250,10 +250,20 @@ def wrap(w, h, label, title, css, d):
             f'<style>{fonts}{css}</style>{"".join(d.parts)}</svg>')
 
 
+def inside_work(p):
+    """The output folder comes from the command line, so it must stay inside the folder the script runs from."""
+    root = os.path.realpath(os.getcwd())
+    full = os.path.realpath(os.path.join(root, os.path.expanduser(p)))
+    if full != root and not full.startswith(root + os.sep):
+        raise SystemExit(f"output folder {p!r} is outside the working folder {root}")
+    return full
+
+
 if __name__ == "__main__":
-    out = sys.argv[1]
+    out = inside_work(sys.argv[1] if len(sys.argv) > 1 else ".")
     os.makedirs(out, exist_ok=True)
     for name, fn in (("hero.svg", hero), ("agents.svg", agents)):
         s = fn()
-        open(f"{out}/{name}", "w").write(s)
+        with open(os.path.join(out, name), "w", encoding="utf-8") as fh:
+            fh.write(s)
         print(name, len(s) // 1024, "KB")

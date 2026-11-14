@@ -2,7 +2,7 @@
 
 Run from the repo root: ~/.venvs/diagram-design/bin/python assets/check_heroes.py
 """
-import sys, pathlib, hashlib, re
+import sys, pathlib, re
 from playwright.sync_api import sync_playwright
 files = sorted(pathlib.Path("skills").glob("*/assets/hero.svg")) + [pathlib.Path("assets/hero.svg")]
 bad = 0
@@ -21,7 +21,7 @@ with sync_playwright() as p:
             for loop in (0, 3):
                 pg.evaluate("t=>document.getAnimations().forEach(a=>{a.pause();a.currentTime=t})",
                             (delay + (loop + frac) * c) * 1000)
-                h.append(hashlib.md5(pg.screenshot()).hexdigest())
+                h.append(pg.screenshot())
             same.append(h[0] == h[1])
         bad += not all(same)
         print(f"{'OK   ' if all(same) else 'DRIFT'} {f}  cycle {c}s  delay {delay}s")

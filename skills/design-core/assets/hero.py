@@ -164,11 +164,13 @@ def build():
 
     # ---- left column: copy written first, then placed
     L, COL = 64, 500
-    out.append(d.t(L, 236, "design-core", 80, INK, 800, cls=d.show(0.1), maxw=COL))
-    out.append(d.t(L, 296, "Design from references,", 32, INK, 800, cls=d.show(0.3), maxw=COL))
-    out.append(d.t(L, 336, "not adjectives.", 32, INK, 800, cls=d.show(0.4), maxw=COL))
-    out.append(d.t(L, 384, "A critic that didn’t build it", 22, INK2, 500, cls=d.show(0.6), maxw=COL))
-    out.append(d.t(L, 414, "decides when it’s done.", 22, INK2, 500, cls=d.show(0.7), maxw=COL))
+    out.extend([
+        d.t(L, 236, "design-core", 80, INK, 800, cls=d.show(0.1), maxw=COL),
+        d.t(L, 296, "Design from references,", 32, INK, 800, cls=d.show(0.3), maxw=COL),
+        d.t(L, 336, "not adjectives.", 32, INK, 800, cls=d.show(0.4), maxw=COL),
+        d.t(L, 384, "A critic that didn’t build it", 22, INK2, 500, cls=d.show(0.6), maxw=COL),
+        d.t(L, 414, "decides when it’s done.", 22, INK2, 500, cls=d.show(0.7), maxw=COL),
+    ])
     facts = ["9–12 references, 3 variants", "layout first, motion second", "pass at 9.2, never self-scored"]
     for i, s in enumerate(facts):
         y = 478 + i * 30
@@ -191,10 +193,11 @@ def build():
         out.append(f'<g class="{c}"><rect x="{x:.1f}" y="{y}" width="{tw}" height="{th}" fill="none" '
                    f'stroke="{INK}" stroke-width="1.5"/>{wire(k, x + 6, y + 6, tw - 12, th - 12)}</g>')
 
-    out.append(arrow(d, X0 + SW / 2, 214, 248, 2.2))
-
-    # three variants; C is the generic three-card row and loses
-    out.append(d.t(X0, 270, "3 variants", 14, INK3, 500, mono=True, cls=d.show(2.5)))
+    # an arrow down, then three variants; C is the generic three-card row and loses
+    out.extend([
+        arrow(d, X0 + SW / 2, 214, 248, 2.2),
+        d.t(X0, 270, "3 variants", 14, INK3, 500, mono=True, cls=d.show(2.5)),
+    ])
     vw, vh = (SW - 2 * 20) / 3, 104
     vy = 282
     picked_x = None
@@ -209,24 +212,25 @@ def build():
             out.append(f'<g class="{c}">{inner}</g>')
         else:
             out.append(f'<g class="{c}"><g class="{d.fade_to(4.0, 0.3)}">{inner}</g></g>')
-    # the pick: heavy frame + tag
+    # the pick (heavy frame + tag), an arrow down, then the critic score per round against the bar
     pk = d.show(4.0, rise=0)
-    out.append(f'<g class="{pk}"><rect x="{picked_x - 3:.1f}" y="{vy - 3}" width="{vw + 6:.1f}" height="{vh + 6}" '
-               f'fill="none" stroke="{INK}" stroke-width="4"/>'
-               f'<rect x="{picked_x + vw - 62:.1f}" y="{vy + vh - 10}" width="64" height="22" fill="{INK}"/>'
-               + d.t(picked_x + vw - 30, vy + vh + 5, "picked", 12, Y, 800, mono=True, anchor="middle") + "</g>")
-
-    out.append(arrow(d, picked_x + vw / 2, vy + vh + 16, 432, 4.5))
-
-    # critic score per round, against the bar
-    out.append(d.t(X0, 452, "critic score", 14, INK3, 500, mono=True, cls=d.show(4.8)))
+    out.extend([
+        f'<g class="{pk}"><rect x="{picked_x - 3:.1f}" y="{vy - 3}" width="{vw + 6:.1f}" height="{vh + 6}" '
+        f'fill="none" stroke="{INK}" stroke-width="4"/>'
+        f'<rect x="{picked_x + vw - 62:.1f}" y="{vy + vh - 10}" width="64" height="22" fill="{INK}"/>'
+        + d.t(picked_x + vw - 30, vy + vh + 5, "picked", 12, Y, 800, mono=True, anchor="middle") + "</g>",
+        arrow(d, picked_x + vw / 2, vy + vh + 16, 432, 4.5),
+        d.t(X0, 452, "critic score", 14, INK3, 500, mono=True, cls=d.show(4.8)),
+    ])
     sy = lambda s: 598 - (s - 5) * 30          # 5..10 -> 598..448
     rx = lambda i: X0 + 150 + i * 96             # r1..r5
     bar = sy(9.2)
     bc = d.draw(4.9, dur=0.8)
-    out.append(f'<path class="{bc}" pathLength="1" d="M{X0 + 120} {bar:.1f}H{X1}" stroke="{INK}" '
-               f'stroke-width="1.5" fill="none"/>')
-    out.append(d.t(X0 + 110, bar + 5, "bar 9.2", 13, INK, 800, mono=True, anchor="end", cls=d.show(5.0)))
+    out.extend([
+        f'<path class="{bc}" pathLength="1" d="M{X0 + 120} {bar:.1f}H{X1}" stroke="{INK}" '
+               f'stroke-width="1.5" fill="none"/>',
+        d.t(X0 + 110, bar + 5, "bar 9.2", 13, INK, 800, mono=True, anchor="end", cls=d.show(5.0)),
+    ])
 
     # round 1: the author scores itself 9.8 (a pass), set aside; the critic says 6.1
     self_c = d.show(5.3)
@@ -243,9 +247,11 @@ def build():
             out.append(f'<path class="{lc}" pathLength="1" d="M{rx(i - 1)} {sy(scores[i - 1]):.1f}L{rx(i)} {sy(s):.1f}" '
                        f'stroke="{INK}" stroke-width="3" fill="none"/>')
         dc = d.show(t, rise=0)
-        out.append(f'<g class="{dc}"><circle cx="{rx(i)}" cy="{sy(s):.1f}" r="7" fill="{INK}"/>'
-                   + d.t(rx(i), sy(s) + 26, f"{s}", 13, INK, 800, mono=True, anchor="middle") + "</g>")
-        out.append(d.t(rx(i), 626, f"r{i + 1}", 12, INK3, 500, mono=True, anchor="middle", cls=d.show(4.9 + i * 0.05)))
+        out.extend([
+            f'<g class="{dc}"><circle cx="{rx(i)}" cy="{sy(s):.1f}" r="7" fill="{INK}"/>'
+                   + d.t(rx(i), sy(s) + 26, f"{s}", 13, INK, 800, mono=True, anchor="middle") + "</g>",
+            d.t(rx(i), 626, f"r{i + 1}", 12, INK3, 500, mono=True, anchor="middle", cls=d.show(4.9 + i * 0.05)),
+        ])
 
     # pass
     pc = d.show(t0 + 4 * 0.8 + 0.5)

@@ -54,16 +54,20 @@ def build():
     L = 64
 
     # left: title and the index
-    out.append(d.t(L, 112, "th3-skills", 72, INK, 800, maxw=560))
-    out.append(d.t(L, 156, "Claude Code skills. Each one does a whole job.", 22, INK2, 500, maxw=560))
+    out.extend([
+        d.t(L, 112, "th3-skills", 72, INK, 800, maxw=560),
+        d.t(L, 156, "Claude Code skills. Each one does a whole job.", 22, INK2, 500, maxw=560),
+    ])
 
     NX, JX, RIGHT = L + 20, L + 270, 628
     row = lambda i: 222 + i * 40
     for i, (name, job, _, _) in enumerate(SKILLS):
         y = row(i)
-        out.append(f'<rect x="{L}" y="{y - 11}" width="8" height="8" fill="{INK}"/>')
-        out.append(d.t(NX, y, name, 15, INK, 800, mono=True, maxw=JX - NX - 14))
-        out.append(d.t(JX, y, job, 16, INK2, 500, maxw=RIGHT - JX))
+        out.extend([
+            f'<rect x="{L}" y="{y - 11}" width="8" height="8" fill="{INK}"/>',
+            d.t(NX, y, name, 15, INK, 800, mono=True, maxw=JX - NX - 14),
+            d.t(JX, y, job, 16, INK2, 500, maxw=RIGHT - JX),
+        ])
         # the highlight that follows the stage
         hl = d.window(i * SLIDE, (i + 1) * SLIDE, base=1 if i == 0 else 0, rise=0)
         out.append(f'<g class="{hl}"><rect x="{L - 10}" y="{y - 25}" width="{RIGHT - L + 20}" height="36" fill="{INK}"/>'
