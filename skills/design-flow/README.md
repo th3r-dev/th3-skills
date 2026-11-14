@@ -101,7 +101,7 @@ Read `SKILL.md` first. It holds the rules. This is the order of operations.
 0  bridge.py status → up if needed;  bridge.py call list_files → plugin connected?
    load design-core; run every script from the work folder (paths outside it are refused)
 1  inventory: variables, text/paint/effect styles, components (run_script or search_design_system)
-   + design-core: each screen's job in one sentence, the product's terms and capitalization
+   + design-core: each screen's job in one sentence and its kind (taste.md), the product's terms and capitalization
    → anything missing that the task needs: STOP, list it, ask
 2  capture
      live page / HTML :  capture.py url|html|jobs --to layers --out <work>/captures [--state FILE]

@@ -29,7 +29,10 @@ its Part 3 before the first Figma call in a session.
    - Tool order and limits come from https://github.com/figma/mcp-server-guide.
 4. **Principles.** Load the `design-core` skill. Its composition, writing and interface-quality
    rules apply to every screen, state screen and flow step this skill makes, and its review
-   table is the design half of every check below (stage 5 of the pipeline). The file's own
+   table is the design half of every check below (stage 5 of the pipeline). For a new page or
+   a gap the file's system doesn't cover, also apply its `references/taste.md`: name the kind
+   (usually tool or product app here), write the copy before placing, and decide open style
+   choices on purpose instead of by habit. The file's own
    system still comes first. If `design-core` isn't installed, say so and install it
    (`npx skills@latest add th3r-dev/th3-skills --skill design-core`) rather than skipping it.
 5. **Privacy.** File contents are the user's. Don't copy real labels, node IDs, or
