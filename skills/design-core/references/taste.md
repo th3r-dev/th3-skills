@@ -40,6 +40,10 @@ When the product leaves a choice open (palette, type pairing, hero layout, card 
   comes from.
 - Record the pick in the plan so sibling screens or pages stay consistent, or differ on purpose.
 - Violet/lavender accents, glow gradients and a three-card feature row need a product reason.
+- When the user hands over a reference, take its technique, not its composition. List what it
+  does (layout, metaphor, motion) and name which of those you are not taking, before building.
+  The reference counts as the first idea. Worked example, including the version rejected for
+  copying: [examples/github-profile](../examples/github-profile/README.md).
 
 ## 4. Composition rules worth keeping
 
@@ -62,6 +66,12 @@ On top of [writing.md](writing.md) and the AI tells in [interface-quality.md](in
 - A device used as a tic: "Not X, but Y" frames, two-fragment headings ("Fast. Simple."),
   runs of negations, a number pair in every heading. Once is a choice; three times is a tic.
 - Leftovers: lorem ipsum, "Sample text", `TODO`, template names.
+
+Visual slop, banned unless the user or the product asks for it (from cook's ban list):
+eyebrow labels over every heading, monospace uppercase text as decoration, a random serif,
+purple gradients or purple as the default accent, beige grounds, 01 / 02 / 03 counters,
+glowing orbs, decorative particles, long thin decorative lines, icons floating for no reason.
+Judge density, not single hits: one is a choice, a page full of them is a template.
 
 ## 6. Check like a gate
 

@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/hero.svg" width="100%" alt="design-flow: Screens in Figma, their flow beside them. A developer can build each page from one look."></p>
+
 # design-flow: guide
 
 How to use this skill to put real screens into Figma, keep them on the file's design system,

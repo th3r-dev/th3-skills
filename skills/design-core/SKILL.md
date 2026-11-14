@@ -1,6 +1,6 @@
 ---
 name: design-core
-description: Shared design principles that the other design skills build on. Covers visual composition (alignment, contrast, hierarchy, proximity, white space, repetition, unity), interface writing (voice, tone, labels, errors, empty states, field hints), and an interface quality baseline (states, accessibility, focus, motion, copy, AI tells). Use when designing or reviewing a screen, page, component, flow, or UI copy, when another design skill (design-flow, figma-generate-design, a frontend build) is about to place or write something, or when the user asks "review this design", "is this layout right", "check the UI copy", "design principles", "หลักการออกแบบ", "ตรวจงานดีไซน์", "เขียนข้อความบนหน้าจอ", or says a screen or page "looks generic", "looks AI-made" or "needs more taste". Not a style of its own: it never overrides the file's or product's existing design system.
+description: Shared design principles that the other design skills build on. Covers visual composition (alignment, contrast, hierarchy, proximity, white space, repetition, unity), interface writing (voice, tone, labels, errors, empty states, field hints), and an interface quality baseline (states, accessibility, focus, motion, copy, AI tells). Use when designing or reviewing a screen, page, component, flow, or UI copy, when another design skill (design-flow, figma-generate-design, a frontend build) is about to place or write something, or when the user asks "review this design", "is this layout right", "check the UI copy", "design principles", "หลักการออกแบบ", "ตรวจงานดีไซน์", "เขียนข้อความบนหน้าจอ", or says a screen or page "looks generic", "looks AI-made" or "needs more taste", or wants to design from reference images, Inspo or Awwwards references, three variants, or a long "cook" iteration loop scored against references. Not a style of its own: it never overrides the file's or product's existing design system.
 ---
 
 # Design Core
@@ -46,6 +46,16 @@ When two rules here disagree with the product, report the gap. Don't silently re
 - No AI tells: decorative gradients, a generic three-card row, rounded cards everywhere,
   filler adjectives.
 
+**Reference first** (detail: [references/reference-first.md](references/reference-first.md),
+[references/cook-loop.md](references/cook-loop.md))
+
+- References carry the look, the prompt stays short. The product's screens come first; outside
+  references (Inspo MCP, Awwwards MCP, the browser) fill only what it leaves open.
+- New page: three static variants side by side before app code. Layout before motion.
+- A bar per dimension, scored by a fresh-context critic on side-by-side images. The author's own
+  score never decides; a user's correction becomes a calibration offset.
+- Feedback is marked-up screenshots and the build's own terms (grid, padding, hex), not "cleaner".
+
 ## How to use it
 
 **Follow the working order** in [references/workflow.md](references/workflow.md): understand →
@@ -53,10 +63,13 @@ inventory → intent → build → review → hand off, with a check at the end 
 Its short form:
 
 1. Write the screen's job in one sentence. Take behavior from the source, never guess it.
-2. Inventory the product's components, tokens, text styles and words before drawing.
-3. Show the plan as text (content order, focal point, states, copy) before building.
+2. Inventory the product's components, tokens, text styles and words before drawing; collect
+   references for what it leaves open.
+3. Show the plan as text (content order, focal point, states, copy) before building; for a new
+   page, three static variants.
 4. Build the default state first from instances and tokens, then the other states.
-5. Screenshot, score, fix the top findings, at most three rounds. Report the scores.
+5. Screenshot, score (a fresh-context critic when there are references), fix the top findings,
+   at most three rounds. Report the scores. A long showcase build runs the cook loop instead.
 6. Hand off states, behavior, tokens and gaps per screen.
 
 **When building**, read the reference that matches the work before placing or writing anything:
@@ -64,6 +77,12 @@ visual principles for layout, writing for any visible text, interface quality fo
 controls, and [references/taste.md](references/taste.md) when the work is a page or a screen with open
 style choices (classify the kind, copy before layout, decide on purpose, check like a gate).
 Then build with the product's own tokens and components.
+
+**Worked example:** [examples/github-profile](examples/github-profile/README.md) is an animated
+GitHub profile (SVG hero and skills panel) that runs the whole workflow end to end: brief and
+kind, a v1 rejected for copying its reference, the open choices behind v2, and the render
+checks that found and fixed real overflow bugs. Its `src/build.py` can be reused for other
+self-contained animated SVGs.
 
 **When reviewing**, score each dimension 0–10 and say what a 10 would look like for this screen:
 
@@ -76,6 +95,7 @@ Then build with the product's own tokens and components.
 | States and edge cases | interface-quality.md |
 | Accessibility | interface-quality.md |
 | Fit to kind, no generic look | taste.md |
+| Closeness to the references (when there are any) | reference-first.md, cook-loop.md |
 
 Report findings as `screen or file:location — issue → fix`, most severe first. A finding needs
 a location and a concrete fix; "feels off" isn't one. Pass is 8 or higher on every row.
@@ -91,6 +111,10 @@ type, display type, layout model, mood, density, and what to exclude.
 - [nexu-io/open-design](https://github.com/nexu-io/open-design/tree/main/skills) (Apache-2.0):
   `web-design-guidelines` (Vercel Web Interface Guidelines), `impeccable-design-polish`,
   `plan-design-review`, `design-brief`
+- [Leonxlnx/cook](https://github.com/Leonxlnx/cook) (MIT): intake, target, bar and calibration,
+  fresh-context critics, round ledger, pacing; scaled down from its long showcase runs
+- Reference tools: [Nutlope/inspo](https://github.com/Nutlope/inspo) (MIT),
+  [INSANE0777/Awwwards-mcp](https://github.com/INSANE0777/Awwwards-mcp) (MIT)
 - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT): the method only (kind
   first, copy first, deliberate choices, checks with ids, waivers), not its kit or scripts
 
