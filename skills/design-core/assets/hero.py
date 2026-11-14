@@ -37,6 +37,23 @@ def width(s, size, key):
     return sum(hmtx[cmap[ord(ch)]][0] for ch in s) * size / upm
 
 
+def embed_fonts(text):
+    """@font-face rules for Archivo (A) and JetBrains Mono (M), subset to the text used."""
+    out = []
+    for fam, key in (("A", "arc"), ("M", "jbm")):
+        for w in (500, 800):
+            f = TTFont(f"{FONTS}/{key}-{w}.woff2")
+            s = subset.Subsetter()
+            s.populate(text=text[key] + " ")
+            s.subset(f)
+            f.flavor = "woff2"
+            b = io.BytesIO()
+            f.save(b)
+            out.append(f"@font-face{{font-family:{fam};font-weight:{w};"
+                       f"src:url(data:font/woff2;base64,{base64.b64encode(b.getvalue()).decode()}) format('woff2')}}")
+    return "".join(out)
+
+
 class Doc:
     def __init__(self):
         self.body, self.css, self.text = [], [], {"arc": "", "jbm": ""}
@@ -52,6 +69,19 @@ class Doc:
         c = f' class="{"m" if mono else "a"} {cls}"'
         return (f'<text{c} x="{x}" y="{y}" font-size="{size}" font-weight="{w}" fill="{fill}"{a}>'
                 f'{escape(s)}</text>')
+
+    def window(self, t_in, t_out, cycle, base=0, rise=6):
+        """A class shown only inside [t_in, t_out] of each `cycle`; `base` is the static opacity."""
+        self.n += 1
+        name = f"w{self.n}"
+        p = lambda t: round(t / cycle * 100, 2)
+        a, a2, b, b2 = p(t_in), p(t_in + 0.3), p(t_out - 0.25), p(t_out)
+        lead = f"0%,{a}%" if a > 0 else "0%"
+        self.css.append(
+            f"@keyframes {name}{{{lead}{{opacity:0;transform:translateY({rise}px)}}{a2}%,{b}%{{opacity:1;transform:none}}"
+            f"{b2}%,100%{{opacity:0;transform:none}}}}"
+            f".{name}{{opacity:{base};animation:{name} {cycle}s {EASE} infinite}}")
+        return name
 
     def show(self, t_in, t_out=CYCLE - 0.7, rise=8, to=1.0):
         """A class that is hidden until t_in, visible until t_out, every cycle."""
@@ -218,19 +248,7 @@ def build():
              "the generic three-card variant is dropped and variant B is picked. A fresh critic scores each round, "
              "6.1, 7.3, 8.2, 8.8, 9.4, until the score passes the 9.2 bar. The author's own score of 9.8 is set aside.")
 
-    fonts = []
-    for fam, key in (("A", "arc"), ("M", "jbm")):
-        for w in (500, 800):
-            f = TTFont(f"{FONTS}/{key}-{w}.woff2")
-            s = subset.Subsetter()
-            s.populate(text=d.text[key] + " ")
-            s.subset(f)
-            f.flavor = "woff2"
-            b = io.BytesIO()
-            f.save(b)
-            fonts.append(f"@font-face{{font-family:{fam};font-weight:{w};"
-                         f"src:url(data:font/woff2;base64,{base64.b64encode(b.getvalue()).decode()}) format('woff2')}}")
-
+    fonts = [embed_fonts(d.text)]
     css = ("".join(fonts)
            + ".a{font-family:A,'Helvetica Neue',Arial,sans-serif}"
            + ".m{font-family:M,ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}"
