@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/hero.svg" width="100%" alt="thai-mock-naming: Thai mock names, fake on sight. Real Thai text for the code to handle, and one grep finds every row."></p>
+
 # thai-mock-naming
 
 Thai mock names that are **unmistakably fake**, **greppable in a database**, and still **structurally valid enough to exercise real Thai text handling**.
