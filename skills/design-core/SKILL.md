@@ -78,6 +78,12 @@ controls, and [references/taste.md](references/taste.md) when the work is a page
 style choices (classify the kind, copy before layout, decide on purpose, check like a gate).
 Then build with the product's own tokens and components.
 
+**Worked example:** [examples/github-profile](examples/github-profile/README.md) is an animated
+GitHub profile (SVG hero and skills panel) that runs the whole workflow end to end: brief and
+kind, a v1 rejected for copying its reference, the open choices behind v2, and the render
+checks that found and fixed real overflow bugs. Its `src/build.py` can be reused for other
+self-contained animated SVGs.
+
 **When reviewing**, score each dimension 0–10 and say what a 10 would look like for this screen:
 
 | Dimension | Source |
