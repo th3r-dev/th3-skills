@@ -61,7 +61,9 @@ Its short form:
 
 **When building**, read the reference that matches the work before placing or writing anything:
 visual principles for layout, writing for any visible text, interface quality for states and
-controls. Then build with the product's own tokens and components.
+controls, and [references/taste.md](references/taste.md) when the work is a page or a screen with open
+style choices (classify the kind, copy before layout, decide on purpose, check like a gate).
+Then build with the product's own tokens and components.
 
 **When reviewing**, score each dimension 0–10 and say what a 10 would look like for this screen:
 
@@ -73,6 +75,7 @@ controls. Then build with the product's own tokens and components.
 | Copy (labels, errors, empty states) | writing.md |
 | States and edge cases | interface-quality.md |
 | Accessibility | interface-quality.md |
+| Fit to kind, no generic look | taste.md |
 
 Report findings as `screen or file:location — issue → fix`, most severe first. A finding needs
 a location and a concrete fix; "feels off" isn't one. Pass is 8 or higher on every row.
@@ -88,5 +91,7 @@ type, display type, layout model, mood, density, and what to exclude.
 - [nexu-io/open-design](https://github.com/nexu-io/open-design/tree/main/skills) (Apache-2.0):
   `web-design-guidelines` (Vercel Web Interface Guidelines), `impeccable-design-polish`,
   `plan-design-review`, `design-brief`
+- [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT): the method only (kind
+  first, copy first, deliberate choices, checks with ids, waivers), not its kit or scripts
 
 The references paraphrase these sources. Re-check them when a rule seems out of date.
