@@ -25,6 +25,8 @@ Read before you draw:
 - The term list and capitalization in the existing screens.
 - Sibling screens in the same section: the new screen must look like them.
 - Platform: Apple HIG, Material, or web, and the frame sizes the product already uses.
+- References for whatever the product leaves open: 9–12 for a new page, 3–5 for a part, with a
+  shot list of what to take from each ([reference-first.md](reference-first.md)).
 
 Missing pieces are a list to show the user, not values to invent. Ask before adding tokens or
 components. When the product has nothing at all, use the [defaults](visual-principles.md#defaults-when-the-product-has-none)
@@ -44,12 +46,18 @@ Write the plan as text and show it:
 - Every style choice the product leaves open, with its options and one sentence on the pick
   ([taste.md](taste.md#3-decide-open-choices-on-purpose)).
 
+For a new page or a redesign, turn the plan into **three competing static variants** on one
+page (desktop and phone) before any app code, and let the user pick
+([cook-loop.md](cook-loop.md#2-target-before-code-three-variants)).
+
 Check: the user agrees with the plan, or the request already fixed it. Skip the wait for a
 one-element change.
 
 ## 4. Build
 
 - Smallest version first: the default state of one screen. Then add the other states.
+- Layout before motion: no animation until the static layout holds at every width; then add
+  motion from reference recordings ([cook-loop.md](cook-loop.md#4-layout-first-motion-second)).
 - Instances of components, never detached copies. Values bound to tokens.
 - Auto layout, so the screen survives long text and resizing.
 - Clear layer names: `Role ▸ Menu ▸ Screen` for screens, the component's name for parts.
@@ -61,7 +69,9 @@ Check: no raw values, no detached instances, no default layer names.
 ## 5. Review
 
 1. Take one screenshot of the result.
-2. Score it with the review table in [SKILL.md](../SKILL.md#how-to-use-it).
+2. Score it with the review table in [SKILL.md](../SKILL.md#how-to-use-it). With references,
+   score side by side (reference left, build right) by a fresh-context critic, not by the author;
+   apply any calibration offset the user gave ([cook-loop.md](cook-loop.md#6-critics)).
 3. Fix the highest-impact findings. A few decisive fixes beat many small nudges.
 4. Take one more screenshot and score again. Stop at a pass or after three rounds, and report
    what still fails rather than looping.
