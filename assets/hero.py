@@ -42,7 +42,7 @@ SKILLS = [
      ["a Markdown file"], ["PDF + DOCX in the house", "theme, changes highlighted"]),
     ("pdf-operations", "merge, split, rotate, stamp",
      ["three separate PDFs"], ["one PDF, pages reordered,", "rotated and stamped"]),
-    ("podman-disk-reclaim", "wins back Podman disk",
+    ("containers", "wins back Podman disk",
      ["a disk full of old images"], ["pruned, trimmed, the WSL", "disk compacted: space back"]),
 ]
 CYCLE = round(SLIDE * len(SKILLS), 3)
