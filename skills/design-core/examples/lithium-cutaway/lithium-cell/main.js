@@ -7,8 +7,9 @@ import {makeCursor, makeLabels, ORANGE_TO, PAPER_GREEN, retint, SHIFT} from 'cut
 import {createStage, PAPER} from 'cutaway-kit/../piranha-shared/stage.js';
 import {buildCell, FLOOR_Y, PAL} from './cell.js';
 import TL from './timeline.json';
-import {makeManual, PARTS} from './manual.js';
-import {makeTour} from './tour.js';
+import {attachManual} from '../../../cutaway/interactive.js';
+import {makeManual} from '../../../cutaway/manual.js';
+import {CAM, LABELS, makeTour, readouts, STATUS} from './tour.js';
 
 // the shell a cool white like R01's; retint() on the lights only: R01 keeps its copper foil, and every accent is
 // built green already
@@ -43,62 +44,45 @@ runSim({duration: TL.duration, fps: 60, theme: 'light', hud: {enabled: false, ti
   const ui = createConsole(app, {...PAGE, nav: [['overview', 'Overview'], ...ACTS], pills: ACTS});
   const cursorAt = makeCursor(ui, T.SCRIPT);
   const labels = makeLabels(st, cell.anchors);
-  // live page: the film plays until the viewer takes over (a pill, keys 1-5, a drag or a scroll on the cell); from
-  // then on manual.js drives it until "Play film". Capture never takes this path and films the pure script.
-  let film = null;
-  const manual = makeManual(canvas, () => film ?? T.stateAt(0));
-  if (!capture) {
-    const bar = document.createElement('div');
-    bar.className = 'manual-bar';
-    bar.innerHTML = `<span data-hint>Click a part to open it · drag to orbit · scroll to zoom</span><button type="button" data-play hidden>Play film</button>`;
-    const css = document.createElement('style');
-    css.textContent = `.vp .manual-bar{position:absolute;left:50%;transform:translateX(-50%);top:802px;display:flex;align-items:center;gap:12px;padding:4px 4px 4px 14px;border:1px solid #e8edf3;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(15,23,42,.06);font:500 12.5px/1 'Inter',sans-serif;color:#475569;white-space:nowrap}
-.vp .manual-bar button[hidden]{display:none}
-.vp .manual-bar button{pointer-events:auto;cursor:pointer;height:28px;padding:0 14px;border:1px solid #16b364;border-radius:14px;background:#effbf4;color:#0b7a43;font:600 12.5px/1 'Inter',sans-serif}
-.vp .manual-bar button:focus-visible,.vp .pill:focus-visible{outline:2px solid #16b364;outline-offset:2px}`;
-    document.head.appendChild(css);
-    ui.root.appendChild(bar);
-    const play = bar.querySelector('[data-play]');
-    const hint = bar.querySelector('[data-hint]');
-    const sync = () => {
-      play.hidden = !manual.isOn();
-      hint.textContent = manual.isOn() ? 'Drag to orbit · scroll to zoom · double-click to reset the view' : 'Click a part to open it · drag to orbit · scroll to zoom';
-    };
-    const toggle = (k) => {
-      manual.toggle(k);
-      sync();
-    };
-    ACTS.forEach(([k]) => {
-      const el = ui.pills[k];
-      Object.assign(el.style, {pointerEvents: 'auto', cursor: 'pointer'});
-      el.setAttribute('role', 'button');
-      el.tabIndex = 0;
-      el.addEventListener('click', () => toggle(k));
-      el.addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), e.stopPropagation(), toggle(k)));
-    });
-    addEventListener('keydown', (e) => /^[1-5]$/.test(e.key) && toggle(PARTS[+e.key - 1]));
-    canvas.addEventListener('pointerdown', sync);
-    canvas.addEventListener('wheel', sync);
-    play.addEventListener('click', () => {
-      manual.leave();
-      dispatchEvent(new KeyboardEvent('keydown', {key: 'r'})); // the runtime restarts the film from 0
-      sync();
-    });
-  }
+  // live page, the design-core default: the film plays until the viewer takes over, then they drive it by hand
+  // (../../../cutaway/manual.js + interactive.js). Capture skips this and films the pure script.
+  const page = capture
+    ? null
+    : attachManual({
+        ui,
+        canvas,
+        acts: ACTS,
+        manual: makeManual(canvas, () => page.film() ?? T.stateAt(0), {
+          parts: ACTS.map(([k]) => k),
+          cams: CAM,
+          labels: LABELS,
+          status: STATUS,
+          closes: {cap: ['roll', 'mandrel']}, // the roll and the pin can't stay out under a closed cap
+          fromFilm: (s) => ({cap: s.cap, sleeve: s.sleeve, roll: s.roll, mandrel: s.mandrel, exploded: s.explode}),
+          toState: (o, t, apart, keep) => ({
+            spin: keep.spin ?? 0,
+            axial: 0,
+            explode: o.exploded,
+            cap: Math.max(o.cap, o.roll, o.mandrel),
+            sleeve: o.sleeve,
+            roll: o.roll,
+            mandrel: o.mandrel,
+            ...readouts(t, apart, o.roll, o.exploded),
+          }),
+        }),
+      });
   const fit = () => (app.style.transform = `scale(${Math.min(innerWidth / 1600, innerHeight / 900)})`);
   const resize = () => {
     fit();
     st.resize(1600, 900, capture ? devicePixelRatio || 1 : Math.min(devicePixelRatio || 1, 2));
   };
   resize();
-  const timeEl = ui.root.querySelector('[data-v="time"]');
-  const progEl = ui.root.querySelector('[data-v="prog"]');
-  window.CELL = {st, cell, T, manual};
+  window.CELL = {st, cell, T};
   return {
     resize,
     render(t) {
-      // live manual mode reads wall-clock time in manual.state; the film (and every capture) stays a pure function of t
-      const s = manual.isOn() ? manual.state(t) : (film = T.stateAt(t));
+      // the viewer's state while they drive (wall-clock, live only); otherwise the film, a pure function of t
+      const s = page ? page.state(t, T.stateAt) : T.stateAt(t);
       cell.pose(s);
       const c = s.cam;
       st.frame({...c, az: c.az * D2R, el: c.el * D2R, sx: SHIFT[0], sy: SHIFT[1]}, {guides: 0});
@@ -115,15 +99,9 @@ runSim({duration: TL.duration, fps: 60, theme: 'light', hud: {enabled: false, ti
         apart: Math.round(s.apart * 100),
         view: s.view,
         callouts: labels(s.labels),
-        cursor: manual.isOn() ? null : cursorAt(t),
+        cursor: page ? page.cursor(cursorAt(t)) : cursorAt(t),
       });
-      // in manual mode several parts can be open at once: light every open part's pill
-      if (manual.isOn()) {
-        for (const [k, el] of Object.entries(ui.pills)) el.classList.toggle('on', manual.isOpen(k));
-        // the film's clock means nothing while the viewer drives: the time reads Manual, the track sits empty
-        timeEl.textContent = 'Manual';
-        progEl.style.width = '0%';
-      }
+      page?.after();
       return {};
     },
   };

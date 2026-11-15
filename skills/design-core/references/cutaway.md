@@ -10,11 +10,10 @@ with a procedural score on the same timeline. Adapted from
 design-core holds the method. The runtime, capture, sound engine and the three example objects
 (tarantula, piranha, wasp) live in the cutaway skill, so install that skill for the build.
 
-**The default output is the interactive page:** one offline HTML file, built and opened in the
-browser (`open cutaway-out/dist/<name>.html`). It plays the film on a loop until the viewer takes
-over. Then they drive it by hand: each part's pill opens or closes that part and leaves it so (parts
-combine), drag orbits, scroll zooms, double-click resets the view, and "Play film" hands back.
-Render the MP4 and the score only when the user asks for a video, a recording or sound.
+**The default output is the interactive page**, driven by hand, built with design-core's
+[`cutaway/`](../cutaway) modules, passed through `check_page.mjs` and handed over open. Rules and
+structure: [The interactive page](#the-interactive-page-required). The MP4 and the score are
+made only when the user asks for a video, a recording or sound.
 
 ## Setup
 
@@ -63,8 +62,9 @@ the user gives goes into it as one line.
    it costs about twice the rounds.
 6. **The short version.** A 10-second film with its own script, opening and exit. Never cut
    pieces out of the long film.
-7. **Hand over the page.** Build it, review its frames, open it. The MP4 and the score are
-   extras for a request that names a video; render and score them then.
+7. **Hand over the page.** Build it with manual mode wired, review its frames, run
+   `check_page.mjs` until it passes, then open it. The MP4 and the score are extras for a
+   request that names a video; render and score them then.
 
 ## Measured checks
 
@@ -112,13 +112,8 @@ every warm colour green. Build the accents green directly and retint only the li
 - Only the part being opened has to stay in frame; the rest may run off.
 - The page around it: an invented product name, one pill button per part that a cursor clicks,
   live cards that move with the parts, labels that never cover the part they name.
-- On the live page the viewer can take over (see the worked example's `manual.js`): pills become
-  toggles (`pointer-events: auto`, `role="button"`, a tab stop, Enter and space), keys 1-9 too;
-  drag orbits, scroll zooms, double-click resets. Manual state eases toward its targets on wall-clock
-  time and starts from the film's current frame, so nothing jumps. Parts that physically block
-  each other close together (closing the cap closes the roll). Hide the scripted cursor and the
-  film clock while the viewer drives, and offer "Play film" to hand back. Capture never enters
-  manual mode, so `render(t)` stays pure for the film.
+- On the live page the film hands over to the viewer: see
+  [The interactive page](#the-interactive-page-required).
 - Visible wing beats 1.5 to 2.5 Hz.
 
 **`render(t)` is pure.** No `Math.random` (seeded `rng` at setup), no `Date`, no state between
@@ -126,6 +121,52 @@ frames. Anything integrated over time (a gait, a speed ramp) is tabulated at loa
 lives in `<name>-film/timeline.json` in seconds; the picture and the score both read that file,
 so the sound can't drift. A frame-by-frame render can't drop frames the way a screen recorder
 does.
+
+## The interactive page (required)
+
+Every cutaway is handed over as a page the viewer drives by hand. A page that only plays the
+film, or only jumps to beats, isn't done: it reads as "stuck" to anyone who clicks it.
+
+**Behaviour, all required:**
+
+| Input | What it does |
+|---|---|
+| Nothing yet | The film plays on a loop, the scripted cursor pressing the pills |
+| A part's pill (click, Enter, space) or its number key | Takes over from the film's current frame (nothing jumps), then opens that part, or closes it if open. It stays as left, and parts combine |
+| Drag on the object | Orbits (azimuth, elevation clamped −8° to 75°) |
+| Scroll | Zooms (distance clamped) |
+| Double-click | Eases back to the last opened part's beat camera |
+| "Play film" | Hands back to the film from 0 |
+
+While the viewer drives: every open part's pill is lit, the scripted cursor is hidden, the film
+clock reads "Manual", and the hint bar says how to orbit and zoom. Parts that can't physically
+stay out alone close together (`closes`: closing the cap closes the roll). Capture never enters
+manual mode, so the film's `render(t)` stays pure.
+
+**Structure.** One folder per object, the cutaway skill's split plus design-core's two modules:
+
+| File | Job |
+|---|---|
+| `<object>.js` | The body from code; every part that comes apart is its own group with an anchor; `pose(state)` sets one moment |
+| `tour.js` | The film as functions of t; exports its beat cameras, labels, status words and card readouts so manual mode reuses them |
+| `main.js` | The page: stage, console, `makeManual(...)` + `attachManual(...)` under `if (!capture)`, `render(t)` taking `page.state(t, stateAt)` |
+| `timeline.json`, `score.py` | The beats in seconds; the score on the same file |
+| [`cutaway/manual.js`](../cutaway/manual.js) | Manual mode, object-agnostic: parts, cameras, labels, `closes`, `fromFilm`, `toState` come in as config |
+| [`cutaway/interactive.js`](../cutaway/interactive.js) | The page wiring: pills as buttons, number keys, hint bar, "Play film", lit pills, the Manual clock; sets `window.CUTAWAY` |
+
+Import the two modules by relative path from the object's folder; esbuild bundles them into the
+one HTML file. The worked example's `main.js` is the reference wiring.
+
+**The gate.** A page is handed over only after this passes:
+
+```
+CUTAWAY_DIR="$SKILL_DIR" node <design-core>/cutaway/check_page.mjs cutaway-out/dist/<name>.html --shots cutaway-out/check
+```
+
+It drives the page like a viewer: film playing, every pill opening its part, two parts open
+together, drag, scroll, a number key, "Play film", no page errors. Exit 1 lists what failed. Read
+its screenshots too. Then `open cutaway-out/dist/<name>.html` and tell the user what they can do
+on it (click parts, drag, scroll, Play film).
 
 ## Sound
 
@@ -137,9 +178,10 @@ from the timeline, never a typed number.
 ## Commands
 
 ```
-node "$SKILL_DIR/sims/build.mjs" piranha-film            # one HTML, offline: the default output
-open cutaway-out/dist/piranha-film.html                   # hand it over open
-# a video, only when asked:
+node "$SKILL_DIR/sims/build.mjs" ./my-object             # one HTML, offline: the default output
+CUTAWAY_DIR="$SKILL_DIR" node <design-core>/cutaway/check_page.mjs cutaway-out/dist/my-object.html
+open cutaway-out/dist/my-object.html                      # hand it over open, once the check passes
+# stills for review, and a video only when asked (upstream's examples shown):
 node "$SKILL_DIR/sims/capture.mjs" piranha-film --size 1600x900 --dpr 1.2 --still 9.4 --out cutaway-out/still.png
 node "$SKILL_DIR/sims/capture.mjs" piranha-film --size 1600x900 --dpr 1.2 --stills beats --cols 4 --out cutaway-out/beats.png
 node "$SKILL_DIR/sims/capture.mjs" piranha-film --size 1600x900 --dpr 2.4 --out cutaway-out/film-4k.mp4
