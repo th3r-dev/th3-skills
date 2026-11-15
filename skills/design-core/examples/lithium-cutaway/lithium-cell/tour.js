@@ -10,7 +10,7 @@ const sm = (x) => {
 const lerp = (a, b, k) => a + (b - a) * k;
 
 // one camera per beat: its own side, height and distance, aimed at its part (degrees, world units)
-const CAM = {
+export const CAM = {
   intro: {tx: 0, ty: -0.22, tz: 0, az: 6, el: 16, d: 9.2},
   cap: {tx: 0, ty: 1.15, tz: 0, az: 24, el: 40, d: 5.4}, // from above, the stack lifting off
   sleeve: {tx: -0.3, ty: 0.55, tz: 0, az: -58, el: 8, d: 11.5}, // low from the left, the wrap sliding off
@@ -20,14 +20,22 @@ const CAM = {
   assemble: {tx: 0, ty: -0.2, tz: 0, az: 6, el: 15, d: 10.0},
   hero: {tx: 0, ty: -0.22, tz: 0, az: 10, el: 17, d: 8.4},
 };
-const LABELS = {
+export const LABELS = {
   cap: [['cap', 'POSITIVE CAP', 'button · ptc ring · vent disc'], ['vent', 'VENT', 'opens at overpressure']],
   sleeve: [['sleeve', 'WRAP', 'printed sleeve over the steel can'], ['base', 'NEGATIVE CUP', 'the can is the minus pole']],
   roll: [['roll', 'JELLY ROLL', 'anode · separator · cathode'], ['tabs', 'POSITIVE TAB', 'aluminium, up to the cap']],
   mandrel: [['mandrel', 'MANDREL', 'steel pin the roll is wound on']],
   exploded: [['cap', 'CAP STACK', '5 parts'], ['roll', 'JELLY ROLL', '18 layers'], ['base', 'CAN AND WRAP', 'steel under a printed sleeve']],
 };
-const STATUS = {intro: 'Idle', cap: 'Cap off', sleeve: 'Wrap off', roll: 'Roll open', mandrel: 'Pin out', exploded: 'Teardown', assemble: 'Reassembly', hero: 'Sealed'};
+export const STATUS = {intro: 'Idle', cap: 'Cap off', sleeve: 'Wrap off', roll: 'Roll open', mandrel: 'Pin out', exploded: 'Teardown', assemble: 'Reassembly', hero: 'Sealed'};
+
+/** The cards: a cell that sags as it is opened, a layer per bar, warming a touch under the lights. */
+export const readouts = (t, apart, roll, explode) => ({
+  volts: 3.68 - 0.25 * apart + 0.015 * Math.sin(t * 5),
+  charge: 0.82 - 0.06 * apart,
+  bars: Array.from({length: 6}, (_, j) => 0.35 + 0.45 * Math.max(roll, explode) * (1 - j / 7) + 0.08 * Math.sin(t * 2.3 + j)),
+  temp: 24 + 3 * apart,
+});
 
 export function makeTour(TL) {
   const SCRIPT = [...TL.script].sort((a, b) => a.t - b.t);
@@ -96,11 +104,7 @@ export function makeTour(TL) {
       cam: camAt(t),
       labels: {set: LABELS[act === 'assemble' ? 'exploded' : act] ?? [], o: labelO},
       status: STATUS[act],
-      // the cards: a cell that sags as it is opened, a layer per bar, warming a touch under the lights
-      volts: 3.68 - 0.25 * apart + 0.015 * Math.sin(t * 5),
-      charge: 0.82 - 0.06 * apart,
-      bars: Array.from({length: 6}, (_, j) => 0.35 + 0.45 * Math.max(s.roll, explode) * (1 - j / 7) + 0.08 * Math.sin(t * 2.3 + j)),
-      temp: 24 + 3 * apart,
+      ...readouts(t, apart, s.roll, explode),
     };
   };
   return {SCRIPT, stateAt};

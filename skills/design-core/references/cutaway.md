@@ -11,8 +11,9 @@ design-core holds the method. The runtime, capture, sound engine and the three e
 (tarantula, piranha, wasp) live in the cutaway skill, so install that skill for the build.
 
 **The default output is the interactive page:** one offline HTML file, built and opened in the
-browser (`open cutaway-out/dist/<name>.html`). It plays the film on a loop, and each part's pill
-is a real button that jumps to its teardown (keys 1–9 do the same; space pauses, ←/→ seek 2 s).
+browser (`open cutaway-out/dist/<name>.html`). It plays the film on a loop until the viewer takes
+over. Then they drive it by hand: each part's pill opens or closes that part and leaves it so (parts
+combine), drag orbits, scroll zooms, double-click resets the view, and "Play film" hands back.
 Render the MP4 and the score only when the user asks for a video, a recording or sound.
 
 ## Setup
@@ -111,10 +112,13 @@ every warm colour green. Build the accents green directly and retint only the li
 - Only the part being opened has to stay in frame; the rest may run off.
 - The page around it: an invented product name, one pill button per part that a cursor clicks,
   live cards that move with the parts, labels that never cover the part they name.
-- On the live page the pills are buttons: pass `stages: [{at, name}]` (each part's beat − 0.15 s)
-  in the sim's defaults, give each pill `pointer-events: auto`, `role="button"` and a tab stop,
-  and on click dispatch the matching digit `keydown`; the runtime seeks. Hide the scripted cursor
-  once the viewer clicks. Capture ignores all of this and films the script.
+- On the live page the viewer can take over (see the worked example's `manual.js`): pills become
+  toggles (`pointer-events: auto`, `role="button"`, a tab stop, Enter and space), keys 1-9 too;
+  drag orbits, scroll zooms, double-click resets. Manual state eases toward its targets on wall-clock
+  time and starts from the film's current frame, so nothing jumps. Parts that physically block
+  each other close together (closing the cap closes the roll). Hide the scripted cursor and the
+  film clock while the viewer drives, and offer "Play film" to hand back. Capture never enters
+  manual mode, so `render(t)` stays pure for the film.
 - Visible wing beats 1.5 to 2.5 Hz.
 
 **`render(t)` is pure.** No `Math.random` (seeded `rng` at setup), no `Date`, no state between
