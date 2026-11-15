@@ -1,10 +1,14 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["fonttools==4.65.0", "brotli==1.2.1"]
+# ///
 """Build the th3-skills README hero: hero.svg next to this file.
 
 Left: every skill with the job it does (complete as a still, so reduced motion loses nothing).
 Right: a stage that walks the skills one by one and shows each one's input and output,
 while a highlight follows it down the index.
 
-Run: ~/.venvs/diagram-design/bin/python assets/hero.py   (needs fonttools + brotli)
+Run: uv run assets/hero.py   (uv installs fonttools + brotli from the header)
 Helpers and fonts come from skills/design-core/assets/hero.py.
 """
 import importlib.util, os

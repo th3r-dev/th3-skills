@@ -6,7 +6,7 @@ A GitHub profile README for [th3r-dev](https://github.com/th3r-dev). It has two 
 |---|---|
 | [hero.svg](hero.svg) | Yellow poster: name, statement, and one request traced through four layers |
 | [agents.svg](agents.svg) | Black panel: an agent moving along Plan → Design → Build → Test → Ship, with the skills used at each stage |
-| [src/build.py](src/build.py) | Generator for both files. Run `python src/build.py .` (needs `fonttools` and `brotli`) |
+| [src/build.py](src/build.py) | Generator for both files. Run `uv run src/build.py .` (uv installs `fonttools` and `brotli` from the script header) |
 | [src/fonts/](src/fonts) | Archivo and JetBrains Mono, subset and embedded at build time (SIL OFL 1.1, licenses included) |
 | [shots/](shots) | Renders of v1 (rejected) and v2 |
 

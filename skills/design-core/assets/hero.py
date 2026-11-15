@@ -1,10 +1,14 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["fonttools==4.65.0", "brotli==1.2.1"]
+# ///
 """Build design-core's animated hero: hero.svg next to this file.
 
 The animation is the skill's loop, in order: twelve references come in, three variants are
 built from them, the generic one loses and one is picked, then a fresh critic scores each round
 until the score crosses the bar. The author's own score shows once and is set aside.
 
-Run: ~/.venvs/diagram-design/bin/python hero.py [--check]   (needs fonttools + brotli)
+Run: uv run hero.py [--check]   (uv installs fonttools + brotli from the header)
 Fonts: Archivo + JetBrains Mono (OFL) from ../examples/github-profile/src/fonts.
 """
 import base64, importlib.util, io, os, sys
