@@ -1,0 +1,36 @@
+name: social-media
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/social-media/**'
+      - '.github/workflows/social-media.yml'
+  pull_request:
+    paths:
+      - 'skills/social-media/**'
+      - '.github/workflows/social-media.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: skills/social-media
+
+jobs:
+  test:
+    name: self-checks (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        with:
+          version: '0.12.5'
+          python-version: ${{ matrix.python-version }}
+      - name: Script self-check and the benchmark case (stdlib only, nothing installed)
+        run: |
+          uv run --no-project python scripts/bench_post.py --selftest
+          uv run --no-project python scripts/bench_post.py benchmarks/banner-making-of.toon examples/banner-making-of/post.th.md --titles examples/banner-making-of/titles.md

@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-A collection of Claude Code skills in `skills/`, shipped as one plugin (`.claude-plugin/`) and installable per skill via `npx skills`. `devops`, `qa`, `containers`, `agent-kit` and `documentation` are umbrella skills with sub-skills in subdirs.
+A collection of Claude Code skills in `skills/`, shipped as one plugin (`.claude-plugin/`) and installable per skill via `npx skills`. `devops`, `qa`, `containers`, `agent-kit`, `documentation`, `design`, `social-media` and `marketing` are umbrella skills with sub-skills in subdirs.
 
 ## Git
 

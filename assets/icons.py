@@ -29,19 +29,10 @@ ART = {
         + "".join(f'<rect x="{x}" y="{y}" width="10" height="10" {_f()}/>' for x in (10, 100) for y in (34, 82))
         + f'<path d="M14 104H106" {_s(4)}/>'),
     # a frame on its thirds, one focal point
-    "design-core": (
+    "design": (
         f'<rect x="12" y="16" width="96" height="88" rx="4" {_s()}/>'
         + "".join(f'<path d="{d}" {_s(2.5)} opacity=".45"/>' for d in ("M44 16V104", "M76 16V104", "M12 45H108", "M12 75H108"))
         + f'<rect x="66" y="35" width="20" height="20" {_f()}/>'),
-    # a screen with its flowchart beside it
-    "design-flow": (
-        f'<rect x="6" y="22" width="58" height="76" rx="4" {_s()}/>'
-        f'<rect x="6" y="22" width="58" height="14" {_f()}/>'
-        f'<path d="M16 50H52M16 62H44M16 74H48" {_s(3.5)}/>'
-        f'<path d="M64 60H76" {_s(4)}/>'
-        f'<path d="M94 42L110 58L94 74L78 58Z" {_s(fill=Y)}/>'
-        f'<path d="M94 74V86" {_s(4)}/>'
-        f'<rect x="80" y="86" width="28" height="18" rx="2" {_f()}/>'),
     # a server rack: three units, lights and vents
     "devops": (
         "".join(f'<rect x="14" y="{y}" width="92" height="26" rx="3" {_s()}/>'
@@ -78,6 +69,18 @@ ART = {
         f'<path d="M56 44H100M56 58H88" {_s(4)}/>'
         f'<circle cx="90" cy="78" r="15" {_s(4)} stroke-dasharray="5 5"/>'
         f'<path d="M80 88L100 68" {_s(4)}/>'),
+    # a price tag on its string, a baht mark punched through it
+    "marketing": (
+        f'<path d="M58 14H100V56L56 100Q50 106 44 100L14 70Q8 64 14 58Z" {_s()}/>'
+        f'<circle cx="84" cy="30" r="7" {_f()}/>'
+        f'<path d="M84 30Q100 4 112 14" {_s(3.5)}/>'
+        f'<path d="M44 46V80M44 46H56Q64 46 64 54Q64 62 56 62H44M44 62H58Q66 62 66 71Q66 80 58 80H44M50 40V86" {_s(4)}/>'),
+    # a post card: the cover image on top, a title and two lines under it
+    "social-media": (
+        f'<rect x="14" y="10" width="92" height="100" rx="8" {_s()}/>'
+        f'<rect x="24" y="20" width="72" height="42" rx="4" {_f()}/>'
+        f'<path d="M30 56L48 38L60 50L68 42L90 56Z" fill="{Y}"/>'
+        f'<path d="M24 76H96" {_s(5)}/><path d="M24 90H76" {_s(3.5)}/><path d="M24 100H64" {_s(3.5)}/>'),
     # a dependency tree with the vulnerable leaf traced from the root
     "dependency-vuln-explainer": (
         f'<path d="M60 20L30 60M60 20L90 60M30 60L18 100M90 60L90 100" {_s(3.5)} opacity=".5"/>'

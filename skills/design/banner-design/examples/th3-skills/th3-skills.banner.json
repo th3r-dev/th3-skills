@@ -1,0 +1,121 @@
+{
+  "name": "th3-skills GitHub social preview",
+  "size": [
+    1280,
+    640
+  ],
+  "brand": {
+    "name": "th3-skills",
+    "mark": "../../../../../.claude-plugin/icon.svg",
+    "promise": [
+      "Claude Code skills",
+      "that each do",
+      "a whole job."
+    ],
+    "facts": "11 skills · 1 plugin · MIT"
+  },
+  "steps": [
+    {
+      "num": "01",
+      "verb": "Design",
+      "line": [
+        "screens, flows,",
+        "banners, posts"
+      ],
+      "items": [
+        {
+          "name": "design",
+          "icon": "../../../assets/icon.svg"
+        },
+        {
+          "name": "social-media",
+          "icon": "../../../../social-media/assets/icon.svg"
+        }
+      ]
+    },
+    {
+      "num": "02",
+      "verb": "Build",
+      "line": [
+        "prove the idea,",
+        "run agents cheap"
+      ],
+      "items": [
+        {
+          "name": "poc-spec-driven-builder",
+          "icon": "../../../../poc-spec-driven-builder/assets/icon.svg"
+        },
+        {
+          "name": "agent-kit",
+          "icon": "../../../../agent-kit/assets/icon.svg"
+        }
+      ]
+    },
+    {
+      "num": "03",
+      "verb": "Test",
+      "line": [
+        "evidence, mock",
+        "data, CVE reach"
+      ],
+      "items": [
+        {
+          "name": "qa",
+          "icon": "../../../../qa/assets/icon.svg"
+        },
+        {
+          "name": "thai-mock-naming",
+          "icon": "../../../../thai-mock-naming/assets/icon.svg"
+        },
+        {
+          "name": "dependency-vuln-explainer",
+          "icon": "../../../../dependency-vuln-explainer/assets/icon.svg"
+        }
+      ]
+    },
+    {
+      "num": "04",
+      "verb": "Ship",
+      "line": [
+        "infra, disk,",
+        "docs, the sale"
+      ],
+      "items": [
+        {
+          "name": "devops",
+          "icon": "../../../../devops/assets/icon.svg"
+        },
+        {
+          "name": "containers",
+          "icon": "../../../../containers/assets/icon.svg"
+        },
+        {
+          "name": "documentation",
+          "icon": "../../../../documentation/assets/icon.svg"
+        },
+        {
+          "name": "marketing",
+          "icon": "../../../../marketing/assets/icon.svg"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "verb": "Install",
+    "detail": "/plugin install th3-skills --marketplace th3r-dev/th3-skills"
+  },
+  "variants": [
+    "columns-flat",
+    "columns-dark",
+    "columns-minimal",
+    "rail-flat",
+    "rail-dark",
+    "rail-minimal",
+    "stairs-flat",
+    "stairs-dark",
+    "stairs-minimal",
+    "bento-flat",
+    "bento-dark",
+    "bento-minimal"
+  ]
+}
