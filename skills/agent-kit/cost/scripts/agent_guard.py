@@ -32,11 +32,12 @@ def check(payload):
 
 
 def selftest():
-    agent = lambda **ti: {"tool_name": "Agent", "tool_input": ti}  # noqa: E731
-    assert check(agent(prompt="find x"))["hookSpecificOutput"]["additionalContext"] == NUDGE
-    assert check(agent(prompt="find x", subagent_type="Explore"))  # no model: nudge
-    assert check(agent(prompt="find x", model="haiku")) is None
-    assert check(agent(prompt="x", subagent_type="fork")) is None
+    def agent(**ti):
+        return {"tool_name": "Agent", "tool_input": dict(prompt="find the config loader", **ti)}
+    assert check(agent())["hookSpecificOutput"]["additionalContext"] == NUDGE
+    assert check(agent(subagent_type="Explore"))  # no model: nudge
+    assert check(agent(model="haiku")) is None
+    assert check(agent(subagent_type="fork")) is None
     assert check({"tool_name": "Bash", "tool_input": {}}) is None
     assert check({}) is None
     print("selftest ok")
