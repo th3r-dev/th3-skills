@@ -1,0 +1,36 @@
+name: agent-kit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/agent-kit/**'
+      - '.github/workflows/agent-kit.yml'
+  pull_request:
+    paths:
+      - 'skills/agent-kit/**'
+      - '.github/workflows/agent-kit.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: skills/agent-kit
+
+jobs:
+  test:
+    name: self-checks (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.5'
+          python-version: ${{ matrix.python-version }}
+      - name: Script self-checks
+        run: |
+          uv run --no-project python cost/scripts/agent_guard.py --selftest
+          uv run --script prompt-cache/scripts/pcache.py --self-test

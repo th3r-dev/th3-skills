@@ -1,5 +1,5 @@
 ---
-name: pdf-operations
+name: documentation-pdf-operations
 description: Use when working on PDF manipulation in this repo — merging multiple PDFs into one, splitting a PDF into pages, extracting/reordering pages, rotating pages, or drawing overlays. Points to the existing pdf-lib pipeline instead of reimplementing it.
 ---
 

@@ -1,4 +1,4 @@
-/* doc-style-builder theme: the one source of truth for fonts, sizes and colors.
+/* documentation doc-style theme: the one source of truth for fonts, sizes and colors.
    build_doc.py reads the :root tokens for the DOCX; the rules below style the HTML and the PDF.
    Change a value here and both outputs follow. */
 :root {
