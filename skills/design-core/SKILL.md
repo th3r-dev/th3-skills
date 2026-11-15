@@ -1,6 +1,6 @@
 ---
 name: design-core
-description: Shared design principles that the other design skills build on. Covers visual composition (alignment, contrast, hierarchy, proximity, white space, repetition, unity), interface writing (voice, tone, labels, errors, empty states, field hints), and an interface quality baseline (states, accessibility, focus, motion, copy, AI tells). Use when designing or reviewing a screen, page, component, flow, or UI copy, when another design skill (design-flow, figma-generate-design, a frontend build) is about to place or write something, or when the user asks "review this design", "is this layout right", "check the UI copy", "design principles", "หลักการออกแบบ", "ตรวจงานดีไซน์", "เขียนข้อความบนหน้าจอ", or says a screen or page "looks generic", "looks AI-made" or "needs more taste", or wants to design from reference images, Inspo or Awwwards references, three variants, or a long "cook" iteration loop scored against references. Not a style of its own: it never overrides the file's or product's existing design system.
+description: Shared design principles that the other design skills build on. Covers visual composition (alignment, contrast, hierarchy, proximity, white space, repetition, unity), interface writing (voice, tone, labels, errors, empty states, field hints), and an interface quality baseline (states, accessibility, focus, motion, copy, AI tells). Use when designing or reviewing a screen, page, component, flow, or UI copy, when another design skill (design-flow, figma-generate-design, a frontend build) is about to place or write something, or when the user asks "review this design", "is this layout right", "check the UI copy", "design principles", "หลักการออกแบบ", "ตรวจงานดีไซน์", "เขียนข้อความบนหน้าจอ", or says a screen or page "looks generic", "looks AI-made" or "needs more taste", or wants to design from reference images, Inspo or Awwwards references, three variants, or a long "cook" iteration loop scored against references, or hands over one picture of a robotic animal, machine or device to rebuild in three.js as an object that takes itself apart (a "cutaway", "exploded view", "make this image a 3D model that comes apart", a 60 fps teardown film with a synced score). Not a style of its own: it never overrides the file's or product's existing design system.
 ---
 
 # Design Core
@@ -55,6 +55,20 @@ When two rules here disagree with the product, report the gap. Don't silently re
 - A bar per dimension, scored by a fresh-context critic on side-by-side images. The author's own
   score never decides; a user's correction becomes a calibration offset.
 - Feedback is marked-up screenshots and the build's own terms (grid, padding, hex), not "cleaner".
+
+**Cutaway** (detail: [references/cutaway.md](references/cutaway.md))
+
+- One picture in, a three.js object built from code out, opened part by part. The build runs in
+  the cutaway skill; this is the method.
+- **The output is an interactive page the viewer drives by hand**, never a film-only page: the
+  film plays until they click; then each part's pill (or number key) opens or closes that part and
+  parts combine, drag orbits, scroll zooms, double-click resets, "Play film" hands back. Build it
+  with [`cutaway/manual.js`](cutaway/manual.js) and [`cutaway/interactive.js`](cutaway/interactive.js).
+- **Not done until** [`cutaway/check_page.mjs`](cutaway/check_page.mjs) passes on the built page
+  and the page is open in the browser. A 60 fps film with a synced score only when asked.
+- A 10–12 line checklist per picture, measured: dark share ≥ 0.8 of the picture's, proportions
+  within a few hundredths. A still first; stop after round 2 and wait for a yes before filming.
+- Port the closest approved film 1:1 and change the body only; every beat its own camera.
 
 ## How to use it
 
@@ -115,6 +129,10 @@ type, display type, layout model, mood, density, and what to exclude.
   fresh-context critics, round ledger, pacing; scaled down from its long showcase runs
 - Reference tools: [Nutlope/inspo](https://github.com/Nutlope/inspo) (MIT),
   [INSANE0777/Awwwards-mcp](https://github.com/INSANE0777/Awwwards-mcp) (MIT)
+- [Nyxera0x/cutaway](https://github.com/Nyxera0x/cutaway) (MIT), on
+  [whaleyxbt/claude-motion](https://github.com/whaleyxbt/claude-motion) (MIT): the picture-to-3D
+  teardown method (checklist, measured density and proportions, still gate, per-beat cameras,
+  timeline-synced score); the runtime stays in that skill
 - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT): the method only (kind
   first, copy first, deliberate choices, checks with ids, waivers), not its kit or scripts
 

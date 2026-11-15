@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["fonttools==4.65.0", "brotli==1.2.1"]
+# ///
 """Build one animated hero per skill: skills/<name>/assets/hero.svg.
 
 Left: the skill's name, its claim, and how to install it. Right: the steps it really runs (from its
@@ -5,7 +9,7 @@ SKILL.md); a marker walks down them, each step inverts while it runs and keeps a
 then the output appears. The still (reduced motion) shows every step ticked and the output.
 design-core is not here: it has its own hero (skills/design-core/assets/hero.py).
 
-Run: ~/.venvs/diagram-design/bin/python assets/skill_heroes.py [name ...]   (needs fonttools + brotli)
+Run: uv run assets/skill_heroes.py [name ...]   (uv installs fonttools + brotli from the header)
 """
 import importlib.util, os, sys
 from html import escape
@@ -17,6 +21,8 @@ _spec = importlib.util.spec_from_file_location(
 dc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(dc)
 Doc, embed_fonts, width, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.width, dc.Y, dc.INK, dc.INK2, dc.INK3
+sys.path.insert(0, HERE)
+from icons import icon  # noqa: E402  the skill's own drawing, also its icon.svg
 
 W, H = 1280, 640
 
@@ -112,7 +118,10 @@ def build(name):
     # left column
     L, COL = 64, 520
     nz = fit(name, COL, "arc-800")
-    out.append(d.t(L, 214, name, nz, INK, 800, cls=d.enter(0.1), maxw=COL))
+    out.extend([
+        icon(name, L, 44, 96, cls=d.enter(0.0)),
+        d.t(L, 214, name, nz, INK, 800, cls=d.enter(0.1), maxw=COL),
+    ])
     for i, s in enumerate(claim):
         out.append(d.t(L, 278 + i * 40, s, 32, INK, 800, cls=d.enter(0.3 + i * 0.1), maxw=COL))
     for i, s in enumerate(sub):

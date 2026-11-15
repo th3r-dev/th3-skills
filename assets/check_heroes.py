@@ -1,6 +1,10 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["playwright==1.62.0"]
+# ///
 """Drift check for every hero SVG: render each at the same point of loop 1 and loop 4; identical pixels = no drift.
 
-Run from the repo root: ~/.venvs/diagram-design/bin/python assets/check_heroes.py
+Run from the repo root: uv run assets/check_heroes.py
 """
 import sys, pathlib, re
 from playwright.sync_api import sync_playwright
@@ -21,6 +25,7 @@ with sync_playwright() as p:
             for loop in (0, 3):
                 pg.evaluate("t=>document.getAnimations().forEach(a=>{a.pause();a.currentTime=t})",
                             (delay + (loop + frac) * c) * 1000)
+                pg.wait_for_timeout(60)  # let the paused frame paint before the shot
                 h.append(pg.screenshot())
             same.append(h[0] == h[1])
         bad += not all(same)
