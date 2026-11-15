@@ -54,27 +54,19 @@ ART = {
         f'<rect x="42" y="8" width="36" height="18" rx="4" {_f()}/>'
         + "".join(f'<path d="M32 {y}l6 6l11-12" {_s(4.5)}/><path d="M60 {y}H88" {_s(4)}/>' for y in (48, 70, 92))),
     # a styled page with a folded corner
-    "doc-style-builder": (
+    "documentation": (
         f'<path d="M24 8H78L100 30V112H24Z" {_s()}/>'
         f'<path d="M78 8V30H100" {_s()}/>'
         f'<rect x="36" y="42" width="44" height="10" {_f()}/>'
         f'<path d="M36 66H88M36 80H76M36 94H84" {_s(4)}/>'
         f'<rect x="30" y="74" width="4" height="12" {_f()}/>'),
-    # two pages merged into one
-    "pdf-operations": (
-        f'<rect x="8" y="14" width="40" height="52" rx="3" {_s(fill=Y)}/>'
-        f'<rect x="20" y="28" width="40" height="52" rx="3" {_s(fill=Y)}/>'
-        f'<path d="M30 46H50M30 58H46" {_s(3.5)}/>'
-        f'<path d="M64 62H82M76 55L83 62L76 69" {_s(4.5)}/>'
-        f'<rect x="86" y="36" width="28" height="66" rx="3" {_f()}/>'
-        f'<path d="M92 50H108M92 60H104M92 70H108M92 80H102" stroke="{Y}" stroke-width="3.5" stroke-linecap="round"/>'),
     # a lab flask: prove the idea
     "poc-spec-driven-builder": (
         f'<path d="M50 12H70M54 12V44L24 100Q21 108 30 108H90Q99 108 96 100L66 44V12" {_s()}/>'
         f'<path d="M38 76H82L93 99Q95 104 89 104H31Q25 104 27 99Z" {_f()}/>'
         f'<circle cx="56" cy="62" r="4" {_f()}/><circle cx="66" cy="54" r="3" {_f()}/>'),
-    # a cache: stacked store, the shared prefix on top
-    "prompt-cache-kit": (
+    # a cache: stacked store, the shared prefix on top (agent runs that hit it)
+    "agent-kit": (
         f'<path d="M20 28V92Q20 104 60 104Q100 104 100 92V28" {_s()}/>'
         f'<path d="M20 50Q20 62 60 62Q100 62 100 50M20 72Q20 84 60 84Q100 84 100 72" {_s(4)}/>'
         f'<ellipse cx="60" cy="28" rx="40" ry="12" {_f()}/>'),

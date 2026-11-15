@@ -17,7 +17,7 @@ venv/
 .coverage
 htmlcov/
 
-# prompt-cache-kit
+# agent-kit/prompt-cache
 .pcache/
 
 # Claude Code personal

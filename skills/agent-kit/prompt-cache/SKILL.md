@@ -1,5 +1,5 @@
 ---
-name: prompt-cache-kit
+name: agent-kit-prompt-cache
 description: Make dynamic agents cheaper by keeping their prompt prefixes byte-identical so the prompt cache hits. Use whenever you are about to spawn subagents, forks, parallel agents or a Workflow, run /loop or ScheduleWakeup, or when the user says "save tokens", "prompt caching", "cache hit", "token usage", "ลด token". Builds a fingerprinted, byte-stable project outline locally with uv (no API key, no LLM), generates agent briefs that put that outline first and the task last, and reports per-agent cache hit rate from the local Claude Code session logs.
 ---
 
