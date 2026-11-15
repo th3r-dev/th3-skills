@@ -1,9 +1,13 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["fonttools==4.65.0", "brotli==1.2.1"]
+# ///
 """Build the animated profile SVGs for github.com/th3r-dev.
 
   hero.svg    yellow poster: name, what I do, and one request traced through four layers
   agents.svg  black panel: an agent moving along Plan > Design > Build > Test > Ship with its skills
 
-Run: python build.py <out_dir>   (needs fonttools + brotli)
+Run: uv run build.py <out_dir>   (uv installs fonttools + brotli from the header)
 Fonts (OFL, in ./fonts): Archivo 500/800 for display, JetBrains Mono 500/800 for labels.
 """
 import base64, io, os, sys

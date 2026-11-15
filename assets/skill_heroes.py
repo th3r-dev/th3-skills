@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["fonttools==4.65.0", "brotli==1.2.1"]
+# ///
 """Build one animated hero per skill: skills/<name>/assets/hero.svg.
 
 Left: the skill's name, its claim, and how to install it. Right: the steps it really runs (from its
@@ -5,7 +9,7 @@ SKILL.md); a marker walks down them, each step inverts while it runs and keeps a
 then the output appears. The still (reduced motion) shows every step ticked and the output.
 design-core is not here: it has its own hero (skills/design-core/assets/hero.py).
 
-Run: ~/.venvs/diagram-design/bin/python assets/skill_heroes.py [name ...]   (needs fonttools + brotli)
+Run: uv run assets/skill_heroes.py [name ...]   (uv installs fonttools + brotli from the header)
 """
 import importlib.util, os, sys
 from html import escape

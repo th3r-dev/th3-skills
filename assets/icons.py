@@ -4,7 +4,7 @@ Each icon is line art in a 120 x 120 box, ink on whatever is behind it. `icon(na
 places it inside a hero; running this file writes skills/<name>/assets/icon.svg with a yellow
 tile behind the art, so it reads on GitHub's light and dark themes alike.
 
-Run: python assets/icons.py   (stdlib only)
+Run: uv run assets/icons.py   (stdlib only)
 """
 import os
 
