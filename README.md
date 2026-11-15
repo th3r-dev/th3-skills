@@ -36,6 +36,19 @@ npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
 
 - <img src="skills/devops/assets/icon.svg" width="22" height="22" align="top" alt=""> [`devops`](skills/devops/SKILL.md) — DevOps toolkit, one skill with three sub-skills and their scripts: `change` (infra work on real machines in a fixed order — triage, read-only investigation, evidence, approved plan, stepwise change, same-command verification, blameless review — closed with a before / steps / after / rollback report; `jssh.py` jump-host ssh from an ini, `snapshot_haproxy.sh` for the config a container is *really* running), `release-scope` (what ships in the next release vs what prod runs, by ticket keys across every repo plus the issue boards, written as the PM list and checked against the customer message) and `network-diagram` (one draw.io file with a board per version → clean one-page PDF; rebuild a drawio from a final PDF; benchmark text / layout / pixels). Generalised from a Thai-government integration project.
 
+## Skills by occupation
+
+Grouped by SOC occupation, the classification [SkillsMP](https://skillsmp.com/creators/th3r-dev/th3-skills) browses by.
+
+| Occupation | Skills |
+|---|---|
+| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`poc-spec-driven-builder`](skills/poc-spec-driven-builder/SKILL.md), [`agent-kit`](skills/agent-kit/SKILL.md), [`thai-mock-naming`](skills/thai-mock-naming/SKILL.md) |
+| [Software Quality Assurance Analysts and Testers](https://skillsmp.com/occupations/software-quality-assurance-analysts-and-testers) | [`qa`](skills/qa/SKILL.md), [`thai-mock-naming`](skills/thai-mock-naming/SKILL.md) |
+| [Network and Computer Systems Administrators](https://skillsmp.com/occupations/network-and-computer-systems-administrators) | [`devops`](skills/devops/SKILL.md), [`containers`](skills/containers/SKILL.md) |
+| [Information Security Analysts](https://skillsmp.com/occupations/information-security-analysts) | [`dependency-vuln-explainer`](skills/dependency-vuln-explainer/SKILL.md) |
+| [Web and Digital Interface Designers](https://skillsmp.com/occupations/web-and-digital-interface-designers) | [`design-core`](skills/design-core/SKILL.md), [`design-flow`](skills/design-flow/SKILL.md) |
+| [Technical Writers](https://skillsmp.com/occupations/technical-writers) | [`documentation`](skills/documentation/SKILL.md) |
+
 ## Related
 
 - [kien-thai (เขียนไทย)](https://github.com/chakrit/kien-thai) by chakrit — a skill for writing Thai that Thai readers find easy to read. Pairs with `thai-mock-naming`: that skill handles the Thai prose in free-text fields, this one handles the identity fields.
