@@ -32,5 +32,5 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Script self-checks (stdlib only, nothing installed)
         run: |
-          uv run --no-build --script cost/scripts/agent_guard.py --selftest
-          uv run --no-build --script prompt-cache/scripts/pcache.py --self-test
+          uv run --no-build --locked --script cost/scripts/agent_guard.py --selftest
+          uv run --no-build --locked --script prompt-cache/scripts/pcache.py --self-test
