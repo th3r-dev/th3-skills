@@ -90,6 +90,9 @@ over the mechanism. Sprinkled dots don't count, and they read as polka dots.
 This is the cutaway house style. When the user's product has its own palette or materials,
 those win (order of authority in [SKILL.md](../SKILL.md)); the measured checks still apply.
 
+When the picture has warm materials (copper, brass, wood), skip the green look's `retint` on the object: it turns
+every warm colour green. Build the accents green directly and retint only the lights.
+
 ## The film
 
 - Frame 0 is the thumbnail: front 3/4 hero view, the object big and already moving.
@@ -131,6 +134,10 @@ ffmpeg -y -i cutaway-out/film-4k.mp4 -i cutaway-out/piranha-score.wav -map 0:v -
 node "$SKILL_DIR/sheet.mjs" --video cutaway-out/film.mp4 --timeline <timeline.json>
 ```
 
+**macOS:** upstream's `paths.mjs` sets an ANGLE backend only on Windows, and on macOS the headless shell then
+can't create a WebGL context (capture times out waiting for `SIM.ready`). Add `'--use-angle=metal'` for `darwin` to
+`CHROMIUM_ARGS`. A sandboxed shell blocks the GPU too, so run capture outside the sandbox.
+
 `--size` is the CSS layout and `--dpr` multiplies it: 1600x900 at 2.4 renders 4K, scaled down to
 1080p so thin veins stay sharp. Capture prints the GPU it got; a software renderer means the GPU
 flags didn't take. A new object outside `SKILL_DIR` is a folder with a `main.js` importing
@@ -149,6 +156,12 @@ current render.
 
 Before showing a new film, put its frames at the same times next to the approved film's. Smaller,
 flatter or blurrier doesn't ship.
+
+## Worked example
+
+[examples/lithium-cutaway](../examples/lithium-cutaway/README.md) benches this method on a lithium-ion cell icon:
+the checklist, two still rounds with measurements (h/w 2.12 → 2.25 against 2.26, dark share 0.64 → 0.85 of the
+reference), the line-by-line grades, and the stop at the still gate.
 
 ## Cost control
 
