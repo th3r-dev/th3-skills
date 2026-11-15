@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """PreToolUse hook for the Agent tool: nudge the caller to pick a model tier.
 
 Reads the hook payload on stdin. When an Agent call names no `model` (and isn't a fork, which
@@ -6,8 +10,8 @@ always inherits the parent model), it returns additionalContext with the tier ta
 blocks the call: the agent still runs, the next one is routed better.
 
   settings.json:  "PreToolUse": [{"matcher": "Agent", "hooks": [{"type": "command",
-                   "command": "python3 <path>/agent_guard.py"}]}]
-  agent_guard.py --selftest
+                   "command": "uv run --script <path>/agent_guard.py"}]}]
+  uv run --script agent_guard.py --selftest
 """
 import json
 import sys

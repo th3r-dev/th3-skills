@@ -52,7 +52,7 @@ the project's or user's `settings.json`:
 
 ```json
 {"hooks": {"PreToolUse": [{"matcher": "Agent", "hooks": [{"type": "command",
-  "command": "python3 /path/to/agent-kit/cost/scripts/agent_guard.py"}]}]}}
+  "command": "uv run --script /path/to/agent-kit/cost/scripts/agent_guard.py"}]}]}}
 ```
 
-`python3 scripts/agent_guard.py --selftest` checks it.
+`uv run --script scripts/agent_guard.py --selftest` checks it.

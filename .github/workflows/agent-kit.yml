@@ -30,9 +30,7 @@ jobs:
         with:
           version: '0.12.5'
           python-version: ${{ matrix.python-version }}
-      - name: Python
-        run: uv venv
       - name: Script self-checks (stdlib only, nothing installed)
         run: |
-          .venv/bin/python cost/scripts/agent_guard.py --selftest
-          .venv/bin/python prompt-cache/scripts/pcache.py --self-test
+          uv run --no-build --script cost/scripts/agent_guard.py --selftest
+          uv run --no-build --script prompt-cache/scripts/pcache.py --self-test

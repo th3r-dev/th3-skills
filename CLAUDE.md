@@ -22,7 +22,7 @@ uv run --no-project python -m pytest -q
 - devops: then `uv run --no-project python release-scope/scripts/release_scope.py --selftest`
 - thai-mock-naming: pytest only (`pytest==8.3.5`, the last pin that supports 3.8–3.13)
 - containers: then `uv run --no-project python podman/scripts/reclaim.py --help`
-- agent-kit: no pytest; `python cost/scripts/agent_guard.py --selftest` and `python prompt-cache/scripts/pcache.py --self-test`
+- agent-kit: no pytest; `uv run --script cost/scripts/agent_guard.py --selftest` and `uv run --script prompt-cache/scripts/pcache.py --self-test`
 
 Each skill has its own path-filtered workflow in `.github/workflows/<skill>.yml`, set up with `astral-sh/setup-uv` (uv supplies every matrix Python itself, so the runner's OS doesn't limit the versions). devops/qa/containers run Python 3.10–3.13; thai-mock-naming runs 3.8–3.13, so keep its code 3.8-compatible. CI installs pinned versions with `uv pip install --no-build` (wheels only, SonarCloud rules) — pin only versions that have wheels for every matrix Python, and quote the install line in YAML.
 

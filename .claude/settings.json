@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; case \"$f\" in */skills/thai-mock-naming/*|*/README.md) exit 0;; esac; python3 \"$CLAUDE_PROJECT_DIR/skills/thai-mock-naming/scripts/check_mock_names.py\" \"$f\" >&2 || exit 2; }",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; case \"$f\" in */skills/thai-mock-naming/*|*/README.md) exit 0;; esac; uv run --no-project python \"$CLAUDE_PROJECT_DIR/skills/thai-mock-naming/scripts/check_mock_names.py\" \"$f\" >&2 || exit 2; }",
             "statusMessage": "Checking mock names..."
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/skills/agent-kit/cost/scripts/agent_guard.py\"",
+            "command": "uv run --script \"$CLAUDE_PROJECT_DIR/skills/agent-kit/cost/scripts/agent_guard.py\"",
             "statusMessage": "Checking agent tier..."
           }
         ]
