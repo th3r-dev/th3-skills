@@ -1,12 +1,32 @@
 {
   "name": "th3-skills",
-  "owner": { "name": "TheeraphatStudent" },
+  "owner": {
+    "name": "TheeraphatStudent"
+  },
   "description": "Claude Code skills by th3.",
   "plugins": [
     {
       "name": "th3-skills",
       "source": "./",
-      "description": "All th3 skills in one plugin."
+      "description": "Claude Code skills that each do a whole job: agent-kit, containers, dependency-vuln-explainer, design-core, design-flow, devops, documentation, poc-spec-driven-builder, qa, thai-mock-naming.",
+      "version": "2.0.0",
+      "category": "productivity",
+      "keywords": [
+        "claude-code",
+        "skills",
+        "agent-skills",
+        "agents",
+        "prompt-caching",
+        "documentation",
+        "pdf",
+        "qa",
+        "devops",
+        "design",
+        "figma",
+        "podman",
+        "thai"
+      ],
+      "homepage": "https://github.com/th3r-dev/th3-skills"
     }
   ]
 }
