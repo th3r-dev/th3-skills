@@ -42,11 +42,12 @@ SKILLS = {
          ("Tokenize", "every value bound to a variable"), ("States", "each result screen captured"),
          ("Flow", "drawn from the app source"), ("Review", "no crossings, every line lands")],
         ["a screen and its flow per page,", "an implementation checklist"]),
-    "prompt-cache-kit": (
+    "agent-kit": (
         ["Cheaper agent runs,", "same prefix every time."],
-        ["Agent briefs share one byte-stable", "outline, so the prompt cache hits."],
-        [("Build", "a fingerprinted outline, locally"), ("Brief", "outline first, task last"),
-         ("Fan out", "forks, subagents, workflows"), ("Stats", "hit rate per agent, cold ones named")],
+        ["The right tier, a finish line,", "one cached prefix for every brief."],
+        [("Inline?", "a few tool calls: no agent"), ("Tier", "haiku, sonnet, or inherit"),
+         ("Build", "a fingerprinted outline, locally"), ("Brief", "outline first, task and check last"),
+         ("Stats", "hit rate per agent, cold ones named")],
         ["one total hit rate,", "and which agents missed"]),
     "thai-mock-naming": (
         ["Thai mock names,", "fake on sight."],
@@ -74,19 +75,13 @@ SKILLS = {
         [("answer-review", "four lenses, one remark per row"), ("export-evidence", "every export clicked, verified"),
          ("excel-import", "validate, submit, check the DB"), ("ticket-report", "the result on the Jira ticket")],
         ["an evidence .xlsx and", "a report on the ticket"]),
-    "doc-style-builder": (
+    "documentation": (
         ["Any work product,", "documented one way."],
-        ["Seven skeletons, one house theme,", "PDF + DOCX from one Markdown file."],
+        ["Seven skeletons, one house theme,", "PDF + DOCX, then merge or stamp."],
         [("Gather", "the facts from the work"), ("Ground", "checked against the source"),
-         ("Summarize", "into the right skeleton"), ("Confirm", "with the user"),
-         ("Build", "Markdown to PDF + DOCX")],
+         ("Summarize", "into the right skeleton"), ("Build", "Markdown to PDF + DOCX"),
+         ("Merge", "annexes and stamps via pdf-lib")],
         ["a matching PDF and DOCX,", "changes highlighted"]),
-    "pdf-operations": (
-        ["PDF work through", "the existing pipeline."],
-        ["Merge, split, reorder, rotate and", "overlay with pdf-lib."],
-        [("Merge", "many PDFs into one"), ("Split", "one PDF into its pages"),
-         ("Reorder", "rotate, delete, duplicate"), ("Overlay", "text and shape stamps")],
-        ["one clean PDF,", "no new pipeline written"]),
     "containers": (
         ["Podman ate the disk.", "Get it back."],
         ["Sub-skill podman: Windows, macOS", "and Linux, one stdlib script."],

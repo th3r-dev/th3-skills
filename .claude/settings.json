@@ -11,6 +11,18 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/skills/agent-kit/cost/scripts/agent_guard.py\"",
+            "statusMessage": "Checking agent tier..."
+          }
+        ]
+      }
     ]
   }
 }

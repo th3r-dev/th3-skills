@@ -1,5 +1,5 @@
 ---
-name: doc-style-builder
+name: documentation-doc-style
 description: >-
   Write and build documentation for any work product (an API, a deploy or update, a system, a feature, a
   release, a test round) in one consistent house style, and output a matching PDF + DOCX from a single
