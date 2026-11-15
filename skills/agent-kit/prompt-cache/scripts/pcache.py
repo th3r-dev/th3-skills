@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.10"
 # dependencies = []
 # ///
 """Byte-stable project context for cache-friendly agent briefs, plus cache stats.

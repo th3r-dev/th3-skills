@@ -25,12 +25,14 @@ jobs:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
         with:
           version: '0.12.5'
           python-version: ${{ matrix.python-version }}
-      - name: Script self-checks
+      - name: Python
+        run: uv venv
+      - name: Script self-checks (stdlib only, nothing installed)
         run: |
-          uv run --no-project python cost/scripts/agent_guard.py --selftest
-          uv run --script prompt-cache/scripts/pcache.py --self-test
+          .venv/bin/python cost/scripts/agent_guard.py --selftest
+          .venv/bin/python prompt-cache/scripts/pcache.py --self-test

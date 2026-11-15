@@ -22,5 +22,6 @@
     "figma",
     "podman",
     "thai"
-  ]
+  ],
+  "icon": ".claude-plugin/icon.svg"
 }

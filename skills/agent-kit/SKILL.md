@@ -32,5 +32,5 @@ agents get share one cached prefix, then measures it.
 ```bash
 cd skills/agent-kit
 python cost/scripts/agent_guard.py --selftest
-uv run --script prompt-cache/scripts/pcache.py --self-test
+python prompt-cache/scripts/pcache.py --self-test
 ```
