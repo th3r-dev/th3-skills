@@ -10,6 +10,11 @@ with a procedural score on the same timeline. Adapted from
 design-core holds the method. The runtime, capture, sound engine and the three example objects
 (tarantula, piranha, wasp) live in the cutaway skill, so install that skill for the build.
 
+**The default output is the interactive page:** one offline HTML file, built and opened in the
+browser (`open cutaway-out/dist/<name>.html`). It plays the film on a loop, and each part's pill
+is a real button that jumps to its teardown (keys 1–9 do the same; space pauses, ←/→ seek 2 s).
+Render the MP4 and the score only when the user asks for a video, a recording or sound.
+
 ## Setup
 
 ```
@@ -57,7 +62,8 @@ the user gives goes into it as one line.
    it costs about twice the rounds.
 6. **The short version.** A 10-second film with its own script, opening and exit. Never cut
    pieces out of the long film.
-7. **Render, score, review frames.**
+7. **Hand over the page.** Build it, review its frames, open it. The MP4 and the score are
+   extras for a request that names a video; render and score them then.
 
 ## Measured checks
 
@@ -105,6 +111,10 @@ every warm colour green. Build the accents green directly and retint only the li
 - Only the part being opened has to stay in frame; the rest may run off.
 - The page around it: an invented product name, one pill button per part that a cursor clicks,
   live cards that move with the parts, labels that never cover the part they name.
+- On the live page the pills are buttons: pass `stages: [{at, name}]` (each part's beat − 0.15 s)
+  in the sim's defaults, give each pill `pointer-events: auto`, `role="button"` and a tab stop,
+  and on click dispatch the matching digit `keydown`; the runtime seeks. Hide the scripted cursor
+  once the viewer clicks. Capture ignores all of this and films the script.
 - Visible wing beats 1.5 to 2.5 Hz.
 
 **`render(t)` is pure.** No `Math.random` (seeded `rng` at setup), no `Date`, no state between
@@ -123,7 +133,9 @@ from the timeline, never a typed number.
 ## Commands
 
 ```
-node "$SKILL_DIR/sims/build.mjs" piranha-film            # one HTML, offline
+node "$SKILL_DIR/sims/build.mjs" piranha-film            # one HTML, offline: the default output
+open cutaway-out/dist/piranha-film.html                   # hand it over open
+# a video, only when asked:
 node "$SKILL_DIR/sims/capture.mjs" piranha-film --size 1600x900 --dpr 1.2 --still 9.4 --out cutaway-out/still.png
 node "$SKILL_DIR/sims/capture.mjs" piranha-film --size 1600x900 --dpr 1.2 --stills beats --cols 4 --out cutaway-out/beats.png
 node "$SKILL_DIR/sims/capture.mjs" piranha-film --size 1600x900 --dpr 2.4 --out cutaway-out/film-4k.mp4
