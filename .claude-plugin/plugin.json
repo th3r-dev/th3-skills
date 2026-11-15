@@ -1,8 +1,26 @@
 {
   "name": "th3-skills",
-  "description": "All th3 skills for Claude Code in one plugin.",
-  "version": "1.0.0",
-  "author": { "name": "TheeraphatStudent" },
+  "description": "Claude Code skills that each do a whole job: agent-kit, containers, dependency-vuln-explainer, design-core, design-flow, devops, documentation, poc-spec-driven-builder, qa, thai-mock-naming.",
+  "version": "2.0.0",
+  "author": {
+    "name": "TheeraphatStudent"
+  },
   "repository": "https://github.com/th3r-dev/th3-skills",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/th3r-dev/th3-skills",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "agent-skills",
+    "agents",
+    "prompt-caching",
+    "documentation",
+    "pdf",
+    "qa",
+    "devops",
+    "design",
+    "figma",
+    "podman",
+    "thai"
+  ]
 }
