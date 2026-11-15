@@ -161,7 +161,8 @@ flatter or blurrier doesn't ship.
 
 [examples/lithium-cutaway](../examples/lithium-cutaway/README.md) benches this method on a lithium-ion cell icon:
 the checklist, two still rounds with measurements (h/w 2.12 → 2.25 against 2.26, dark share 0.64 → 0.85 of the
-reference), the line-by-line grades, and the stop at the still gate.
+reference), the line-by-line grades, the stop at the still gate, and the 18 s film with its score after approval.
+A page that only holds the still looks broken to a viewer: say it is the gate, or show the stack image instead.
 
 ## Cost control
 

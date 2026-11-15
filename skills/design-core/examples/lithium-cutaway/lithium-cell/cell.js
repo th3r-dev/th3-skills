@@ -19,12 +19,14 @@ export function buildCell() {
   M.capGrey = new THREE.MeshPhysicalMaterial({color: '#c9cfcb', roughness: 0.4, metalness: 0.3, clearcoat: 0.6});
   M.green = M.orange; // PAL.orange is set to the page green before the build
 
+  // root (turntable) -> tilt (lays the cell down for the explode, pivot at its centre) -> body (built along +x)
   const root = new THREE.Group();
+  const tilt = new THREE.Group();
+  tilt.position.y = FLOOR_Y + 1.05;
+  root.add(tilt);
   const body = new THREE.Group();
-  body.rotation.z = Math.PI / 2;
   body.scale.x = 1.05; // round 2: h/w measured 2.12 against R01's 2.26
-  body.position.y = FLOOR_Y + 1.05;
-  root.add(body);
+  tilt.add(body);
   const group = (name) => {
     const g = new THREE.Group();
     g.name = name;
@@ -106,23 +108,35 @@ export function buildCell() {
   const G = {can, sleeve, roll, mandrel, tabs, insTop, insBot, cap};
   const HOME = Object.fromEntries(Object.entries(G).map(([k, g]) => [k, g.position.clone()]));
 
-  /** One moment of the cell. s: {spin (deg), explode, cap, sleeve, roll, mandrel} each 0..1. */
+  /** One moment of the cell. s: {spin, axial (deg), explode, cap, sleeve, roll, mandrel}, amounts 0..1.
+   *  Every move runs along the cell's axis, so no part passes through another: the explode lays the cell on its
+   *  side in the air and spreads the stack along the axis, the can and cup staying at one end. */
   const pose = (s = {}) => {
     const e = s.explode ?? 0;
-    for (const [k, g] of Object.entries(G)) g.position.copy(HOME[k]);
+    const c = s.cap ?? 0;
+    for (const [k, g] of Object.entries(G)) {
+      g.position.copy(HOME[k]);
+      g.scale.set(1, 1, 1);
+    }
     root.rotation.y = (s.spin ?? 0) * D2R;
-    // along the axis (local x) and sideways (local y = world -x, local z = toward the camera at rest)
-    const lift = (k, x, y = 0, z = 0) => G[k].position.add(new V3(x, y, z));
-    lift('cap', 0.75 * Math.max(e, s.cap ?? 0));
-    lift('insTop', 0.42 * e);
-    lift('tabs', 0.2 * e);
-    lift('mandrel', 1.25 * Math.max(e * 0.6, s.mandrel ?? 0));
-    lift('sleeve', 0, 0.85 * Math.max(e, s.sleeve ?? 0), 0);
-    lift('can', -0.55 * e, -0.55 * e, 0);
-    lift('insBot', -0.75 * e, -0.55 * e, 0);
+    tilt.rotation.z = -(Math.PI / 2) * e;
+    body.rotation.set(0, 0, Math.PI / 2);
+    body.rotateX((s.axial ?? 0) * D2R);
+    body.position.set(0, 0, 0);
+    body.translateX(-1.85 * e); // the exploded stack's middle (-1.05 .. 4.6 after the 1.05 stretch) on the pivot
+    const up = (k, x) => (G[k].position.x += x);
+    // acts: the cap stack lifts (and stays up while the roll or the pin come out); the wrap loosens and rides up
+    up('cap', 1.0 * c * (1 - e) + 3.3 * e);
+    up('insTop', 0.5 * c * (1 - e) + 2.6 * e);
+    up('roll', 2.0 * e);
+    up('tabs', 2.15 * e);
+    up('mandrel', 0.9 * (s.mandrel ?? 0) * (1 - e) + 3.0 * e);
+    const w = Math.max(s.sleeve ?? 0, e);
+    G.sleeve.scale.set(1, 1 + 0.07 * sm01(w * 3), 1 + 0.07 * sm01(w * 3));
+    up('sleeve', 1.2 * (s.sleeve ?? 0) * (1 - e) + 0.25 * e);
     // the roll telescopes: layer i rises by a share of the open amount, inner first
     const t = Math.max(e * 0.5, s.roll ?? 0);
-    layers.forEach((l, i) => (l.position.x = t * 0.6 * (1 - i / layers.length)));
+    layers.forEach((l, i) => (l.position.x = t * 0.5 * (1 - i / layers.length)));
   };
 
   const clear = [];
@@ -131,7 +145,7 @@ export function buildCell() {
     a.obj.updateWorldMatrix(true, false);
     return a.obj.localToWorld(out.copy(a.at));
   };
-  return {root, body, pose, clear, M, anchors, anchorAt, layers, groups: G};
+  return {root, tilt, body, pose, clear, M, anchors, anchorAt, layers, groups: G};
 }
 
 // the bolt from R01, in picture px (can 320 px wide = 1.0, 600 px tall = 2.0), bent onto the sleeve
@@ -152,5 +166,7 @@ function boltGeo() {
   g.computeVertexNormals();
   return g;
 }
+
+const sm01 = (x) => Math.min(1, Math.max(0, x));
 
 export {PAL};
