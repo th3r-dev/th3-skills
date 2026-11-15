@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <!-- R01: a lithium-ion cell icon, front 3/4 from slightly above, a quarter of the can cut away over the jelly roll.
+       Drawn for the design-core cutaway bench; it is the one picture the 3D build is graded against. -->
+  <defs>
+    <linearGradient id="can" x1="0" x2="1">
+      <stop offset="0" stop-color="#d9dedb"/><stop offset=".22" stop-color="#ffffff"/>
+      <stop offset=".6" stop-color="#f1f4f2"/><stop offset="1" stop-color="#c3cac6"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" x2="1">
+      <stop offset="0" stop-color="#8d949a"/><stop offset=".35" stop-color="#e9ecef"/><stop offset="1" stop-color="#7b8288"/>
+    </linearGradient>
+    <linearGradient id="roll" x1="0" x2="1">
+      <stop offset="0" stop-color="#1a1d21"/><stop offset="1" stop-color="#2f3339"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#9fb1a8" stop-opacity=".55"/><stop offset="1" stop-color="#9fb1a8" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="cut"><path d="M500 300 L660 270 L660 800 Q580 830 500 834 Z"/></clipPath>
+  </defs>
+  <rect width="1000" height="1000" fill="#f7f9f8"/>
+  <ellipse cx="500" cy="880" rx="260" ry="46" fill="url(#shadow)"/>
+
+  <!-- the can -->
+  <path d="M340 230 L340 830 A160 44 0 0 0 660 830 L660 230 Z" fill="url(#can)"/>
+  <!-- negative base ring -->
+  <path d="M340 800 L340 830 A160 44 0 0 0 660 830 L660 800 A160 44 0 0 1 340 800 Z" fill="#202327"/>
+  <!-- green wrap bands -->
+  <path d="M340 262 L340 284 A160 44 0 0 0 660 284 L660 262 A160 44 0 0 1 340 262 Z" fill="#17b865"/>
+  <path d="M340 770 L340 780 A160 44 0 0 0 660 780 L660 770 A160 44 0 0 1 340 770 Z" fill="#17b865"/>
+
+  <!-- the cut: a quarter of the can removed, the jelly roll in layers -->
+  <g clip-path="url(#cut)">
+    <rect x="500" y="260" width="170" height="590" fill="url(#roll)"/>
+    <g stroke-width="5" fill="none">
+      <path d="M520 300 V830" stroke="#b87333"/><path d="M540 296 V830" stroke="#e9ecef"/>
+      <path d="M560 292 V830" stroke="#4a4f57"/><path d="M580 288 V830" stroke="#b87333"/>
+      <path d="M600 284 V830" stroke="#e9ecef"/><path d="M620 280 V830" stroke="#4a4f57"/>
+      <path d="M640 276 V830" stroke="#b87333"/>
+    </g>
+    <!-- the mandrel pin at the core -->
+    <rect x="496" y="296" width="12" height="536" fill="#9aa1a7"/>
+  </g>
+  <!-- cut edges: the can wall in section -->
+  <path d="M500 300 L500 834" stroke="#c3cac6" stroke-width="6"/>
+  <path d="M500 300 L660 270" stroke="#17b865" stroke-width="5"/>
+
+  <!-- top: the can rim and the crimp -->
+  <ellipse cx="500" cy="230" rx="160" ry="44" fill="#e6ebe8"/>
+  <ellipse cx="500" cy="230" rx="148" ry="39" fill="none" stroke="#17b865" stroke-width="6"/>
+  <ellipse cx="500" cy="232" rx="120" ry="31" fill="#cfd5d1"/>
+  <!-- vent holes -->
+  <g fill="#202327">
+    <ellipse cx="420" cy="234" rx="12" ry="5"/><ellipse cx="580" cy="234" rx="12" ry="5"/>
+    <ellipse cx="460" cy="252" rx="12" ry="5"/><ellipse cx="540" cy="252" rx="12" ry="5"/>
+  </g>
+  <!-- positive terminal button -->
+  <path d="M440 196 L440 222 A60 17 0 0 0 560 222 L560 196 Z" fill="url(#steel)"/>
+  <ellipse cx="500" cy="196" rx="60" ry="17" fill="#eef1f3"/>
+  <ellipse cx="500" cy="196" rx="60" ry="17" fill="none" stroke="#8d949a" stroke-width="2"/>
+
+  <!-- the lightning bolt on the wrap -->
+  <path d="M430 420 L382 560 L424 560 L398 680 L468 520 L428 520 L456 420 Z" fill="#17b865"/>
+</svg>
