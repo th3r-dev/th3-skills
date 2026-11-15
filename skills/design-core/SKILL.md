@@ -58,8 +58,9 @@ When two rules here disagree with the product, report the gap. Don't silently re
 
 **Cutaway** (detail: [references/cutaway.md](references/cutaway.md))
 
-- One picture in, a three.js object built from code out, opened part by part and filmed at
-  60 fps with a score on the same timeline. The build runs in the cutaway skill; this is the method.
+- One picture in, a three.js object built from code out, opened part by part. The default output
+  is the interactive HTML page, opened in the browser, with a button per part; a 60 fps film with
+  a score on the same timeline only when asked. The build runs in the cutaway skill; this is the method.
 - A 10–12 line checklist per picture, measured: dark share ≥ 0.8 of the picture's, proportions
   within a few hundredths. A still first; stop after round 2 and wait for a yes before filming.
 - Port the closest approved film 1:1 and change the body only; every beat its own camera.

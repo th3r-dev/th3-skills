@@ -31,7 +31,10 @@ const PAGE = {
   },
   cards: [{k: 'Voltage', kind: 'wave', unit: 'V'}, {k: 'Charge', kind: 'bar', unit: '%'}, {k: 'Layer load', kind: 'bars', n: 6}, {k: 'Temperature', kind: 'bar', unit: '°C'}],
 };
-runSim({duration: TL.duration, fps: 60, theme: 'light', hud: {enabled: false, title: 'lithium-cutaway', subtitle: ''}, director: {enabled: false}, watermark: ''}, async ({canvas, capture}) => {
+// keys 1-5 (and the pills, below) jump to each part's beat: the runtime seeks to stages[i].at on a digit key
+const STAGES = ACTS.map(([k, name]) => ({at: Math.max(0, (TL.script.find((e) => e.act === k)?.t ?? 0) - 0.15), name}));
+
+runSim({duration: TL.duration, fps: 60, theme: 'light', stages: STAGES, hud: {enabled: false, title: 'lithium-cutaway', subtitle: ''}, director: {enabled: false}, watermark: ''}, async ({canvas, capture}) => {
   const app = document.getElementById('app');
   const st = createStage({canvas, floorY: FLOOR_Y, span: 2.6});
   const cell = buildCell();
@@ -42,6 +45,23 @@ runSim({duration: TL.duration, fps: 60, theme: 'light', hud: {enabled: false, ti
   const ui = createConsole(app, {...PAGE, nav: [['overview', 'Overview'], ...ACTS], pills: ACTS});
   const cursorAt = makeCursor(ui, T.SCRIPT);
   const labels = makeLabels(st, cell.anchors);
+  // live page: the pills are real buttons. A click plays that part from its beat; once the viewer takes over, the
+  // scripted cursor is hidden so it never seems to click something they didn't. Capture keeps the scripted film.
+  let driven = false;
+  if (!capture) {
+    ACTS.forEach(([k], i) => {
+      const el = ui.pills[k];
+      Object.assign(el.style, {pointerEvents: 'auto', cursor: 'pointer'});
+      el.setAttribute('role', 'button');
+      el.tabIndex = 0;
+      const go = () => {
+        driven = true;
+        dispatchEvent(new KeyboardEvent('keydown', {key: String(i + 1)}));
+      };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), e.stopPropagation(), go()));
+    });
+  }
   const fit = () => (app.style.transform = `scale(${Math.min(innerWidth / 1600, innerHeight / 900)})`);
   const resize = () => {
     fit();
@@ -69,7 +89,7 @@ runSim({duration: TL.duration, fps: 60, theme: 'light', hud: {enabled: false, ti
         apart: Math.round(s.apart * 100),
         view: s.view,
         callouts: labels(s.labels),
-        cursor: cursorAt(t),
+        cursor: driven ? null : cursorAt(t),
       });
       return {};
     },

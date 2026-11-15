@@ -23,6 +23,7 @@ a synced score once the user approved it.
 ```
 npx skills add Nyxera0x/cutaway -g -a claude-code      # then npm install + npx playwright install chromium in it
 node "$SKILL_DIR/sims/build.mjs" ./lithium-cell
+open cutaway-out/dist/lithium-cell.html                # the deliverable: click a part's pill (or keys 1-5) to open it
 node "$SKILL_DIR/sims/capture.mjs" lithium-cell --size 1600x900 --dpr 1.2 --still 1.0 --out cutaway-out/still.png
 python lithium-cell/measure.py refs/R01-lithium-icon.png cutaway-out/still.png --crop 700,360,1180,1000
 ```
