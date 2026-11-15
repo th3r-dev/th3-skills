@@ -1,0 +1,37 @@
+{
+  "name": "th3r first Fastwork post",
+  "size": [1920, 1080],
+  "brand": {
+    "name": "th3r",
+    "badge": "Open for freelance",
+    "promise": ["I build software", "from the interface", "down to the cluster."],
+    "facts": [["EXPERIENCE", "4+ years"], ["BASED IN", "Thailand"], ["TIME ZONE", "UTC+7"]]
+  },
+  "steps": [
+    {"num": "01", "verb": "Interface", "line": ["workflows into", "clear screens"],
+     "items": [{"name": "Next.js"}, {"name": "Angular"}, {"name": "Figma"}]},
+    {"num": "02", "verb": "Services", "line": ["APIs, jobs and", "integrations"],
+     "items": [{"name": "NestJS"}, {"name": "FastAPI"}, {"name": "Node.js"}]},
+    {"num": "03", "verb": "Data", "line": ["contracts, migrations,", "edge cases"],
+     "items": [{"name": "PostgreSQL"}, {"name": "Oracle"}, {"name": "SQL"}]},
+    {"num": "04", "verb": "Platform", "line": ["package, deploy,", "operate"],
+     "items": [{"name": "Kubernetes"}, {"name": "ArgoCD"}, {"name": "Docker"}]}
+  ],
+  "through": "AI agents on every layer · Claude Code + th3-skills",
+  "cta": {"verb": "Hire", "detail": "fastwork.com/user/th3r"},
+  "styles": {
+    "blueprint": {
+      "bg": "#0E1116", "panel": "#FFD60A", "on_panel": "#0A0A0A",
+      "fg": "#EDEFF2", "fg2": "#A9B1BD", "fg3": "#FFD60A", "rule": "#3A4452",
+      "cta": "#FFD60A", "on_cta": "#0A0A0A", "edge": null,
+      "pattern": "grid", "pattern_color": "#1A212B", "shadow": "#1F2732", "accent": "#FFD60A"
+    },
+    "paper": {
+      "bg": "#F3EFE6", "panel": "#0A0A0A", "on_panel": "#F3EFE6",
+      "fg": "#0A0A0A", "fg2": "#4A463E", "fg3": "#6B655A", "rule": "#0A0A0A",
+      "cta": "#FFD60A", "on_cta": "#0A0A0A", "edge": null,
+      "pattern": "dots", "pattern_color": "#D9D2C2", "shadow": "#0A0A0A", "accent": "#0A0A0A"
+    }
+  },
+  "variants": ["stack-blueprint", "stack-paper", "stack-flat"]
+}

@@ -9,14 +9,14 @@ Right: a stage that walks the skills one by one and shows each one's input and o
 while a highlight follows it down the index.
 
 Run: uv run assets/hero.py   (uv installs fonttools + brotli from the header)
-Helpers and fonts come from skills/design-core/assets/hero.py.
+Helpers and fonts come from skills/design/core/assets/hero.py.
 """
 import importlib.util, os
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _spec = importlib.util.spec_from_file_location(
-    "dc_hero", os.path.join(HERE, "..", "skills", "design-core", "assets", "hero.py"))
+    "dc_hero", os.path.join(HERE, "..", "skills", "design", "core", "assets", "hero.py"))
 dc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(dc)
 Doc, embed_fonts, width, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.width, dc.Y, dc.INK, dc.INK2, dc.INK3
@@ -31,10 +31,12 @@ SLIDE = 2.8
 SKILLS = [
     ("poc-spec-driven-builder", "proves an idea, tests first",
      ["“Can tickets sync to a sheet?”"], ["spec, test matrix, build,", "a PR with the proof"]),
-    ("design-core", "design rules, scored by a critic",
-     ["a screen the author", "scored 9.8"], ["critic: 6.1, fix, re-score,", "9.4: passes the 9.2 bar"]),
-    ("design-flow", "Figma screens with their flow",
-     ["a live page or its HTML"], ["an editable Figma screen,", "its flowchart beside it"]),
+    ("design", "screens, flows, banners, scored",
+     ["a live page, a brief,", "an author's own 9.8"], ["a Figma screen and its flow,", "a banner; critic-scored 9.4"]),
+    ("marketing", "prices from costs, listings",
+     ["a salary, monthly costs,", "a marketplace category"], ["4 packages, none at a loss,", "a listing ready to paste"]),
+    ("social-media", "posts and covers, fact-checked",
+     ["a Thai prompt: write about", "the banner, hire me at the end"], ["5 titles, 6 hooks, a Thai post,", "a cover; case passes 7/7"]),
     ("agent-kit", "cheaper agent runs",
      ["every agent on the top tier,", "briefs that differ"], ["the cheapest tier that works,", "one cached prefix"]),
     ("thai-mock-naming", "mock names that are fake on sight",
@@ -85,7 +87,7 @@ def build():
     X0, X1 = 700, 1216
     SW = X1 - X0
     top = row(0) - 25
-    out.append(f'<rect x="{X0}" y="{top}" width="{SW}" height="{row(10) + 11 - top}" fill="none" stroke="{INK}" stroke-width="2"/>')
+    out.append(f'<rect x="{X0}" y="{top}" width="{SW}" height="{row(len(SKILLS)) + 11 - top}" fill="none" stroke="{INK}" stroke-width="2"/>')
     PX = X0 + 28
     for i, (name, job, src, res) in enumerate(SKILLS):
         t0 = i * SLIDE
@@ -115,8 +117,8 @@ def build():
         out.extend(g)
 
     # progress ticks under the stage, one per skill
-    py = row(10) + 11 - 24
-    tw = (SW - 56 - 10 * 6) / 11
+    py = row(len(SKILLS)) + 11 - 24
+    tw = (SW - 56 - len(SKILLS) * 6) / (len(SKILLS) + 1)
     for i in range(len(SKILLS)):
         x = PX + i * (tw + 6)
         out.append(f'<rect x="{x:.1f}" y="{py}" width="{tw:.1f}" height="4" fill="{INK}" opacity=".2"/>')

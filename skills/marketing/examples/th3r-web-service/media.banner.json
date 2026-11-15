@@ -1,0 +1,344 @@
+{
+  "name": "Fastwork web service: media",
+  "fonts": {
+    "title": "kanit-700",
+    "strong": "anuphan-700",
+    "text": "anuphan-500",
+    "mono": "anuphan-500",
+    "accent": "mali-600"
+  },
+  "styles": {
+    "blueprint": {
+      "bg": "#0E1116",
+      "panel": "#FFD60A",
+      "on_panel": "#0A0A0A",
+      "fg": "#EDEFF2",
+      "fg2": "#A9B1BD",
+      "fg3": "#FFD60A",
+      "rule": "#3A4452",
+      "cta": "#FFD60A",
+      "on_cta": "#0A0A0A",
+      "edge": null,
+      "pattern": "grid",
+      "pattern_color": "#1A212B",
+      "shadow": "#1F2732",
+      "accent": "#FFD60A"
+    },
+    "paper": {
+      "bg": "#F3EFE6",
+      "panel": "#0A0A0A",
+      "on_panel": "#F3EFE6",
+      "fg": "#0A0A0A",
+      "fg2": "#4A463E",
+      "fg3": "#6B655A",
+      "rule": "#0A0A0A",
+      "cta": "#FFD60A",
+      "on_cta": "#0A0A0A",
+      "edge": null,
+      "pattern": "dots",
+      "pattern_color": "#D9D2C2",
+      "shadow": "#0A0A0A",
+      "accent": "#0A0A0A"
+    }
+  },
+  "render": [
+    "blueprint"
+  ],
+  "pages": [
+    {
+      "id": "hook",
+      "layout": "hook",
+      "size": [
+        1920,
+        1080
+      ],
+      "hook": {
+        "kicker": "รับทำเว็บไซต์และระบบ",
+        "title": [
+          "เว็บไซต์ธุรกิจ",
+          "พร้อมใช้ใน 5 วัน"
+        ],
+        "checks": [
+          "รองรับมือถือทุกหน้าจอ",
+          "ส่งมอบโค้ดและสิทธิ์ให้คุณ",
+          "แก้บั๊กฟรีหลังส่งงาน"
+        ],
+        "price": {
+          "label": "เริ่มต้น",
+          "value": "6,900 บาท"
+        },
+        "author": "th3r fastwork.com/user/th3r",
+        "image": "../../../design/banner-design/examples/th3r-fastwork/stack-blueprint-1920x1080.png",
+        "flow": [
+          {
+            "icon": "chat",
+            "label": "คุย"
+          },
+          {
+            "icon": "brief",
+            "label": "สรุปงาน"
+          },
+          {
+            "icon": "build",
+            "label": "ลงมือทำ"
+          },
+          {
+            "icon": "launch",
+            "label": "ขึ้นระบบ"
+          },
+          {
+            "icon": "support",
+            "label": "ดูแลต่อ"
+          }
+        ]
+      },
+      "content_ratio": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "service",
+      "layout": "stack",
+      "size": [
+        1920,
+        1080
+      ],
+      "brand": {
+        "name": "th3r",
+        "badge": "รับงานฟรีแลนซ์",
+        "promise": [
+          "รับทำเว็บไซต์และระบบ",
+          "Cloud หรือ Self-host",
+          "อยู่ดูแลต่อหลังส่งงาน"
+        ],
+        "facts": [
+          [
+            "เริ่มต้น",
+            "6,900 บาท"
+          ],
+          [
+            "ซัพพอร์ต",
+            "14 ถึง 60 วัน"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "num": "01",
+          "verb": "หน้าเว็บ",
+          "line": [
+            "รองรับมือถือ",
+            "ทุกหน้าจอ"
+          ],
+          "items": [
+            {
+              "name": "Landing Page"
+            },
+            {
+              "name": "เว็บธุรกิจ"
+            },
+            {
+              "name": "Web App"
+            }
+          ]
+        },
+        {
+          "num": "02",
+          "verb": "หลังบ้าน",
+          "line": [
+            "แก้เนื้อหา",
+            "ได้เอง"
+          ],
+          "items": [
+            {
+              "name": "แก้ข้อความและรูป"
+            },
+            {
+              "name": "Dashboard"
+            },
+            {
+              "name": "สมาชิก"
+            }
+          ]
+        },
+        {
+          "num": "03",
+          "verb": "ข้อมูล",
+          "line": [
+            "เก็บครบ",
+            "สำรองได้"
+          ],
+          "items": [
+            {
+              "name": "ฐานข้อมูล"
+            },
+            {
+              "name": "สำรองข้อมูล"
+            }
+          ]
+        },
+        {
+          "num": "04",
+          "verb": "ระบบ",
+          "line": [
+            "Cloud หรือ",
+            "Self-host"
+          ],
+          "items": [
+            {
+              "name": "Cloud"
+            },
+            {
+              "name": "Self-host"
+            },
+            {
+              "name": "ซัพพอร์ต"
+            }
+          ]
+        }
+      ],
+      "through": "ดูแลทุกชั้น ตั้งแต่หน้าเว็บถึงเซิร์ฟเวอร์",
+      "cta": {
+        "verb": "จ้าง",
+        "detail": "fastwork.com/user/th3r"
+      }
+    },
+    {
+      "id": "process",
+      "layout": "stairs",
+      "size": [
+        1920,
+        1080
+      ],
+      "brand": {
+        "name": "th3r",
+        "badge": "ตัวอย่างการทำงาน",
+        "promise": [
+          "4 ขั้นตอน",
+          "จากแชทแรก",
+          "ถึงขึ้นระบบจริง"
+        ],
+        "facts": [
+          [
+            "ตัวอย่าง",
+            "แพ็กแนะนำ"
+          ],
+          [
+            "ส่งงาน",
+            "10 วัน"
+          ],
+          [
+            "แก้ไข",
+            "3 ครั้ง"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "num": "01",
+          "verb": "คุย",
+          "line": [
+            "เล่าธุรกิจและสิ่งที่อยากได้"
+          ],
+          "items": [
+            {
+              "name": "วันที่ 1"
+            },
+            {
+              "name": "ทักแชท"
+            },
+            {
+              "name": "ส่งเว็บที่ชอบมาดู"
+            }
+          ]
+        },
+        {
+          "num": "02",
+          "verb": "สรุป",
+          "line": [
+            "ขอบเขต แพ็ก และใบเสนอราคา"
+          ],
+          "items": [
+            {
+              "name": "วันที่ 1"
+            },
+            {
+              "name": "สรุปเป็นข้อความ"
+            },
+            {
+              "name": "เสนอราคาใน Fastwork"
+            }
+          ]
+        },
+        {
+          "num": "03",
+          "verb": "ทำ",
+          "line": [
+            "ส่งให้ดูเป็นระยะ แก้ได้ 3 ครั้ง"
+          ],
+          "items": [
+            {
+              "name": "วันที่ 2 ถึง 9"
+            },
+            {
+              "name": "ดูงานจริงระหว่างทำ"
+            }
+          ]
+        },
+        {
+          "num": "04",
+          "verb": "ส่งมอบ",
+          "line": [
+            "ขึ้นระบบ คู่มือ และซัพพอร์ต"
+          ],
+          "items": [
+            {
+              "name": "วันที่ 10"
+            },
+            {
+              "name": "ขึ้นระบบ"
+            },
+            {
+              "name": "ซัพพอร์ต 30 วัน"
+            }
+          ]
+        }
+      ],
+      "cta": {
+        "verb": "จ้าง",
+        "detail": "fastwork.com/user/th3r"
+      },
+      "render": [
+        "paper"
+      ]
+    },
+    {
+      "id": "showcase",
+      "layout": "showcase",
+      "size": [
+        1920,
+        1080
+      ],
+      "showcase": {
+        "kicker": "ตัวอย่างผลงาน",
+        "title": "ผลงานรับทำเว็บไซต์และระบบ",
+        "placeholder": "Coming soon",
+        "placeholder_note": "ผลงานจริงจะขึ้นที่นี่เร็ว ๆ นี้",
+        "caption": [
+          "เว็บไซต์และระบบที่ขึ้นใช้งานจริง พร้อมซัพพอร์ตหลังส่งงาน"
+        ],
+        "tags": [
+          "Cloud",
+          "Self-host",
+          "ซัพพอร์ต"
+        ],
+        "author": "th3r fastwork.com/user/th3r"
+      }
+    }
+  ],
+  "content_ratio": [
+    4,
+    3
+  ]
+}

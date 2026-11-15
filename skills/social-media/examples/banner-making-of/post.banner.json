@@ -1,0 +1,342 @@
+{
+  "name": "Blog post images: the making of the th3r Fastwork banner",
+  "fonts": {
+    "title": "kanit-700",
+    "strong": "anuphan-700",
+    "text": "anuphan-500",
+    "accent": "mali-600"
+  },
+  "styles": {
+    "riso": {
+      "bg": "#F4EFE4",
+      "panel": "#1B2F7A",
+      "on_panel": "#F4EFE4",
+      "fg": "#1B2F7A",
+      "fg2": "#33406B",
+      "fg3": "#1B2F7A",
+      "rule": "#1B2F7A",
+      "cta": "#1B2F7A",
+      "on_cta": "#F4EFE4",
+      "edge": null,
+      "accent": "#FF4FA3",
+      "shadow": "#FF4FA3",
+      "pattern": "dots",
+      "pattern_color": "#EBC9D8",
+      "accent_text": "#1B2F7A"
+    },
+    "riso-night": {
+      "bg": "#16205A",
+      "panel": "#16205A",
+      "on_panel": "#F4EFE4",
+      "fg": "#F4EFE4",
+      "fg2": "#C9CBE0",
+      "fg3": "#F4EFE4",
+      "rule": "#F4EFE4",
+      "cta": "#F4EFE4",
+      "on_cta": "#16205A",
+      "edge": null,
+      "accent": "#FF4FA3"
+    }
+  },
+  "render": [
+    "riso"
+  ],
+  "pages": [
+    {
+      "id": "cover",
+      "layout": "cover",
+      "sizes": [
+        [
+          1200,
+          630
+        ],
+        [
+          1920,
+          1080
+        ]
+      ],
+      "render": [
+        "riso",
+        "riso-night"
+      ],
+      "cover": {
+        "kicker": "เบื้องหลังแบนเนอร์ Fastwork",
+        "title": [
+          "ทำแบนเนอร์ด้วย AI Agent",
+          "ให้ script ตรวจ",
+          "ก่อนโพสต์"
+        ],
+        "note": "เช็คง่าย ๆ ด้วยวิธีนี้",
+        "author": "th3r · fastwork.com/user/th3r",
+        "motif": [
+          "columns",
+          "rail",
+          "stairs",
+          "bento",
+          "stack"
+        ]
+      }
+    },
+    {
+      "id": "step-1",
+      "layout": "step",
+      "size": [
+        1200,
+        675
+      ],
+      "step": {
+        "num": "01",
+        "title": [
+          "เก็บกฎ แล้วใช้",
+          "เนื้อหาที่มีอยู่จริง"
+        ],
+        "caption": [
+          "กฎจากสามแหล่ง รวมเป็นชุดเดียว",
+          "สี่ชั้นจาก README บน GitHub"
+        ],
+        "visual": {
+          "kind": "checks",
+          "rows": [
+            {
+              "mark": "pass",
+              "text": "AlphaGraphics"
+            },
+            {
+              "mark": "pass",
+              "text": "Adobe Express"
+            },
+            {
+              "mark": "pass",
+              "text": "ui-ux-pro-max: banner-design"
+            },
+            {
+              "mark": "pass",
+              "text": "README: Interface ถึง Platform"
+            }
+          ]
+        },
+        "kicker": "ขั้นที่ 1 จาก 4 · เบื้องหลังแบนเนอร์ Fastwork",
+        "author": "th3r · fastwork.com/user/th3r"
+      }
+    },
+    {
+      "id": "step-2",
+      "layout": "step",
+      "size": [
+        1200,
+        675
+      ],
+      "step": {
+        "num": "02",
+        "title": [
+          "วัดขนาดจาก",
+          "หน้า Fastwork"
+        ],
+        "caption": [
+          "หน้าเว็บโชว์ 16:9 ที่ 840 x 473",
+          "แบนเนอร์จึงทำที่ 1920 x 1080"
+        ],
+        "visual": {
+          "kind": "size",
+          "outer": "1920 x 1080 ไฟล์ที่อัปโหลด",
+          "inner": "840 x 473 บนหน้าเว็บ"
+        },
+        "kicker": "ขั้นที่ 2 จาก 4 · เบื้องหลังแบนเนอร์ Fastwork",
+        "author": "th3r · fastwork.com/user/th3r"
+      }
+    },
+    {
+      "id": "step-3",
+      "layout": "step",
+      "size": [
+        1200,
+        675
+      ],
+      "step": {
+        "num": "03",
+        "title": [
+          "เขียนแบนเนอร์",
+          "เป็นไฟล์ spec"
+        ],
+        "caption": [
+          "แก้ไฟล์เดียว รันใหม่",
+          "ได้ครบทุกสไตล์"
+        ],
+        "visual": {
+          "kind": "code",
+          "lines": [
+            "{",
+            "  \"size\": [1920, 1080],",
+            "  \"brand\": {\"name\": \"th3r\"},",
+            "  \"steps\": [Interface, Services,",
+            "            Data, Platform],",
+            "  \"cta\": {\"verb\": \"Hire\"},",
+            "  \"variants\": [\"stack-blueprint\",",
+            "    \"stack-paper\", \"stack-flat\"]",
+            "}",
+            "$ uv run banner.py th3r.banner.json"
+          ]
+        },
+        "kicker": "ขั้นที่ 3 จาก 4 · เบื้องหลังแบนเนอร์ Fastwork",
+        "author": "th3r · fastwork.com/user/th3r"
+      }
+    },
+    {
+      "id": "step-4",
+      "layout": "step",
+      "size": [
+        1200,
+        675
+      ],
+      "step": {
+        "num": "04",
+        "title": [
+          "ให้ script ตรวจ",
+          "ก่อนโพสต์"
+        ],
+        "caption": [
+          "script จับได้สองจุด",
+          "อีกจุดผมเจอเองตอนอ่านทวน"
+        ],
+        "visual": {
+          "kind": "checks",
+          "rows": [
+            {
+              "mark": "fail",
+              "text": "ชื่อ 120px ล้นเข้าขอบ 96px"
+            },
+            {
+              "mark": "fail",
+              "text": "ป้ายเหลือ 4.7px บนมือถือ"
+            },
+            {
+              "mark": "fail",
+              "text": "Remote: ผมเจอเองตอนอ่านทวน"
+            },
+            {
+              "mark": "pass",
+              "text": "แก้ครบ ผ่านทั้งสามสไตล์"
+            }
+          ]
+        },
+        "kicker": "ขั้นที่ 4 จาก 4 · เบื้องหลังแบนเนอร์ Fastwork",
+        "author": "th3r · fastwork.com/user/th3r"
+      }
+    },
+    {
+      "id": "end",
+      "layout": "stack",
+      "size": [
+        1200,
+        675
+      ],
+      "brand": {
+        "name": "th3r",
+        "badge": "Open for freelance",
+        "promise": [
+          "I build software",
+          "from the interface",
+          "down to the cluster."
+        ],
+        "facts": [
+          [
+            "EXPERIENCE",
+            "4+ years"
+          ],
+          [
+            "BASED IN",
+            "Thailand"
+          ],
+          [
+            "TIME ZONE",
+            "UTC+7"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "num": "01",
+          "verb": "Interface",
+          "line": [
+            "workflows into",
+            "clear screens"
+          ],
+          "items": [
+            {
+              "name": "Next.js"
+            },
+            {
+              "name": "Angular"
+            },
+            {
+              "name": "Figma"
+            }
+          ]
+        },
+        {
+          "num": "02",
+          "verb": "Services",
+          "line": [
+            "APIs, jobs and",
+            "integrations"
+          ],
+          "items": [
+            {
+              "name": "NestJS"
+            },
+            {
+              "name": "FastAPI"
+            },
+            {
+              "name": "Node.js"
+            }
+          ]
+        },
+        {
+          "num": "03",
+          "verb": "Data",
+          "line": [
+            "contracts, migrations,",
+            "edge cases"
+          ],
+          "items": [
+            {
+              "name": "PostgreSQL"
+            },
+            {
+              "name": "Oracle"
+            },
+            {
+              "name": "SQL"
+            }
+          ]
+        },
+        {
+          "num": "04",
+          "verb": "Platform",
+          "line": [
+            "package, deploy,",
+            "operate"
+          ],
+          "items": [
+            {
+              "name": "Kubernetes"
+            },
+            {
+              "name": "ArgoCD"
+            },
+            {
+              "name": "Docker"
+            }
+          ]
+        }
+      ],
+      "through": "AI agents on every layer · Claude Code + th3-skills",
+      "cta": {
+        "verb": "Hire",
+        "detail": "fastwork.com/user/th3r"
+      },
+      "fonts": {}
+    }
+  ]
+}
