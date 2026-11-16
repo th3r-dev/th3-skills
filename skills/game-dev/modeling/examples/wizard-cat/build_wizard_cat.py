@@ -27,20 +27,42 @@ def cone(name, cell, parent, sides, radius1, radius2, depth, location, rotation=
 
 
 def dress(cat):
+    # v2, after the Fable 5.2 review (5/10): centred tapered cape, clasp where it shows, a staff
+    # holding the crystal, ears clear of a smaller brim, sparks joined into one part.
+    objects = bpy.data.objects
     # The crown tuft would sit inside the hat: geometry nobody sees is cut, not hidden.
-    bpy.data.objects.remove(bpy.data.objects["FurCrown"])
-    # Brim low on the head, so the ears' upper halves stand above it.
-    cone("HatBrim", "purple", cat, 6, 0.5, 0.5, 0.05, (0, -0.4, 1.6), (-6, 0, 0))
-    cone("Hat", "purple", cat, 5, 0.3, 0, 0.8, (0.02, -0.36, 1.98), (-14, 8, 0))
-    cat_kit.spike("HatTip", "gold", cat, 0.07, 0.14, (0.07, -0.27, 2.38), (-14, 8, 0))
-    # The cape: a three-sided prism along the back, ridge up, wider than the body, so its sides
-    # hang over the flanks like cloth (8 triangles).
-    cape = cat_kit.prism("Cape", "purple", cat, 0.46, 0.72, (0, 0.18, 0.74), (90, -90, 0))
-    cape.scale = (1, 1.35, 1)  # local Y is the world width here: wide enough that no body shows through
-    cat_kit.spike("CapeClasp", "gold", cat, 0.08, 0.1, (0, -0.2, 1.02), (90, 0, 180))
-    cat_kit.ico("Crystal", "cyan", cat, 0.12, (0.62, -0.78, 0.82), scale=(0.8, 0.8, 1.3))
-    for k, (x, y, z) in enumerate(((0.82, -0.7, 1.05), (0.45, -0.95, 1.08), (0.78, -0.95, 0.58))):
-        cat_kit.spike(f"Spark{k + 1}", "cyan", cat, 0.04, 0.08, (x, y, z), (k * 40, k * 70, 0))
+    objects.remove(objects["FurCrown"])
+    # Ears tilt out, so both triangles stand clear of the brim.
+    for name, x in (("Ear_L", 1), ("Ear_R", -1), ("EarInner_L", 1), ("EarInner_R", -1)):
+        objects[name].location.x = x * 0.38
+        objects[name].rotation_euler.y = math.radians(-x * 30)
+
+    brim = cone("HatBrim", "purple", cat, 6, 0.36, 0.36, 0.05, (0, -0.4, 1.66), (-6, 0, 0))
+    cat_kit.patch(brim, "gold", lambda c: abs(c.z) < 0.01)  # the rim's side faces: a gold band, 0 triangles
+    cone("Hat", "purple", cat, 5, 0.26, 0, 0.8, (0.02, -0.38, 2.06), (-14, 8, 0))
+    cat_kit.spike("HatTip", "gold", cat, 0.07, 0.14, (0.07, -0.29, 2.46), (-14, 8, 0))
+
+    # The cape: a closed tent along the back, ridge up and centred, narrow at the neck and wide,
+    # low at the hem past the rump; a shoulder line keeps the round body inside it (16 triangles).
+    front, back = -0.3, 0.75
+    verts = [
+        (0, front, 1.1), (0.31, front, 0.95), (0.34, front, 0.66), (-0.31, front, 0.95), (-0.34, front, 0.66),
+        (0, back, 1.0), (0.4, back, 0.88), (0.48, back, 0.38), (-0.4, back, 0.88), (-0.48, back, 0.38),
+    ]
+    faces = [(0, 1, 2, 4, 3), (5, 8, 9, 7, 6), (0, 5, 6, 1), (1, 6, 7, 2), (0, 3, 8, 5), (3, 4, 9, 8), (2, 7, 9, 4)]
+    cat_kit.solid("Cape", "plum", cat, verts, faces)
+    cat_kit.spike_toward("CapeClasp", "gold", cat, 0.07, 0.1, (0, -0.64, 0.7), (0, -1, -0.15))
+
+    # A staff planted by the front paw, the crystal (an octahedron, 8 triangles) on top.
+    cat_kit.prism_toward("Staff", "wood", cat, 0.04, 1.45, (0.58, -0.55, 0.0), (-0.06, 0, 1))
+    cx, cy, cz, a, h = 0.49, -0.55, 1.6, 0.09, 0.16
+    crystal = [(cx + a, cy, cz), (cx - a, cy, cz), (cx, cy + a, cz), (cx, cy - a, cz), (cx, cy, cz + h), (cx, cy, cz - h)]
+    cat_kit.solid("Crystal", "cyan", cat, crystal,
+                  [(4, 0, 2), (4, 2, 1), (4, 1, 3), (4, 3, 0), (5, 2, 0), (5, 1, 2), (5, 3, 1), (5, 0, 3)])
+    # Two sparks by the crystal, joined into one part (one MeshPart in Roblox, not two).
+    sparks = [cat_kit.spike_toward(f"Spark{k}", "cyan", cat, 0.035, 0.08, base, d)
+              for k, (base, d) in enumerate((((0.68, -0.5, 1.72), (1, 0, 1)), ((0.32, -0.62, 1.78), (-1, -0.3, 1))))]
+    cat_kit.join("Sparks", sparks)
 
 
 def main():
