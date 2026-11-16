@@ -27,6 +27,7 @@ DARK = (0.08, 0.07, 0.07, 1)
 PALETTE = {
     "fur": FUR, "cream": CREAM, "pink": PINK, "dark": DARK,
     "purple": (0.45, 0.22, 0.68, 1), "gold": (0.96, 0.78, 0.25, 1), "cyan": (0.35, 0.92, 0.96, 1),
+    "plum": (0.28, 0.12, 0.42, 1), "wood": (0.45, 0.28, 0.14, 1),
 }  # 4 x 4 cells, 4 px each; outfits use the spare colours
 CELLS = list(PALETTE)
 GRID = 4
@@ -116,6 +117,59 @@ def spike(name, mat, parent, radius, depth, location, rotation):
     return finish(name, mat, parent, location, rotation)
 
 
+def _aim(obj, base, direction, depth):
+    """Point a primitive's +Z axis along `direction`, its base at `base`."""
+    from mathutils import Vector
+
+    d = Vector(direction).normalized()
+    obj.location = Vector(base) + d * depth / 2
+    obj.rotation_mode = "QUATERNION"
+    obj.rotation_quaternion = d.to_track_quat("Z", "Y")
+    return obj
+
+
+def spike_toward(name, cell, parent, radius, depth, base, direction):
+    """A tetrahedron from `base` along `direction` (4 triangles): tufts, fans, ruffs."""
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=radius, radius2=0, depth=depth)
+    return _aim(finish(name, cell, parent), base, direction, depth)
+
+
+def prism_toward(name, cell, parent, radius, depth, base, direction):
+    """A 3-sided prism from `base` along `direction` (8 triangles): tail segments, a staff."""
+    bpy.ops.mesh.primitive_cylinder_add(vertices=3, radius=radius, depth=depth, end_fill_type="NGON")
+    return _aim(finish(name, cell, parent), base, direction, depth)
+
+
+def solid(name, cell, parent, verts, faces):
+    """A closed mesh from explicit vertices and faces, for shapes no primitive gives."""
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)  # outward, whatever order the faces came in
+    bm.to_mesh(mesh)
+    bm.free()
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    bpy.context.view_layer.objects.active = obj
+    return finish(name, cell, parent)
+
+
+def join(name, objs):
+    """Join parts that never move apart into one: one Roblox MeshPart instead of several."""
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in objs:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
+    bpy.ops.object.join()
+    joined = bpy.context.active_object
+    joined.name = joined.data.name = name
+    return joined
+
+
 def patch(obj, cell, inside):
     """A colour patch on the faces whose local centre passes `inside`: 0 extra triangles."""
     paint(obj, cell, inside)
@@ -136,18 +190,27 @@ def build(out):
     patch(body, cream, lambda c: c.z < -0.12)  # belly
     head = ico("Head", fur, cat, 0.55, (0, -0.4, 1.18), scale=(1.15, 0.95, 0.92))
     patch(head, cream, lambda c: c.y < -0.3 and c.z < -0.05)  # muzzle and chin
-    spike("Nose", pink, cat, 0.07, 0.06, (0, -0.93, 1.1), (90, 0, 180))
+    # Face features sit flush: their bases just under the head's surface (review: they floated).
+    spike("Nose", pink, cat, 0.07, 0.06, (0, -0.9, 1.1), (90, 0, 180))
     for side, x in (("L", 1), ("R", -1)):
-        spike(f"Eye_{side}", dark, cat, 0.12, 0.04, (x * 0.22, -0.88, 1.28), (90, 0, 180))
+        spike(f"Eye_{side}", dark, cat, 0.12, 0.04, (x * 0.19, -0.85, 1.28), (90, 0, 180))
         spike(f"Ear_{side}", fur, cat, 0.22, 0.45, (x * 0.3, -0.35, 1.66), (0, -x * 18, 0))
         spike(f"EarInner_{side}", pink, cat, 0.12, 0.28, (x * 0.3, -0.43, 1.62), (0, -x * 18, 0))
-        spike(f"FurCheek_{side}", fur, cat, 0.1, 0.26, (x * 0.62, -0.52, 1.03), (0, x * 75, 0))
+        # Cheek fur: two spikes per side, fanned down and back (review: one flat spike read as an arm).
+        join(f"FurCheek_{side}", [
+            spike_toward(f"FurCheek_{side}1", fur, cat, 0.09, 0.26, (x * 0.5, -0.6, 1.08), (x, 0.5, -0.45)),
+            spike_toward(f"FurCheek_{side}2", fur, cat, 0.08, 0.22, (x * 0.48, -0.55, 0.95), (x, 0.6, -0.9)),
+        ])
         for front, y in (("F", -0.15), ("B", 0.45)):
             prism(f"Leg_{front}{side}", fur, cat, 0.11, 0.42, (x * 0.22, y, 0.21))
-    spike("FurChest", cream, cat, 0.12, 0.28, (0, -0.38, 0.75), (150, 0, 0))
+    # Chest ruff: three cream spikes under the chin, pointing down and forward.
+    join("FurChest", [spike_toward(f"FurChest{k + 1}", cream, cat, 0.1, 0.26, (dx * 0.15, -0.5, 0.72), (dx, -0.7, -1))
+                      for k, dx in enumerate((-0.6, 0, 0.6))])
     spike("FurCrown", fur, cat, 0.09, 0.24, (0, -0.4, 1.72), (0, 0, 0))
-    prism("Tail", fur, cat, 0.07, 0.7, (0, 0.75, 0.85), (-35, 0, 0))
-    spike("FurTailTip", cream, cat, 0.11, 0.26, (0, 0.98, 1.22), (-35, 0, 0))
+    # Tail: two segments curling up and forward, a cat's question mark, not a fox's brush.
+    prism_toward("Tail", fur, cat, 0.085, 0.5, (0, 0.62, 0.78), (0, 1, 0.9))
+    prism_toward("TailUpper", fur, cat, 0.075, 0.42, (0, 0.95, 1.1), (0, -0.25, 1))
+    spike_toward("FurTailTip", fur, cat, 0.1, 0.24, (0, 0.86, 1.48), (0, -0.4, 1))
     return cat
 
 

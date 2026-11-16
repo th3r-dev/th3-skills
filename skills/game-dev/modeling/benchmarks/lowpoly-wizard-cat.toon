@@ -10,13 +10,13 @@ max_materials: 1
 max_texture: 512
 fur_prefix: Fur
 source: build_wizard_cat.py
-parts[16]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Leg_FL,Leg_FR,Leg_BL,Leg_BR,Hat,HatBrim,Cape,Crystal
+parts[17]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Leg_FL,Leg_FR,Leg_BL,Leg_BR,Hat,HatBrim,Cape,Crystal,Staff
 views[4]: front,side,three-quarter,top
 rubric[10]{id,check}:
   budget,"total triangles at most max_tris: lowest polygon, measured, not claimed"
   engine,"every mesh within the target engine's limits (mesh_check.py)"
   closed,"every mesh is closed: each edge, welded by position, is shared by exactly two triangles (Roblox wants watertight)"
-  parts,"the cat's parts and the outfit's (hat, brim, cape, crystal) are nodes"
+  parts,"the cat's parts and the outfit's (hat, brim, cape, crystal, staff) are nodes"
   fur,"at least min_fur nodes named fur_prefix*: the fur is modelled, not just named in the prompt"
   source,"the build script sits next to the model, so it can be rebuilt"
   renders,"every view in views has a PNG render of at least 2 KB"
