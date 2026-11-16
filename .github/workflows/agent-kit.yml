@@ -35,3 +35,4 @@ jobs:
           uv run --no-build --locked --script cost/scripts/agent_guard.py --selftest
           uv run --no-build --locked --script prompt-cache/scripts/pcache.py --self-test
           uv run --no-build --locked --script team/scripts/team.py --selftest
+          uv run --no-build --locked --script rag/scripts/vault.py --selftest
