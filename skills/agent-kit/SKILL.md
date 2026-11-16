@@ -5,10 +5,13 @@ description: >-
   agent to the cheapest model tier that can finish it, give it a checkable finish line, skip agents the
   task doesn't need, with a PreToolUse hook that nudges Agent calls that set no model; (2) prompt-cache:
   keep agent prompt prefixes byte-identical so the prompt cache hits, with a uv-run script that builds a
-  fingerprinted project outline, writes agent briefs and reports per-agent hit rate. Use WHENEVER you
+  fingerprinted project outline, writes agent briefs and reports per-agent hit rate; (3) team: a lead
+  loop in the main session hands GitHub issues to role agents in their own worktrees, with every handoff
+  a label or PR comment, and a `team.py` board (doctor, next, claim, release). Use WHENEVER you
   are about to spawn subagents, forks, parallel agents or a Workflow, run /loop or ScheduleWakeup, pick
   a model for an agent, or the user says "save tokens", "agent cost", "which model", "prompt caching",
-  "cache hit", "token usage", "ลด token". Read the sub-skill's SKILL.md before acting.
+  "cache hit", "token usage", "ลด token", "agent team", "agentic loop", "orchestrate agents",
+  "lead agent", "/team-tick", "ทีม agent". Read the sub-skill's SKILL.md before acting.
 ---
 
 # agent-kit: sub-skills
@@ -17,9 +20,11 @@ description: >-
 |---|---|---|
 | spawning agents, "which model for this agent", "too many agents", "agent cost" | [`cost/SKILL.md`](cost/SKILL.md) | `cost/scripts/agent_guard.py` (PreToolUse hook, `--selftest`) |
 | fanning out agents that share context, /loop, "cache hit rate", "prompt caching" | [`prompt-cache/SKILL.md`](prompt-cache/SKILL.md) | `prompt-cache/scripts/pcache.py` (`build` · `brief` · `stats` · `--self-test`) |
+| a team of role agents working issues on a loop, "lead agent", "/team-tick", handoff through GitHub | [`team/SKILL.md`](team/SKILL.md) | `team/scripts/team.py` (`doctor` · `board` · `next` · `claim` · `release` · `--selftest`) |
 
 They chain: `cost` decides whether to spawn and on which tier; `prompt-cache` makes the briefs those
-agents get share one cached prefix, then measures it.
+agents get share one cached prefix, then measures it; `team` runs them as a standing team on a
+project's issues, using both.
 
 ## Rules every sub-skill keeps
 
@@ -33,4 +38,5 @@ agents get share one cached prefix, then measures it.
 cd skills/agent-kit
 uv run --script cost/scripts/agent_guard.py --selftest
 uv run --script prompt-cache/scripts/pcache.py --self-test
+uv run --script team/scripts/team.py --selftest
 ```
