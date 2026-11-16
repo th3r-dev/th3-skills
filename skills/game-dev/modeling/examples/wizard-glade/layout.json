@@ -1,0 +1,536 @@
+{
+ "units": "studs",
+ "axes": "Blender: Z up, the door faces -Y. In the GLB and in Roblox Y is up: (x, y, z) here is (x, z, -y) there.",
+ "tile": [
+  24.0,
+  24.0
+ ],
+ "kit": "kit/<kit>.fbx",
+ "pieces": [
+  {
+   "name": "Ground",
+   "kit": "Ground",
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "Path",
+   "kit": "Path",
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "WizardDoor",
+   "kit": "WizardDoor",
+   "position": [
+    0,
+    6.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "TreePine_1",
+   "kit": "TreePine",
+   "position": [
+    -4.5,
+    9.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "TreePine_2",
+   "kit": "TreePine",
+   "position": [
+    4.5,
+    9.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    45
+   ],
+   "scale": 1.1
+  },
+  {
+   "name": "TreePine_3",
+   "kit": "TreePine",
+   "position": [
+    -9.5,
+    3,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    90
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "TreeRound_1",
+   "kit": "TreeRound",
+   "position": [
+    7.5,
+    3.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "TreeRound_2",
+   "kit": "TreeRound",
+   "position": [
+    -8.5,
+    -5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    120
+   ],
+   "scale": 1.1
+  },
+  {
+   "name": "TreeRound_3",
+   "kit": "TreeRound",
+   "position": [
+    9,
+    -7.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    60
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "TreeYoung_1",
+   "kit": "TreeYoung",
+   "position": [
+    4.5,
+    -6.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "TreeYoung_2",
+   "kit": "TreeYoung",
+   "position": [
+    -9.5,
+    9.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    90
+   ],
+   "scale": 1.1
+  },
+  {
+   "name": "TreeYoung_3",
+   "kit": "TreeYoung",
+   "position": [
+    9.5,
+    9.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    30
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "RockLarge_1",
+   "kit": "RockLarge",
+   "position": [
+    3.5,
+    6,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "RockLarge_2",
+   "kit": "RockLarge",
+   "position": [
+    -7.5,
+    -10,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    75
+   ],
+   "scale": 1
+  },
+  {
+   "name": "RockLarge_3",
+   "kit": "RockLarge",
+   "position": [
+    -3.5,
+    7.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    150
+   ],
+   "scale": 0.8
+  },
+  {
+   "name": "RockSmall_1",
+   "kit": "RockSmall",
+   "position": [
+    -1.5,
+    -9,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "RockSmall_2",
+   "kit": "RockSmall",
+   "position": [
+    4.5,
+    1.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    105
+   ],
+   "scale": 1.2
+  },
+  {
+   "name": "RockSmall_3",
+   "kit": "RockSmall",
+   "position": [
+    -5.5,
+    1,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    45
+   ],
+   "scale": 1
+  },
+  {
+   "name": "RockSmall_4",
+   "kit": "RockSmall",
+   "position": [
+    6,
+    -3.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    210
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "Mushroom_1",
+   "kit": "Mushroom",
+   "position": [
+    -2.5,
+    5.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.2
+  },
+  {
+   "name": "Mushroom_2",
+   "kit": "Mushroom",
+   "position": [
+    -3,
+    4.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    60
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "Mushroom_3",
+   "kit": "Mushroom",
+   "position": [
+    2.5,
+    4.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    30
+   ],
+   "scale": 1
+  },
+  {
+   "name": "Mushroom_4",
+   "kit": "Mushroom",
+   "position": [
+    6.5,
+    2,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    90
+   ],
+   "scale": 1.1
+  },
+  {
+   "name": "Mushroom_5",
+   "kit": "Mushroom",
+   "position": [
+    7,
+    1.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    15
+   ],
+   "scale": 0.8
+  },
+  {
+   "name": "Mushroom_6",
+   "kit": "Mushroom",
+   "position": [
+    -7.5,
+    -6.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    45
+   ],
+   "scale": 1
+  },
+  {
+   "name": "GrassTuft_1",
+   "kit": "GrassTuft",
+   "position": [
+    -7,
+    -1.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1
+  },
+  {
+   "name": "GrassTuft_2",
+   "kit": "GrassTuft",
+   "position": [
+    -1.5,
+    -1,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    45
+   ],
+   "scale": 1.2
+  },
+  {
+   "name": "GrassTuft_3",
+   "kit": "GrassTuft",
+   "position": [
+    4,
+    -9.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    90
+   ],
+   "scale": 1
+  },
+  {
+   "name": "GrassTuft_4",
+   "kit": "GrassTuft",
+   "position": [
+    8.5,
+    -1,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    15
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "GrassTuft_5",
+   "kit": "GrassTuft",
+   "position": [
+    -10,
+    -8.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    60
+   ],
+   "scale": 1.1
+  },
+  {
+   "name": "GrassTuft_6",
+   "kit": "GrassTuft",
+   "position": [
+    2,
+    -10.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    30
+   ],
+   "scale": 1
+  },
+  {
+   "name": "GrassTuft_7",
+   "kit": "GrassTuft",
+   "position": [
+    -5.5,
+    5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    75
+   ],
+   "scale": 1
+  },
+  {
+   "name": "GrassTuft_8",
+   "kit": "GrassTuft",
+   "position": [
+    10,
+    6,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.2
+  },
+  {
+   "name": "GrassTuft_9",
+   "kit": "GrassTuft",
+   "position": [
+    -2,
+    10.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    45
+   ],
+   "scale": 0.9
+  },
+  {
+   "name": "GrassTuft_10",
+   "kit": "GrassTuft",
+   "position": [
+    5.5,
+    -4.5,
+    0
+   ],
+   "rotation_deg": [
+    0,
+    0,
+    120
+   ],
+   "scale": 1
+  }
+ ]
+}

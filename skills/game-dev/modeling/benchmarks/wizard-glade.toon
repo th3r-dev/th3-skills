@@ -1,0 +1,21 @@
+id: wizard-glade
+skill: game-dev/modeling
+prompt: "Add environment building and a studio art theme: prove it with one small low-poly environment, a glade the wizard cat lives in"
+prompt_read_as: "A 24 by 24 stud glade in the wizard cat's theme, built from a kit: a ground tile, a path, two to three tree variants, rocks and one landmark, each piece made once and placed several times."
+target: roblox
+max_tris: 3000
+max_materials: 1
+max_texture: 512
+source: build_wizard_glade.py
+parts[10]: Ground,Path,WizardDoor,TreeRound_1,TreePine_1,TreeYoung_1,RockLarge_1,RockSmall_1,Mushroom_1,GrassTuft_1
+views[5]: front,side,three-quarter,top,wide
+rubric[9]{id,check}:
+  budget,"total triangles at most max_tris, every placed copy counted (references/environment.md: a scene's budget is per view, not per mesh)"
+  engine,"every mesh within the target engine's limits (mesh_check.py)"
+  closed,"every kit mesh is closed: each edge, welded by position, is shared by exactly two triangles (Roblox wants watertight)"
+  parts,"the ground, the path, the landmark and a first copy of every kit piece are nodes"
+  source,"the build script sits next to the scene, so it can be rebuilt"
+  renders,"every view in views has a PNG render of at least 2 KB; wide is the one with the wizard cat for scale"
+  materials,"at most max_materials materials: the whole kit shares the palette, so identical pieces can instance (ZEPETO texture guide, Roblox draw calls)"
+  textures,"every texture is a power of two on both sides and at most max_texture px (ZEPETO texture guide, Roblox texture specs)"
+  look,"manual: score with references/visual-review.md and the checklist in references/art-theme.md (a fresh reviewer, 0-10 per criterion); a person opens wide.png and says the cat reads at the right scale against the door and the trees, and the glade's colours sit under the cat's"
