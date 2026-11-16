@@ -63,11 +63,13 @@ def test_unreadable_is_exit_2(tmp_path):
     assert mc.main([str(p)]) == 2
 
 
-def test_worked_case_scores_full_marks():
+def test_worked_cases_score_full_marks():
     spec = importlib.util.spec_from_file_location("bench_model", HERE.parent / "scripts" / "bench_model.py")
     bm = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(bm)
     assert bm.selftest() == 0
-    case = bm.load_toon((HERE.parent / "benchmarks" / "lowpoly-furry-cat.toon").read_text(encoding="utf-8"))
-    results = bm.run(case, HERE.parent / "examples" / "lowpoly-cat" / "cat.glb")
-    assert all(ok in (True, None) for ok, _ in results.values()), results
+    for case_name, model in (("lowpoly-furry-cat", "lowpoly-cat/cat.glb"),
+                             ("lowpoly-wizard-cat", "wizard-cat/wizard-cat.glb")):
+        case = bm.load_toon((HERE.parent / "benchmarks" / f"{case_name}.toon").read_text(encoding="utf-8"))
+        results = bm.run(case, HERE.parent / "examples" / model)
+        assert all(ok in (True, None) for ok, _ in results.values()), (case_name, results)

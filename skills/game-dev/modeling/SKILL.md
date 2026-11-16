@@ -91,6 +91,8 @@ Rules, whichever way:
   cleanup → export. Check proportions at the blockout, not at the end.
 - **Look at it.** Render front, side, three-quarter and top views and open them before calling the
   model done. A render shows the look, not the topology: section 4's checks cover that.
+- **Colour and textures:** read [`references/texturing.md`](references/texturing.md) first. Low-poly
+  work uses one material over a small palette texture (power of two), not a material per colour.
 - **Modifiers, then apply.** Mirror, bevel, subdivision and weld are fine while working; apply
   them before export so the engine gets the real mesh. Booleans leave n-gons: clean them up.
 
@@ -151,13 +153,15 @@ shared by two triangles), named parts, modelled fur, the build script beside the
 renders. Whether it *looks* like the prompt is a `manual` row: open the renders.
 
 Worked case, "Create an cat furry charactor which lowest polygon" (`examples/lowpoly-cat/`):
-**128 triangles** in 19 closed parts, 7/7. How it got there:
+**128 triangles** in 19 closed parts, one material, 9/9. How it got there:
 
 | Build | Triangles | What changed |
 |---|---|---|
 | v1 | 168 | first pass from the prompt alone |
 | v1.1 | 148 | renders showed a belly hidden inside the body (20 triangles for nothing) and a floating chest tuft |
 | v3 | 128 | after the reference board (`references.md`): character proportions, muzzle and belly as face colours instead of shapes, bigger eyes |
+| v4 | 128 | after `references/texturing.md`: one material over a 16 px palette texture instead of four materials |
+| wizard | 200 | the follow-up "output is need wizard cat": `examples/wizard-cat/` dresses the same cat (hat, cape, crystal), 9/9 on its own case |
 
 The script never caught any of these: the renders and the references did.
 

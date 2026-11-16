@@ -5,11 +5,13 @@ prompt_read_as: "A furry cat character at the lowest polygon count that still re
 target: roblox
 max_tris: 300
 min_fur: 4
+max_materials: 1
+max_texture: 512
 fur_prefix: Fur
 source: build_cat.py
 parts[12]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Leg_FL,Leg_FR,Leg_BL,Leg_BR
 views[4]: front,side,three-quarter,top
-rubric[8]{id,check}:
+rubric[10]{id,check}:
   budget,"total triangles at most max_tris: lowest polygon, measured, not claimed"
   engine,"every mesh within the target engine's limits (mesh_check.py)"
   closed,"every mesh is closed: each edge, welded by position, is shared by exactly two triangles (Roblox wants watertight)"
@@ -17,4 +19,6 @@ rubric[8]{id,check}:
   fur,"at least min_fur nodes named fur_prefix*: the fur is modelled, not just named in the prompt"
   source,"the build script sits next to the model, so it can be rebuilt"
   renders,"every view in views has a PNG render of at least 2 KB"
+  materials,"at most max_materials materials: one draw call per part (ZEPETO texture guide)"
+  textures,"every texture is a power of two on both sides and at most max_texture px (ZEPETO texture guide, Roblox texture specs)"
   look,"manual: a person opens the renders and says it reads as a furry cat; not counted by the script"
