@@ -93,6 +93,10 @@ Restart the agent. Studio shows a green dot with the count of connected clients,
 A playtest's result is what the output and the capture show. One that could not run is NOT
 ASSESSED, never a pass.
 
+**An agent that playtests PRs** (a `playtester` role in an agent team): scenarios written from each
+issue's "Done when", server-authority probes, PASS/FAIL with screenshots, a bug issue per failure.
+Read [`references/agentic-playtest.md`](references/agentic-playtest.md).
+
 ## Rules for Roblox code
 
 **Read [`references/luau.md`](references/luau.md) before writing Luau.** It holds the house style
