@@ -41,3 +41,5 @@ jobs:
           uv run --no-project python modeling/scripts/bench_model.py --selftest
           uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/lowpoly-furry-cat.toon modeling/examples/lowpoly-cat/cat.glb
           uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/lowpoly-wizard-cat.toon modeling/examples/wizard-cat/wizard-cat.glb
+          uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/crystal-ground.toon modeling/examples/crystal-ground/crystal-ground.glb
+          uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/wizard-glade.toon modeling/examples/wizard-glade/wizard-glade.glb

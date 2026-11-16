@@ -1,0 +1,21 @@
+id: crystal-ground
+skill: game-dev/modeling
+prompt: "A low-poly ground tile with crystal clusters and a few small rocks for the wizard cat to stand on, scattered by Geometry Nodes, with a procedural material baked to a texture"
+prompt_read_as: "A scene prop: one tile, crystals and rocks scattered from a seed, procedural colour and glow baked to small textures, realized to plain closed meshes for Roblox."
+target: roblox
+max_tris: 600
+max_materials: 1
+max_texture: 512
+source: build_crystal_ground.py
+parts[3]: Ground,Crystals,Rocks
+views[4]: front,side,three-quarter,top
+rubric[9]{id,check}:
+  budget,"total triangles at most max_tris, counted after Realize Instances (instances multiply the count)"
+  engine,"every mesh within the target engine's limits (mesh_check.py)"
+  closed,"every mesh is closed: each edge, welded by position, is shared by exactly two triangles (Roblox wants watertight)"
+  parts,"the tile, the crystals and the rocks are nodes: plain meshes, no Geometry Nodes modifier left"
+  source,"the build script sits next to the model, so it can be rebuilt with a seed"
+  renders,"every view in views has a PNG render of at least 2 KB"
+  materials,"at most max_materials materials: the procedural materials are baked, not exported (references/shading.md)"
+  textures,"every texture is a power of two on both sides and at most max_texture px (ZEPETO texture guide, Roblox texture specs)"
+  look,"manual: score with references/visual-review.md (a fresh reviewer, 0-10 per criterion); a person opens the renders and says the crystals sit on the ground, the colours read as baked gradients, and a second seed gives a different layout"
