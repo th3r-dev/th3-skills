@@ -5,7 +5,7 @@ The source of the model: run it, never edit the .blend by hand.
   blender -b --factory-startup --python build_cat.py -- --out <folder>
 
 Writes <folder>/cat.blend, cat.glb, and renders front/side/three-quarter/top .png.
-"Furry" at this budget means faceted tufts (three-sided spikes) at the cheeks, chest, crown and
+Built after a reference board (references.md). "Furry" at this budget means faceted tufts (three-sided spikes) at the cheeks, chest, crown and
 tail tip, not hair particles: hair cannot be exported to a game mesh.
 Every part is its own named, closed object under an empty "Cat", so a rig or Roblox's importer
 can move parts separately (Roblox makes one MeshPart each).
@@ -18,7 +18,7 @@ import sys
 
 import bpy
 
-FUR = (0.93, 0.55, 0.22, 1)  # orange tabby
+FUR = (0.95, 0.5, 0.15, 1)  # orange
 CREAM = (0.98, 0.88, 0.70, 1)
 PINK = (0.95, 0.55, 0.62, 1)
 DARK = (0.08, 0.07, 0.07, 1)
@@ -76,7 +76,18 @@ def spike(name, mat, parent, radius, depth, location, rotation):
     return finish(name, mat, parent, location, rotation)
 
 
+def patch(obj, mat, inside):
+    """Colour the faces whose local centre passes `inside`: a patch for 0 extra triangles."""
+    obj.data.materials.append(mat)
+    index = len(obj.data.materials) - 1
+    for poly in obj.data.polygons:
+        if inside(poly.center):
+            poly.material_index = index
+
+
 def build():
+    # v2, after the reference board (references.md): character proportions (head as big as the
+    # body, big ears, short legs), colour patches per facet instead of extra shapes, fur as tufts.
     bpy.ops.wm.read_factory_settings(use_empty=True)
     fur, cream, pink, dark = (material(n, c) for n, c in
                               (("Fur", FUR), ("Cream", CREAM), ("Pink", PINK), ("Dark", DARK)))
@@ -84,35 +95,40 @@ def build():
     cat = bpy.context.active_object
     cat.name = "Cat"
 
-    ico("Body", fur, cat, 0.5, (0, 0.05, 0.75), scale=(0.95, 1.7, 0.9))
-    ico("Head", fur, cat, 0.42, (0, -0.85, 1.25))
-    ico("Muzzle", cream, cat, 0.17, (0, -1.18, 1.14), scale=(1.3, 0.8, 0.8))
-    spike("Nose", pink, cat, 0.06, 0.08, (0, -1.32, 1.22), (90, 0, 180))
-    for side, x in (("L", 0.15), ("R", -0.15)):
-        spike(f"Eye_{side}", dark, cat, 0.06, 0.05, (x, -1.2, 1.36), (90, 0, 180))
-        spike(f"Ear_{side}", fur, cat, 0.15, 0.32, (x * 1.5, -0.82, 1.68), (0, -x * 80, 0))
-        spike(f"EarInner_{side}", pink, cat, 0.08, 0.2, (x * 1.5, -0.88, 1.66), (0, -x * 80, 0))
-        spike(f"FurCheek_{side}", fur, cat, 0.1, 0.24, (x * 2.4, -0.95, 1.12), (0, x * 500, 0))
-        for front, y in (("F", -0.45), ("B", 0.55)):
-            prism(f"Leg_{front}{side}", fur, cat, 0.12, 0.6, (x * 1.6, y, 0.3))
-    spike("FurChest", cream, cat, 0.13, 0.3, (0, -0.72, 0.86), (150, 0, 0))
-    spike("FurCrown", fur, cat, 0.08, 0.22, (0, -0.8, 1.68), (0, 0, 0))
-    prism("Tail", fur, cat, 0.08, 0.8, (0, 0.95, 1.05), (-35, 0, 0))
-    spike("FurTailTip", cream, cat, 0.12, 0.28, (0, 1.2, 1.45), (-35, 0, 0))
+    body = ico("Body", fur, cat, 0.42, (0, 0.15, 0.6), scale=(0.85, 1.3, 0.85))
+    patch(body, cream, lambda c: c.z < -0.12)  # belly
+    head = ico("Head", fur, cat, 0.55, (0, -0.4, 1.18), scale=(1.15, 0.95, 0.92))
+    patch(head, cream, lambda c: c.y < -0.3 and c.z < -0.05)  # muzzle and chin
+    spike("Nose", pink, cat, 0.07, 0.06, (0, -0.93, 1.1), (90, 0, 180))
+    for side, x in (("L", 1), ("R", -1)):
+        spike(f"Eye_{side}", dark, cat, 0.12, 0.04, (x * 0.22, -0.88, 1.28), (90, 0, 180))
+        spike(f"Ear_{side}", fur, cat, 0.22, 0.45, (x * 0.3, -0.35, 1.66), (0, -x * 18, 0))
+        spike(f"EarInner_{side}", pink, cat, 0.12, 0.28, (x * 0.3, -0.43, 1.62), (0, -x * 18, 0))
+        spike(f"FurCheek_{side}", fur, cat, 0.1, 0.26, (x * 0.62, -0.52, 1.03), (0, x * 75, 0))
+        for front, y in (("F", -0.15), ("B", 0.45)):
+            prism(f"Leg_{front}{side}", fur, cat, 0.11, 0.42, (x * 0.22, y, 0.21))
+    spike("FurChest", cream, cat, 0.12, 0.28, (0, -0.38, 0.75), (150, 0, 0))
+    spike("FurCrown", fur, cat, 0.09, 0.24, (0, -0.4, 1.72), (0, 0, 0))
+    prism("Tail", fur, cat, 0.07, 0.7, (0, 0.75, 0.85), (-35, 0, 0))
+    spike("FurTailTip", cream, cat, 0.11, 0.26, (0, 0.98, 1.22), (-35, 0, 0))
     return cat
 
 
 def render(out, size):
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_WORKBENCH"
-    scene.display.shading.light = "STUDIO"
-    scene.display.shading.color_type = "MATERIAL"
-    scene.display.shading.show_object_outline = True
+    try:
+        scene.render.engine = "BLENDER_EEVEE"  # Blender 5.x
+    except TypeError:
+        scene.render.engine = "BLENDER_EEVEE_NEXT"  # Blender 4.2-4.x
+    bpy.ops.object.light_add(type="SUN", rotation=(math.radians(50), 0, math.radians(30)))
+    bpy.context.active_object.data.energy = 1.6
     scene.render.resolution_x = scene.render.resolution_y = size
     scene.render.film_transparent = False
     scene.view_settings.view_transform = "Standard"  # flat colours as picked, no filmic wash
     world = bpy.data.worlds.new("World")
-    world.color = (0.92, 0.92, 0.95)
+    world.use_nodes = True
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.9, 0.9, 0.93, 1)
+    world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.35
     scene.world = world
     bpy.ops.object.camera_add()
     cam = bpy.context.active_object
