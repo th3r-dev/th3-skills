@@ -98,10 +98,87 @@ def finish(name, mat, parent, location=None, rotation=None, scale=None):
     return o
 
 
-def ico(name, mat, parent, radius, location, scale=None):
+def ico(name, mat, parent, radius, location, scale=None, mirror=False):
     # subdivisions=1: an icosahedron, 20 triangles
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=radius)
+    if mirror:
+        # Turn it about Z so a vertex of the upper ring points straight forward (-Y): the
+        # icosahedron is then mirror-symmetric across x = 0, and so is any patch painted on it.
+        import math as _m
+        from mathutils import Matrix
+
+        mesh = bpy.context.active_object.data
+        ring = [v.co for v in mesh.vertices if 0.1 * radius < v.co.z < 0.9 * radius]
+        phi = _m.atan2(ring[0].y, ring[0].x)
+        mesh.transform(Matrix.Rotation(-_m.pi / 2 - phi, 4, "Z"))
     return finish(name, mat, parent, location, scale=scale)
+
+
+# v3 body: one closed mesh lofted through hexagonal cross-sections (y, half-width, half-height,
+# centre z), with the legs extruded from its belly, so body and legs are one surface (8 + 8 + ...).
+BODY_RINGS = [(-0.34, 0.24, 0.26, 0.68), (-0.05, 0.34, 0.33, 0.63), (0.28, 0.34, 0.3, 0.6),
+              (0.56, 0.26, 0.25, 0.62), (0.72, 0.13, 0.14, 0.68)]  # the last ring rounds the rump
+# (segment between rings, bottom face: 2 = +x side, 3 = -x side, leg name)
+BODY_LEGS = [(0, 2, "Leg_FL"), (0, 3, "Leg_FR"), (2, 2, "Leg_BL"), (2, 3, "Leg_BR")]
+
+
+def ring_points(w, h, zc):
+    """A hexagon, top first, then clockwise seen from the front: flat bottom with a centre vertex."""
+    return [(0, zc + h), (w, zc + 0.3 * h), (0.85 * w, zc - h), (0, zc - h), (-0.85 * w, zc - h), (-w, zc + 0.3 * h)]
+
+
+def body_with_legs(name, cell, parent, belly_cell):
+    import bmesh
+    from mathutils import Vector
+
+    bm = bmesh.new()
+    rings = [[bm.verts.new((x, y, z)) for x, z in ring_points(w, h, zc)] for y, w, h, zc in BODY_RINGS]
+    sides = {}
+    for i in range(len(rings) - 1):
+        a, b = rings[i], rings[i + 1]
+        for k in range(6):
+            sides[(i, k)] = bm.faces.new((a[k], a[(k + 1) % 6], b[(k + 1) % 6], b[k]))
+    bm.faces.new(rings[0])
+    bm.faces.new(rings[-1])
+    legs = {}
+    for seg, k, leg in BODY_LEGS:
+        face = sides[(seg, k)]
+        out = bmesh.ops.extrude_face_region(bm, geom=[face])
+        # bmesh keeps the source face (the editor's extrude removes it): left in, it sits inside the
+        # leg's top and every edge round it is shared by three faces, so the body is not closed.
+        bmesh.ops.delete(bm, geom=[face], context="FACES_ONLY")
+        new = [g for g in out["geom"] if isinstance(g, bmesh.types.BMVert)]
+        c = sum((v.co for v in new), Vector()) / len(new)
+        for v in new:  # down to the ground, tapering toward the paw
+            v.co.x = c.x + (v.co.x - c.x) * 0.6
+            v.co.y = c.y + (v.co.y - c.y) * 0.6
+            v.co.z = 0.0
+        legs[leg] = new
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.verts.index_update()
+    bm.faces.index_update()
+    leg_verts = {v for vs in legs.values() for v in vs}
+    leg_faces = {f.index for f in bm.faces if any(v in leg_verts for v in f.verts)}
+    groups = {leg: [v.index for v in vs] for leg, vs in legs.items()}
+    mesh = bpy.data.meshes.new(name)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    bpy.context.view_layer.objects.active = obj
+    finish(name, cell, parent)
+    # Cream on the body's underside between the legs and on the chest face; every leg face stays fur.
+    i = CELLS.index(belly_cell)
+    u = ((i % GRID + 0.5) / GRID, (i // GRID + 0.5) / GRID)
+    uv = mesh.uv_layers.active.data
+    for poly in mesh.polygons:
+        c = poly.center
+        if poly.index not in leg_faces and (poly.normal.z < -0.7 or (c.y < -0.33 and c.z > 0.45)):
+            for li in poly.loop_indices:
+                uv[li].uv = u
+    for leg, idx in groups.items():  # vertex groups: the rig weights each leg to its bones
+        obj.vertex_groups.new(name=leg).add(idx, 1.0, "REPLACE")
+    return obj
 
 
 def prism(name, mat, parent, radius, depth, location, rotation=None, cap=True):
@@ -158,6 +235,27 @@ def solid(name, cell, parent, verts, faces):
     return finish(name, cell, parent)
 
 
+def on_surface(target, x, z):
+    """Where a ray from the front at (x, z) meets `target`, and the surface normal there."""
+    from mathutils import Vector
+    from mathutils.bvhtree import BVHTree
+
+    bpy.context.view_layer.update()
+    tree = BVHTree.FromObject(target, bpy.context.evaluated_depsgraph_get())
+    inv = target.matrix_world.inverted()
+    origin = inv @ Vector((x, -5.0, z))
+    direction = (inv.to_3x3() @ Vector((0, 1, 0))).normalized()
+    hit, normal, _, _ = tree.ray_cast(origin, direction)
+    world = target.matrix_world
+    return world @ hit, (world.to_3x3().inverted().transposed() @ normal).normalized()
+
+
+def seated(name, cell, parent, target, radius, depth, x, z, sink=0.012):
+    """A tetrahedron standing on `target`'s surface at (x, z) as seen from the front: flush, never floating."""
+    point, normal = on_surface(target, x, z)
+    return spike_toward(name, cell, parent, radius, depth, tuple(point - normal * sink), tuple(normal))
+
+
 def join(name, objs):
     """Join parts that never move apart into one: one Roblox MeshPart instead of several."""
     bpy.ops.object.select_all(action="DESELECT")
@@ -186,14 +284,13 @@ def build(out):
     cat = bpy.context.active_object
     cat.name = "Cat"
 
-    body = ico("Body", fur, cat, 0.42, (0, 0.15, 0.6), scale=(0.85, 1.3, 0.85))
-    patch(body, cream, lambda c: c.z < -0.12)  # belly
-    head = ico("Head", fur, cat, 0.55, (0, -0.4, 1.18), scale=(1.15, 0.95, 0.92))
+    body_with_legs("Body", fur, cat, cream)
+    head = ico("Head", fur, cat, 0.55, (0, -0.4, 1.18), scale=(1.15, 0.95, 0.92), mirror=True)
     patch(head, cream, lambda c: c.y < -0.3 and c.z < -0.05)  # muzzle and chin
     # Face features sit flush: their bases just under the head's surface (review: they floated).
-    spike("Nose", pink, cat, 0.07, 0.06, (0, -0.9, 1.1), (90, 0, 180))
+    seated("Nose", pink, cat, head, 0.07, 0.06, 0, 1.12)
     for side, x in (("L", 1), ("R", -1)):
-        spike(f"Eye_{side}", dark, cat, 0.12, 0.04, (x * 0.19, -0.85, 1.28), (90, 0, 180))
+        seated(f"Eye_{side}", dark, cat, head, 0.11, 0.035, x * 0.2, 1.3)
         spike(f"Ear_{side}", fur, cat, 0.22, 0.45, (x * 0.3, -0.35, 1.66), (0, -x * 18, 0))
         spike(f"EarInner_{side}", pink, cat, 0.12, 0.28, (x * 0.3, -0.43, 1.62), (0, -x * 18, 0))
         # Cheek fur: two spikes per side, fanned down and back (review: one flat spike read as an arm).
@@ -201,8 +298,6 @@ def build(out):
             spike_toward(f"FurCheek_{side}1", fur, cat, 0.09, 0.26, (x * 0.5, -0.6, 1.08), (x, 0.5, -0.45)),
             spike_toward(f"FurCheek_{side}2", fur, cat, 0.08, 0.22, (x * 0.48, -0.55, 0.95), (x, 0.6, -0.9)),
         ])
-        for front, y in (("F", -0.15), ("B", 0.45)):
-            prism(f"Leg_{front}{side}", fur, cat, 0.11, 0.42, (x * 0.22, y, 0.21))
     # Chest ruff: three cream spikes under the chin, pointing down and forward.
     join("FurChest", [spike_toward(f"FurChest{k + 1}", cream, cat, 0.1, 0.26, (dx * 0.15, -0.5, 0.72), (dx, -0.7, -1))
                       for k, dx in enumerate((-0.6, 0, 0.6))])

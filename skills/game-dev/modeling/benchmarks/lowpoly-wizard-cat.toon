@@ -10,7 +10,7 @@ max_materials: 1
 max_texture: 512
 fur_prefix: Fur
 source: build_wizard_cat.py
-parts[17]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Leg_FL,Leg_FR,Leg_BL,Leg_BR,Hat,HatBrim,Cape,Crystal,Staff
+parts[13]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Hat,HatBrim,Cape,Crystal,Staff
 views[4]: front,side,three-quarter,top
 rubric[10]{id,check}:
   budget,"total triangles at most max_tris: lowest polygon, measured, not claimed"
@@ -22,4 +22,4 @@ rubric[10]{id,check}:
   renders,"every view in views has a PNG render of at least 2 KB"
   materials,"at most max_materials materials: one draw call per part (ZEPETO texture guide)"
   textures,"every texture is a power of two on both sides and at most max_texture px (ZEPETO texture guide, Roblox texture specs)"
-  look,"manual: a person opens the renders and says it reads as a wizard cat, and not as a copy of any existing character"
+  look,"manual: score with references/visual-review.md (a fresh reviewer, 0-10 per criterion); a person opens the renders and says it reads as a wizard cat, and not as a copy of any existing character"

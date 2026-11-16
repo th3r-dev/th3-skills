@@ -9,16 +9,16 @@ max_materials: 1
 max_texture: 512
 fur_prefix: Fur
 source: build_cat.py
-parts[12]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Leg_FL,Leg_FR,Leg_BL,Leg_BR
+parts[8]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail
 views[4]: front,side,three-quarter,top
 rubric[10]{id,check}:
   budget,"total triangles at most max_tris: lowest polygon, measured, not claimed"
   engine,"every mesh within the target engine's limits (mesh_check.py)"
   closed,"every mesh is closed: each edge, welded by position, is shared by exactly two triangles (Roblox wants watertight)"
-  parts,"every name in parts is a node, so a rig or the importer can move it"
+  parts,"every name in parts is a node (the legs are part of Body since v3, as vertex groups the rig weights)"
   fur,"at least min_fur nodes named fur_prefix*: the fur is modelled, not just named in the prompt"
   source,"the build script sits next to the model, so it can be rebuilt"
   renders,"every view in views has a PNG render of at least 2 KB"
   materials,"at most max_materials materials: one draw call per part (ZEPETO texture guide)"
   textures,"every texture is a power of two on both sides and at most max_texture px (ZEPETO texture guide, Roblox texture specs)"
-  look,"manual: a person opens the renders and says it reads as a furry cat; not counted by the script"
+  look,"manual: score with references/visual-review.md (a fresh reviewer, 0-10 per criterion); a person opens the renders and says it reads as a furry cat; not counted by the script"

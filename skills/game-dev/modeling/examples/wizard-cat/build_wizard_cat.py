@@ -37,21 +37,32 @@ def dress(cat):
         objects[name].location.x = x * 0.38
         objects[name].rotation_euler.y = math.radians(-x * 30)
 
-    brim = cone("HatBrim", "purple", cat, 6, 0.36, 0.36, 0.05, (0, -0.4, 1.66), (-6, 0, 0))
+    brim = cone("HatBrim", "purple", cat, 5, 0.36, 0.36, 0.05, (0, -0.4, 1.66), (-6, 0, 0))
     cat_kit.patch(brim, "gold", lambda c: abs(c.z) < 0.01)  # the rim's side faces: a gold band, 0 triangles
     cone("Hat", "purple", cat, 5, 0.26, 0, 0.8, (0.02, -0.38, 2.06), (-14, 8, 0))
     cat_kit.spike("HatTip", "gold", cat, 0.07, 0.14, (0.07, -0.29, 2.46), (-14, 8, 0))
 
-    # The cape: a closed tent along the back, ridge up and centred, narrow at the neck and wide,
-    # low at the hem past the rump; a shoulder line keeps the round body inside it (16 triangles).
-    front, back = -0.3, 0.75
-    verts = [
-        (0, front, 1.1), (0.31, front, 0.95), (0.34, front, 0.66), (-0.31, front, 0.95), (-0.34, front, 0.66),
-        (0, back, 1.0), (0.4, back, 0.88), (0.48, back, 0.38), (-0.4, back, 0.88), (-0.48, back, 0.38),
-    ]
-    faces = [(0, 1, 2, 4, 3), (5, 8, 9, 7, 6), (0, 5, 6, 1), (1, 6, 7, 2), (0, 3, 8, 5), (3, 4, 9, 8), (2, 7, 9, 4)]
+    # The cape (v3): a thin cloth shell that follows the body's own cross-sections from the neck back,
+    # its hem hanging over the flanks and flaring past the rump, so it reads as cloth, not a block.
+    # One cape section over every body section it covers, from the shoulders back: with fewer, the
+    # straight runs between sections cut through the body's bulge and the fur shows through.
+    cape_rings = [ring + (0.04, 1.0) for ring in cat_kit.BODY_RINGS[1:4]]  # (y, w, h, zc, drop, flare)
+    y, w, h, zc = cat_kit.BODY_RINGS[3]
+    cape_rings.append((y + 0.22, w * 1.15, h, zc - 0.04, 0.34, 1.25))  # the hem trailing past the rump
+    d = 0.045  # cloth thickness
+    verts, loops = [], []
+    for y, w, h, zc, drop, flare in cape_rings:
+        hem = zc - 0.3 * h - drop * (1 + (y > 0.3))
+        outer = [(w * flare + d, hem), (w + d, zc + 0.3 * h), (0, zc + h + d), (-(w + d), zc + 0.3 * h), (-(w * flare + d), hem)]
+        inner = [(-(w + 0.005), zc + 0.3 * h), (0, zc + h + 0.005), (w + 0.005, zc + 0.3 * h)]  # just off the fur
+        base = len(verts)
+        verts += [(x, y, z) for x, z in outer + inner]
+        loops.append([base + k for k in range(8)])
+    faces = [tuple(loops[0]), tuple(reversed(loops[-1]))]
+    for a, b in zip(loops, loops[1:]):
+        faces += [(a[k], a[(k + 1) % 8], b[(k + 1) % 8], b[k]) for k in range(8)]
     cat_kit.solid("Cape", "plum", cat, verts, faces)
-    cat_kit.spike_toward("CapeClasp", "gold", cat, 0.07, 0.1, (0, -0.64, 0.7), (0, -1, -0.15))
+    # No clasp: the chest ruff covers the throat, so a clasp there was half hidden (review round 2).
 
     # A staff planted by the front paw, the crystal (an octahedron, 8 triangles) on top.
     cat_kit.prism_toward("Staff", "wood", cat, 0.04, 1.45, (0.58, -0.55, 0.0), (-0.06, 0, 1))
@@ -59,9 +70,9 @@ def dress(cat):
     crystal = [(cx + a, cy, cz), (cx - a, cy, cz), (cx, cy + a, cz), (cx, cy - a, cz), (cx, cy, cz + h), (cx, cy, cz - h)]
     cat_kit.solid("Crystal", "cyan", cat, crystal,
                   [(4, 0, 2), (4, 2, 1), (4, 1, 3), (4, 3, 0), (5, 2, 0), (5, 1, 2), (5, 3, 1), (5, 0, 3)])
-    # Two sparks by the crystal, joined into one part (one MeshPart in Roblox, not two).
+    # One spark by the crystal (joined, so more sparks stay one MeshPart in Roblox).
     sparks = [cat_kit.spike_toward(f"Spark{k}", "cyan", cat, 0.035, 0.08, base, d)
-              for k, (base, d) in enumerate((((0.68, -0.5, 1.72), (1, 0, 1)), ((0.32, -0.62, 1.78), (-1, -0.3, 1))))]
+              for k, (base, d) in enumerate((((0.68, -0.5, 1.72), (1, 0, 1)),))]
     cat_kit.join("Sparks", sparks)
 
 
@@ -74,4 +85,5 @@ def main():
     cat_kit.save_all(out, "wizard-cat", a.size)
 
 
-main()
+if __name__ == "__main__":  # blender --python runs it as __main__; the rig script imports it
+    main()
