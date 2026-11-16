@@ -14,7 +14,7 @@ Tool: `uv run --script ${CLAUDE_SKILL_DIR}/scripts/pcache.py <cmd>`. It's stdlib
 | Command | Does |
 |---|---|
 | `build [root]` | Hashes git-visible files and re-outlines only the changed ones into `.pcache/context.md`, which comes out byte-stable. |
-| `brief "<task>" [--role R]` | Prints the outline, a fixed rules block, then the role and task last. |
+| `brief "<task>" [--role R] [--rag VAULT]` | Prints the outline, a fixed rules block, then the role and task last. With `--rag`, the vault's hot.md and the notes retrieved for this task go between the rules and the role, after the shared prefix (`../rag`). |
 | `stats [session_id] [--logs DIR]` | Shows input, cache write, cache read and hit rate per agent, read from `~/.claude/projects/<cwd>/`. Defaults to the newest session. |
 | `--self-test` | Runs the built-in asserts. |
 
