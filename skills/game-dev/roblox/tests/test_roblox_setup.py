@@ -55,8 +55,10 @@ def test_scaffold_dry_run_then_write(tmp_path, capsys):
     assert not (tmp_path / "default.project.json").exists()
     assert rs.main(["scaffold", "--root", str(tmp_path), "--title", "Coin Run"]) == 0
     assert json.loads((tmp_path / "default.project.json").read_text())["name"] == "Coin Run"
-    rules = (tmp_path / "src/shared/Rules.luau").read_text()
-    assert "game:" not in rules and "game." not in rules  # rules stay instance-free, so Lune can test them
+    for name in ("Wallet", "Pickup", "PickupFactory"):
+        text = (tmp_path / f"src/shared/{name}.luau").read_text()
+        assert text.startswith("--!strict")
+        assert "game:" not in text and "game." not in text  # shared classes stay instance-free, so Lune can test them
 
 
 def test_scaffold_keeps_existing_files(tmp_path, capsys):
