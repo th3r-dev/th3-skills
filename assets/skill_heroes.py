@@ -95,6 +95,13 @@ SKILLS = {
          ("Summarize", "into the right skeleton"), ("Build", "Markdown to PDF + DOCX"),
          ("Merge", "annexes and stamps via pdf-lib")],
         ["a matching PDF and DOCX,", "changes highlighted"]),
+    "game-dev": (
+        ["Idea to playable game,", "motivation first."],
+        ["Sub-skills design-lens and roblox,", "for any coding agent."],
+        [("Motivation", "who plays and which drive"), ("Brief", "one page, the loop first"),
+         ("Engine", "web, or Roblox Studio"), ("Build", "the core loop, run and looked at"),
+         ("Playtest", "through Studio's MCP server"), ("Grow", "one feature a sitting")],
+        ["a game you can play,", "and the next feature named"]),
     "containers": (
         ["Podman ate the disk.", "Get it back."],
         ["Sub-skill podman: Windows, macOS", "and Linux, one stdlib script."],

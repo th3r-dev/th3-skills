@@ -49,6 +49,8 @@ SKILLS = [
      ["a change on a real server"], ["plan, approved steps, checks,", "before / after / rollback"]),
     ("documentation", "docs in one house style",
      ["a Markdown file,", "two annex PDFs"], ["one PDF + DOCX in the house", "theme, annexes merged"]),
+    ("game-dev", "idea to playable game",
+     ["“an obby where the floor", "follows the music”"], ["a brief, a Roblox place,", "a playtest the agent ran"]),
     ("containers", "wins back Podman disk",
      ["a disk full of old images"], ["pruned, trimmed, the WSL", "disk compacted: space back"]),
 ]
@@ -67,7 +69,7 @@ def build():
     ])
 
     NX, JX, RIGHT = L + 20, L + 270, 628
-    row = lambda i: 222 + i * 40
+    row = lambda i: 216 + i * 38
     for i, (name, job, _, _) in enumerate(SKILLS):
         y = row(i)
         out.extend([
@@ -80,7 +82,7 @@ def build():
         out.append(f'<g class="{hl}"><rect x="{L - 10}" y="{y - 25}" width="{RIGHT - L + 20}" height="36" fill="{INK}"/>'
                    + d.t(NX, y, name, 15, Y, 800, mono=True) + d.t(JX, y, job, 16, Y, 500) + "</g>")
 
-    out.append(d.t(L, 686, "/plugin install th3-skills --marketplace th3r-dev/th3-skills", 14, INK3, 500, mono=True,
+    out.append(d.t(L, 698, "/plugin install th3-skills --marketplace th3r-dev/th3-skills", 14, INK3, 500, mono=True,
                    maxw=RIGHT - L))
 
     # right: the stage
