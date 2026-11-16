@@ -93,6 +93,7 @@ Rules, whichever way:
   model done. A render shows the look, not the topology: section 4's checks cover that.
 - **Colour and textures:** read [`references/texturing.md`](references/texturing.md) first. Low-poly
   work uses one material over a small palette texture (power of two), not a material per colour.
+- **Bones and animation:** read [`references/rigging.md`](references/rigging.md) first. A segmented low-poly model is joined into one mesh and weighted part by part; `examples/wizard-cat/rig_wizard_cat.py` is the worked case.
 - **Modifiers, then apply.** Mirror, bevel, subdivision and weld are fine while working; apply
   them before export so the engine gets the real mesh. Booleans leave n-gons: clean them up.
 
@@ -150,7 +151,9 @@ python scripts/bench_model.py benchmarks/lowpoly-furry-cat.toon examples/lowpoly
 
 Checks: triangle budget, the engine's limits, every mesh closed (edges welded by position, each
 shared by two triangles), named parts, modelled fur, the build script beside the model, and four
-renders. Whether it *looks* like the prompt is a `manual` row: open the renders.
+renders. Whether it *looks* like the prompt is the `manual` `look` row: score it with
+[`references/visual-review.md`](references/visual-review.md), a fresh reviewer on a fixed 0–10
+scale with evidence per view, never the builder's own eye.
 
 Worked case, "Create an cat furry charactor which lowest polygon" (`examples/lowpoly-cat/`):
 **128 triangles** in 19 closed parts, one material, 9/9. How it got there:

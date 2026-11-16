@@ -52,7 +52,7 @@ def dress(cat):
     d = 0.045  # cloth thickness
     verts, loops = [], []
     for y, w, h, zc, drop, flare in cape_rings:
-        hem = zc - 0.3 * h - drop * (1 + (y > 0.3))
+        hem = max(zc - 0.3 * h - drop * (1 + (y > 0.3)), 0.12)  # the hem hangs low but never through the ground
         outer = [(w * flare + d, hem), (w + d, zc + 0.3 * h), (0, zc + h + d), (-(w + d), zc + 0.3 * h), (-(w * flare + d), hem)]
         inner = [(-(w + 0.005), zc + 0.3 * h), (0, zc + h + 0.005), (w + 0.005, zc + 0.3 * h)]  # just off the fur
         base = len(verts)
