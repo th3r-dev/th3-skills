@@ -47,10 +47,10 @@ python scripts/roblox_setup.py scaffold --root <game folder> --title "<game name
 
 | Path | Becomes in Studio | Holds |
 |---|---|---|
-| `src/shared/` | ReplicatedStorage.Shared | modules both sides use; **rules with no `game` in them** |
-| `src/server/` | ServerScriptService.Server (Script) | everything that decides: score, currency, saves |
+| `src/shared/` | ReplicatedStorage.Shared | classes and factories both sides use (`Wallet`, `Pickup`, `PickupFactory`); **no `game` in them** |
+| `src/server/` | ServerScriptService.Server (Script) | the one server Script and server classes (`PickupSpawner`): score, currency, saves |
 | `src/client/` | StarterPlayerScripts.Client (LocalScript) | input and what the player sees |
-| `tests/run.luau` | — (runs under Lune) | the rules' tests |
+| `tests/run.luau` | — (runs under Lune) | the shared classes' tests |
 | `rokit.toml` | — | Rojo 7.7.1, Selene 0.32.0, StyLua 2.6.0, Lune 0.11.1 |
 
 Then, each on a yes: `rokit install` (downloads the four tools from GitHub). The person runs
@@ -95,11 +95,18 @@ ASSESSED, never a pass.
 
 ## Rules for Roblox code
 
+**Read [`references/luau.md`](references/luau.md) before writing Luau.** It holds the house style
+(Roblox's style guide as the base), the typed **class + factory** pattern every module follows,
+what the Luau VM rewards, and a review checklist, with each rule's source.
+
+
 - **The server decides.** Currency, items, score, damage and cooldowns change on the server. A
   client message is a request: check its type, range and rate, and whether the player could do
   that now.
-- **Rules without instances.** Put game rules in `src/shared/` modules that never touch `game`, so
-  Lune tests them headless.
+- **Classes and factories.** Each kind of thing is a typed class; one factory per family makes
+  them from a frozen table of definitions, so a new kind is one row. Rules classes in `src/shared/`
+  never touch `game`, so Lune tests them; world code (Parts, connections) is a server class with
+  `destroy()`.
 - **Files are the source.** With Rojo connected, edit `src/`, not Studio's script editor: the next
   sync overwrites a Studio edit. Use MCP `multi_edit` only for a place with no files.
 - **Saves.** DataStore calls in `pcall` with retries; save on leave and in `game:BindToClose`.

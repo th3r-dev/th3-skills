@@ -1,3 +1,4 @@
+--!strict
 -- Client entry: Rojo makes this folder StarterPlayerScripts.Client (a LocalScript).
 -- It only shows state; it never changes the score (the server owns it).
 
