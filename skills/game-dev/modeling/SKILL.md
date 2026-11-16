@@ -41,10 +41,22 @@ per-topic references; this file is the route and the game-engine handoff.
 
 Before building, write down: the engine (Roblox, web, other), what it is (prop, building,
 character to rig), its size in the game (Roblox studs, metres), the triangle budget, and the
-style. For Roblox the hard limits are in [section 4](#4-engine-limits). A character to rig needs a
+style. For Roblox the hard limits are in [section 5](#5-engine-limits). A character to rig needs a
 T- or A-pose and clean topology; a prop does not.
 
-## 2. Blender (default route)
+## 2. References first
+
+Before building, collect 6 to 12 references and write them down in `references.md` beside the
+build script: link, author, licence, polygon count, and **what each one gives** (a proportion, a
+budget, a way to do fur or colour).
+
+- **Sketchfab** is measurable: `https://api.sketchfab.com/v3/search?type=models&q=<terms>&max_face_count=<n>`
+  and `.../v3/models/<uid>` return face counts, licences and thumbnails without a login.
+- **Pinterest and image boards** are mood only: rights unknown, nothing copied, no image committed.
+- **Not a copy:** no existing game's or brand's character, even when it shows up in the search.
+- Put your renders next to the closest references before calling the model done.
+
+## 3. Blender (default route)
 
 **Check Blender first:** `blender --version` (macOS: `/Applications/Blender.app/Contents/MacOS/Blender`).
 Not installed: say so (blender.org/download, free) and stop the Blender steps.
@@ -82,7 +94,7 @@ Rules, whichever way:
 - **Modifiers, then apply.** Mirror, bevel, subdivision and weld are fine while working; apply
   them before export so the engine gets the real mesh. Booleans leave n-gons: clean them up.
 
-## 3. Export
+## 4. Export
 
 ```bash
 blender -b art/rock/rock.blend --python scripts/blender_export.py -- --target roblox --out build/rock.fbx --dry-run
@@ -95,7 +107,7 @@ blender -b art/rock/rock.blend --python scripts/blender_export.py -- --target ro
 transforms were applied, and writes nothing. Checked on Blender 5.3.0: the cat example's FBX
 re-imports with every scale 1 and the same triangle count.
 
-## 4. Engine limits
+## 5. Engine limits
 
 Check the file before importing it:
 
@@ -124,7 +136,7 @@ user and pass it as `--max-total`.
 Then import (Roblox: Studio → 3D Importer), and look at it in the engine. With Studio's MCP server
 connected, `screen_capture` after `insert_asset` or the import shows it in place.
 
-## 5. Bench
+## 6. Bench
 
 A case in `benchmarks/*.toon` holds the prompt as typed, the budget and a rubric;
 `scripts/bench_model.py` scores a built model against it (exit code = failed checks):
@@ -138,13 +150,18 @@ Checks: triangle budget, the engine's limits, every mesh closed (edges welded by
 shared by two triangles), named parts, modelled fur, the build script beside the model, and four
 renders. Whether it *looks* like the prompt is a `manual` row: open the renders.
 
-Worked case, "Create an cat furry charactor which lowest polygon": 148 triangles in 20 closed
-parts (icosahedron body and head, three-sided legs and tail, tetrahedron ears, eyes, nose and five
-fur tufts), 7/7. The first build had 168 triangles: a cream belly hidden inside the body cost 20
-for nothing, and the chest tuft floated under the body. Both were caught by looking at the renders,
-not by the script.
+Worked case, "Create an cat furry charactor which lowest polygon" (`examples/lowpoly-cat/`):
+**128 triangles** in 19 closed parts, 7/7. How it got there:
 
-## 6. Asset records
+| Build | Triangles | What changed |
+|---|---|---|
+| v1 | 168 | first pass from the prompt alone |
+| v1.1 | 148 | renders showed a belly hidden inside the body (20 triangles for nothing) and a floating chest tuft |
+| v3 | 128 | after the reference board (`references.md`): character proportions, muzzle and belly as face colours instead of shapes, bigger eyes |
+
+The script never caught any of these: the renders and the references did.
+
+## 7. Asset records
 
 Every model gets a line in `assets/provenance.yaml`: where it came from (script path, Meshy task
 id, or the source and its license), the date, and the asset id once uploaded. Never use a model
@@ -165,7 +182,7 @@ meshy-3d-agent's skill that matter here:
 - Submit once with `create --async`, keep the task id, `wait` on it; a timeout is not a reason to
   create again. Use `--format json --no-update-check` on every command.
 - **An LOD is a remesh of the existing task**, never a new generation.
-- Download the GLB, run `mesh_check.py` on it, then fix or export in Blender (sections 2–4). A
+- Download the GLB, run `mesh_check.py` on it, then fix or export in Blender (sections 3–5). A
   preview image is not proof of topology.
 - Login is the CLI's device flow, approved by the user in a browser. Credentials never go in chat
   or in files the agent writes.
