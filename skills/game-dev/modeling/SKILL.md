@@ -7,7 +7,8 @@ description: >-
   (FBX for Roblox, GLB for the web); and checks the file against the engine's limits with
   `mesh_check.py` before import. Meshy AI generation is an opt-in route, off unless the user says
   they have the Meshy CLI. Use WHENEVER the work is "3D model", "make a prop / asset / character
-  model", "Blender", "bpy", "low poly", "polycount", "triangle budget", "export FBX / GLB / glTF",
+  model", "Blender", "bpy", "low poly", "polycount", "triangle budget", "environment", "level", "modular kit",
+  "set dressing", "art style", "shading", "bake", "geometry nodes", "export FBX / GLB / glTF",
   "import a mesh into Roblox", "MeshPart", "too many triangles", "texture size", "Meshy",
   "text to 3D", "image to 3D", "โมเดล 3D", "ปั้นโมเดล".
 ---
@@ -93,7 +94,11 @@ Rules, whichever way:
   model done. A render shows the look, not the topology: section 4's checks cover that.
 - **Colour and textures:** read [`references/texturing.md`](references/texturing.md) first. Low-poly
   work uses one material over a small palette texture (power of two), not a material per colour.
+- **Materials that must leave Blender:** read [`references/shading.md`](references/shading.md) first. No engine reads a procedural node tree: build the look with nodes, bake it to a power-of-two image, export one Principled material over that image.
+- **Scatter, repeats, variants from a seed:** read [`references/geometry-nodes.md`](references/geometry-nodes.md) first. Realize Instances, apply the modifier, cap the count, and count triangles after realizing. `examples/crystal-ground/build_crystal_ground.py` is the worked case for both.
 - **Bones and animation:** read [`references/rigging.md`](references/rigging.md) first. A segmented low-poly model is joined into one mesh and weighted part by part; `examples/wizard-cat/rig_wizard_cat.py` is the worked case.
+- **Scenes and levels:** read [`references/environment.md`](references/environment.md) first. A scene is a kit: each unique piece is built once, exported once (`kit/<Piece>.fbx`) and placed from a layout table, so Roblox uploads it once and instances the copies. `examples/wizard-glade/build_wizard_glade.py` is the worked case.
+- **The house look:** read [`references/art-theme.md`](references/art-theme.md) before modelling anything that stands next to the wizard cat: the palette cells, the value and saturation rules, the size ladder in studs, and the triangle budget per asset class.
 - **Modifiers, then apply.** Mirror, bevel, subdivision and weld are fine while working; apply
   them before export so the engine gets the real mesh. Booleans leave n-gons: clean them up.
 
@@ -166,7 +171,20 @@ Worked case, "Create an cat furry charactor which lowest polygon" (`examples/low
 | v4 | 128 | after `references/texturing.md`: one material over a 16 px palette texture instead of four materials |
 | wizard | 200 | the follow-up "output is need wizard cat": `examples/wizard-cat/` dresses the same cat (hat, cape, crystal), 9/9 on its own case |
 
+A second case, `benchmarks/crystal-ground.toon` (`examples/crystal-ground/`): a tile for the cat to
+stand on, crystals and rocks scattered by Geometry Nodes from a seed, procedural materials baked
+to a 256 px colour map and a 128 px emission map. **498 triangles** in 3 closed parts, one
+material, 8/8.
+
+| Build | Triangles | What changed |
+|---|---|---|
+| first render | 458 | the 128 px emission map showed crystal glow on the ground's rim: the bake margin was wider than the gap between UV islands |
+| final | 498 | margin tied to the gap; small pieces given 2.5 times the texel density; the ring widened so the count reaches its cap more often |
+
 The script never caught any of these: the renders and the references did.
+
+Scene case (`examples/wizard-glade/`, `benchmarks/wizard-glade.toon`): a 24 × 24 stud glade, **942
+triangles** placed from 354 unique in 10 kit pieces (35 copies), one material, 8/8.
 
 ## 7. Asset records
 
