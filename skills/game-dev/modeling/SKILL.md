@@ -56,7 +56,18 @@ Three ways to drive it; use the first that is available:
 2. **Blender Lab MCP server** (official, Blender 5.1+; v1.0.3, 2026-09-11): a Blender add-on on
    `localhost:9876`, plus the `blender-mcp` server for any stdio MCP client. It runs model-written
    Python in the live Blender session **with no sandbox**: say so and ask before wiring it up.
-   Setup: projects.blender.org/lab/blender_mcp.
+   Setup checked on Blender 5.3.0, from the v1.0.3 release files
+   (projects.blender.org/lab/blender_mcp/releases):
+   - Add-on: `blender --command extension install-file -r user_default -e mcp-1.0.3.zip`, then
+     enable it and turn on Preferences → System → Allow Online Access. It auto-starts on port
+     9876 when Blender opens with a window.
+   - Server: unzip `blender-1.0.3.mcpb` and register `uv run --directory <unzipped> blender-mcp`
+     (stdio) with the agent. `BLENDER_PATH` names Blender for the background tools.
+   - Two modes. The `*_for_cli` tools open a `.blend` in background Blender and need no window or
+     add-on; `execute_blender_code_for_cli` edits a temporary copy, so save with
+     `save_as_mainfile(copy=True)` to keep a result. The live tools (`execute_blender_code`,
+     `get_objects_summary`, `get_screenshot_of_window_as_image`) drive the open Blender. Code
+     returns data by assigning a dict to `result`; `print` output is not returned.
 3. **Plain Blender:** write the script, then `blender -b --python build_<asset>.py`. Works for any
    agent with a shell.
 
@@ -81,8 +92,8 @@ blender -b art/rock/rock.blend --python scripts/blender_export.py -- --target ro
 `--target roblox` applies scale and rotation, then writes FBX with Roblox's documented settings
 (Path Mode Copy, Embed Textures, FBX Unit Scale, no leaf bones, no baked animation unless
 `--animation`). `--target web` writes a GLB. `--dry-run` prints triangles, n-gons and whether
-transforms were applied, and writes nothing. *This script has not yet been run in Blender in this
-repo; check its first export by hand.*
+transforms were applied, and writes nothing. Checked on Blender 5.3.0: the cat example's FBX
+re-imports with every scale 1 and the same triangle count.
 
 ## 4. Engine limits
 
@@ -113,7 +124,27 @@ user and pass it as `--max-total`.
 Then import (Roblox: Studio → 3D Importer), and look at it in the engine. With Studio's MCP server
 connected, `screen_capture` after `insert_asset` or the import shows it in place.
 
-## 5. Asset records
+## 5. Bench
+
+A case in `benchmarks/*.toon` holds the prompt as typed, the budget and a rubric;
+`scripts/bench_model.py` scores a built model against it (exit code = failed checks):
+
+```bash
+blender -b --factory-startup --python examples/lowpoly-cat/build_cat.py -- --out examples/lowpoly-cat
+python scripts/bench_model.py benchmarks/lowpoly-furry-cat.toon examples/lowpoly-cat/cat.glb
+```
+
+Checks: triangle budget, the engine's limits, every mesh closed (edges welded by position, each
+shared by two triangles), named parts, modelled fur, the build script beside the model, and four
+renders. Whether it *looks* like the prompt is a `manual` row: open the renders.
+
+Worked case, "Create an cat furry charactor which lowest polygon": 148 triangles in 20 closed
+parts (icosahedron body and head, three-sided legs and tail, tetrahedron ears, eyes, nose and five
+fur tufts), 7/7. The first build had 168 triangles: a cream belly hidden inside the body cost 20
+for nothing, and the chest tuft floated under the body. Both were caught by looking at the renders,
+not by the script.
+
+## 6. Asset records
 
 Every model gets a line in `assets/provenance.yaml`: where it came from (script path, Meshy task
 id, or the source and its license), the date, and the asset id once uploaded. Never use a model

@@ -1,0 +1,20 @@
+id: lowpoly-furry-cat
+skill: game-dev/modeling
+prompt: "Create an cat furry charactor which lowest polygon"
+prompt_read_as: "A furry cat character at the lowest polygon count that still reads as a cat, as a game asset."
+target: roblox
+max_tris: 300
+min_fur: 4
+fur_prefix: Fur
+source: build_cat.py
+parts[12]: Body,Head,Ear_L,Ear_R,Eye_L,Eye_R,Nose,Tail,Leg_FL,Leg_FR,Leg_BL,Leg_BR
+views[4]: front,side,three-quarter,top
+rubric[8]{id,check}:
+  budget,"total triangles at most max_tris: lowest polygon, measured, not claimed"
+  engine,"every mesh within the target engine's limits (mesh_check.py)"
+  closed,"every mesh is closed: each edge, welded by position, is shared by exactly two triangles (Roblox wants watertight)"
+  parts,"every name in parts is a node, so a rig or the importer can move it"
+  fur,"at least min_fur nodes named fur_prefix*: the fur is modelled, not just named in the prompt"
+  source,"the build script sits next to the model, so it can be rebuilt"
+  renders,"every view in views has a PNG render of at least 2 KB"
+  look,"manual: a person opens the renders and says it reads as a furry cat; not counted by the script"
