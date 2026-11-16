@@ -1,0 +1,7 @@
+# The toolchain, pinned. `rokit install` installs exactly these versions
+# (docs/engine-reference/roblox/VERSION.md lists the same pins).
+[tools]
+rojo = "rojo-rbx/rojo@7.7.1"
+selene = "Kampfkarren/selene@0.32.0"
+stylua = "JohnnyMorganz/StyLua@2.6.0"
+lune = "lune-org/lune@0.11.1"

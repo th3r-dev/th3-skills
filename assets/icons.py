@@ -21,6 +21,11 @@ def _f():
 
 
 ART = {
+    # a gamepad: d-pad left, two buttons right
+    "game-dev": (
+        f'<path d="M34 36H86C100 36 110 48 112 64L114 84C115 94 106 100 98 94L84 80H36L22 94C14 100 5 94 6 84L8 64C10 48 20 36 34 36Z" {_s(fill=Y)}/>'
+        f'<path d="M34 50V70M24 60H44" {_s(7)}/>'
+        f'<circle cx="80" cy="54" r="6" {_f()}/><circle cx="92" cy="66" r="6" {_f()}/>'),
     # a shipping container on a crane sling
     "containers": (
         f'<path d="M30 34L60 12L90 34" {_s()}/>'
