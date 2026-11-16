@@ -20,7 +20,7 @@ description: >-
 | When the work is… | Read | Scripts |
 |---|---|---|
 | an idea, a brief, "is this fun", a loop, rewards, player types, monetization ethics | [`design-lens/SKILL.md`](design-lens/SKILL.md) | none |
-| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory) | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory) | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md), agent playtests: [`roblox/references/agentic-playtest.md`](roblox/references/agentic-playtest.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
 | 3D models: build in Blender, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
 
 ## The flow
