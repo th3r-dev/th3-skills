@@ -41,7 +41,7 @@ def inside_cwd(path: str) -> str:
     written by an agent) can never read or write elsewhere."""
     base = os.path.realpath(os.getcwd())
     full = os.path.realpath(path)
-    if os.path.commonpath([base, full]) != base:
+    if full != base and not full.startswith(base + os.sep):
         raise SystemExit(f"{path}: outside the current directory ({base}); run from a folder that contains it")
     return full
 
