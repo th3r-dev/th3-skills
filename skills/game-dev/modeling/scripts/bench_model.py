@@ -15,6 +15,8 @@ check text starts with "manual:" is printed for a person and not counted.
   fur      at least min_fur nodes whose names start with fur_prefix
   source   the case's source file sits next to the model
   renders  every name in views has <name>.png of at least 2 KB next to the model
+  materials  at most max_materials materials in the file
+  textures   every image is a power of two on both sides and at most max_texture px
 
 Stdlib only. Reads the TOON subset the cases use (as social-media's bench_post.py does).
 """
@@ -114,7 +116,7 @@ def open_edges(doc, binary, mesh) -> int:
 
 def run(case: dict, model: Path) -> dict[str, tuple[bool | None, str]]:
     doc, binary = mesh_check.read_gltf(model)
-    meshes, _ = mesh_check.check_gltf(model)
+    meshes, images = mesh_check.check_gltf(model)
     names = {n.get("name", "") for n in doc.get("nodes", [])}
     results: dict[str, tuple[bool | None, str]] = {}
     for r in case["rubric"]:
@@ -149,6 +151,15 @@ def run(case: dict, model: Path) -> dict[str, tuple[bool | None, str]]:
             small = [v for v in case["views"]
                      if not (model.parent / f"{v}.png").is_file() or (model.parent / f"{v}.png").stat().st_size < 2048]
             results[rid] = (not small, "all views rendered" if not small else "missing or blank: " + ", ".join(small))
+        elif rid == "materials":
+            n = len(doc.get("materials", []))
+            results[rid] = (n <= case["max_materials"], f"{n} materials, at most {case['max_materials']}")
+        elif rid == "textures":
+            pot = lambda v: v > 0 and v & (v - 1) == 0
+            bad = [f"{t['name']} {t['size']}" for t in images
+                   if not t["size"] or not all(pot(v) and v <= case["max_texture"] for v in t["size"])]
+            sizes = ", ".join(f"{t['name']} {t['size'][0]}x{t['size'][1]}" for t in images if t["size"]) or "none"
+            results[rid] = (not bad, sizes if not bad else "not a power of two or too big: " + ", ".join(bad))
         else:
             results[rid] = (False, "no check implements this rubric id")
     return results
@@ -177,8 +188,9 @@ def selftest() -> int:
     case = load_toon(
         "target: roblox\nmax_tris: 8\nmin_fur: 1\nfur_prefix: Fur\nsource: build.py\n"
         "parts[2]: Body,Tail\nviews[1]: front\n"
-        "rubric[8]{id,check}:\n  budget,x\n  engine,x\n  closed,x\n  parts,x\n  fur,x\n"
-        "  source,x\n  renders,x\n  look,\"manual: open it\"\n")
+        "max_materials: 1\nmax_texture: 512\n"
+        "rubric[10]{id,check}:\n  budget,x\n  engine,x\n  closed,x\n  parts,x\n  fur,x\n"
+        "  source,x\n  renders,x\n  materials,x\n  textures,x\n  look,\"manual: open it\"\n")
     with tempfile.TemporaryDirectory() as d:
         glb = Path(d) / "m.glb"
         _tetra_glb(glb)
@@ -187,6 +199,7 @@ def selftest() -> int:
         assert not r["parts"][0] and "Tail" in r["parts"][1]
         assert r["fur"][0] and not r["source"][0] and not r["renders"][0]
         assert r["look"][0] is None
+        assert r["materials"][0] and r["textures"][0]  # no materials, no images: nothing over
         _tetra_glb(glb, open_one=True)
         assert not run(case, glb)["closed"][0]
         case["rubric"].append({"id": "nope", "check": "x"})

@@ -31,4 +31,13 @@ its design is not to be copied.
 | The lowest-poly models colour faces, not extra shapes | a 20-triangle muzzle object | muzzle and belly as face colours on the head and body: 0 extra triangles |
 | Big eyes carry the character | small eyes | eyes twice the size |
 | Fur at low poly is spikes (Gnarpy) | kept | kept: cheeks, chest, crown, tail tip |
-| — | 148 triangles | **128 triangles**, 7/7 on the bench |
+| One material per asset, power-of-two textures (ZEPETO, `references/texturing.md`) | 4 materials | **1 material** over a 16 px palette texture |
+| — | 148 triangles | **128 triangles**, 9/9 on the bench |
+
+## Wizard cat (`../wizard-cat/`)
+
+The follow-up "output is need wizard cat" dresses the same cat. [Wizard Cat](https://sketchfab.com/3d-models/42cc473a1c17467c8f96e47e2a4439de)
+on this board gave the idea only. Its look (a black cat, a blue robe, a yellow hat with a red band,
+blue flames) was kept out: this one is the orange cat with a purple pointed hat, the ears through
+its brim, a purple cape with a gold clasp, and a floating cyan crystal. 200 triangles, one
+material, 9/9 on `benchmarks/lowpoly-wizard-cat.toon`.

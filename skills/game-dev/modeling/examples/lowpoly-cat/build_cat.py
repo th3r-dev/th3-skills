@@ -4,7 +4,7 @@ The source of the model: run it, never edit the .blend by hand.
 
   blender -b --factory-startup --python build_cat.py -- --out <folder>
 
-Writes <folder>/cat.blend, cat.glb, and renders front/side/three-quarter/top .png.
+Writes <folder>/cat.blend, cat.glb, palette.png (16 px, one material), and renders front/side/three-quarter/top .png.
 Built after a reference board (references.md). "Furry" at this budget means faceted tufts (three-sided spikes) at the cheeks, chest, crown and
 tail tip, not hair particles: hair cannot be exported to a game mesh.
 Every part is its own named, closed object under an empty "Cat", so a rig or Roblox's importer
@@ -22,6 +22,16 @@ FUR = (0.95, 0.5, 0.15, 1)  # orange
 CREAM = (0.98, 0.88, 0.70, 1)
 PINK = (0.95, 0.55, 0.62, 1)
 DARK = (0.08, 0.07, 0.07, 1)
+# One material, one 16 px palette texture (power of two), every face UV'd to the middle of its
+# colour's cell: one draw call per part, and new colours are new cells, not new materials.
+PALETTE = {
+    "fur": FUR, "cream": CREAM, "pink": PINK, "dark": DARK,
+    "purple": (0.45, 0.22, 0.68, 1), "gold": (0.96, 0.78, 0.25, 1), "cyan": (0.35, 0.92, 0.96, 1),
+}  # 4 x 4 cells, 4 px each; outfits use the spare colours
+CELLS = list(PALETTE)
+GRID = 4
+PALETTE_SIZE = 16
+PALETTE_MAT = None
 
 
 def args():
@@ -32,15 +42,44 @@ def args():
     return ap.parse_args(argv)
 
 
-def material(name, color):
-    m = bpy.data.materials.new(name)
-    m.diffuse_color = color  # Workbench and the viewport read this
+def palette_material(out):
+    cell = PALETTE_SIZE // GRID
+    img = bpy.data.images.new("Palette", PALETTE_SIZE, PALETTE_SIZE)
+    colours = list(PALETTE.values())
+    pixels = []
+    for y in range(PALETTE_SIZE):
+        for x in range(PALETTE_SIZE):
+            k = (y // cell) * GRID + x // cell
+            pixels.extend(colours[k] if k < len(colours) else (1, 0, 1, 1))  # magenta = unused
+    img.pixels = pixels
+    img.filepath_raw = os.path.join(out, "palette.png")
+    img.file_format = "PNG"
+    img.save()
+    img.pack()  # the .blend carries it too
+    m = bpy.data.materials.new("Palette")
     m.use_nodes = True
-    bsdf = m.node_tree.nodes.get("Principled BSDF")
-    if bsdf:
-        bsdf.inputs["Base Color"].default_value = color  # glTF exports this
-        bsdf.inputs["Roughness"].default_value = 0.9
+    nodes = m.node_tree.nodes
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = img
+    tex.interpolation = "Closest"  # flat cells, no bleeding between colours
+    bsdf = nodes["Principled BSDF"]
+    m.node_tree.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.9
     return m
+
+
+def paint(obj, cell, inside=None):
+    """UV the faces (all, or those whose local centre passes `inside`) to a palette cell."""
+    i = CELLS.index(cell)
+    u = ((i % GRID + 0.5) / GRID, (i // GRID + 0.5) / GRID)
+    mesh = obj.data
+    if not mesh.uv_layers:
+        mesh.uv_layers.new(name="UVMap")
+    uv = mesh.uv_layers.active.data
+    for poly in mesh.polygons:
+        if inside is None or inside(poly.center):
+            for li in poly.loop_indices:
+                uv[li].uv = u
 
 
 def finish(name, mat, parent, location=None, rotation=None, scale=None):
@@ -52,7 +91,8 @@ def finish(name, mat, parent, location=None, rotation=None, scale=None):
         o.rotation_euler = [math.radians(a) for a in rotation]
     if scale:
         o.scale = scale
-    o.data.materials.append(mat)
+    o.data.materials.append(PALETTE_MAT)
+    paint(o, mat)
     o.parent = parent
     return o
 
@@ -76,21 +116,18 @@ def spike(name, mat, parent, radius, depth, location, rotation):
     return finish(name, mat, parent, location, rotation)
 
 
-def patch(obj, mat, inside):
-    """Colour the faces whose local centre passes `inside`: a patch for 0 extra triangles."""
-    obj.data.materials.append(mat)
-    index = len(obj.data.materials) - 1
-    for poly in obj.data.polygons:
-        if inside(poly.center):
-            poly.material_index = index
+def patch(obj, cell, inside):
+    """A colour patch on the faces whose local centre passes `inside`: 0 extra triangles."""
+    paint(obj, cell, inside)
 
 
-def build():
+def build(out):
     # v2, after the reference board (references.md): character proportions (head as big as the
     # body, big ears, short legs), colour patches per facet instead of extra shapes, fur as tufts.
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    fur, cream, pink, dark = (material(n, c) for n, c in
-                              (("Fur", FUR), ("Cream", CREAM), ("Pink", PINK), ("Dark", DARK)))
+    global PALETTE_MAT
+    PALETTE_MAT = palette_material(out)
+    fur, cream, pink, dark = CELLS[:4]
     bpy.ops.object.empty_add(location=(0, 0, 0))
     cat = bpy.context.active_object
     cat.name = "Cat"
@@ -130,17 +167,24 @@ def render(out, size):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.9, 0.9, 0.93, 1)
     world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.35
     scene.world = world
+    # Frame the whole model, whatever an outfit adds: the centre and size of every mesh's corners.
+    from mathutils import Vector
+
+    corners = [o.matrix_world @ Vector(c) for o in scene.objects if o.type == "MESH" for c in o.bound_box]
+    lo = Vector(tuple(min(c[i] for c in corners) for i in range(3)))
+    hi = Vector(tuple(max(c[i] for c in corners) for i in range(3)))
+    target = (lo + hi) / 2
     bpy.ops.object.camera_add()
     cam = bpy.context.active_object
     cam.data.type = "ORTHO"
-    cam.data.ortho_scale = 3.2
+    cam.data.ortho_scale = max(hi - lo) * 1.3
     scene.camera = cam
-    target = (0, -0.1, 0.9)
+    tx, ty, tz = target
     views = {
-        "front": (0, -8, 0.9),
-        "side": (8, -0.1, 0.9),
-        "three-quarter": (5.5, -5.5, 3.5),
-        "top": (0, -0.1, 9),
+        "front": (tx, ty - 8, tz),
+        "side": (tx + 8, ty, tz),
+        "three-quarter": (tx + 5.5, ty - 5.5, tz + 2.6),
+        "top": (tx, ty, tz + 9),
     }
     for name, (x, y, z) in views.items():
         cam.location = (x, y, z)
@@ -151,16 +195,23 @@ def render(out, size):
     bpy.data.objects.remove(cam)
 
 
-def main():
-    a = args()
-    out = os.path.abspath(a.out)
-    os.makedirs(out, exist_ok=True)
-    build()
-    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, "cat.blend"))
-    bpy.ops.export_scene.gltf(filepath=os.path.join(out, "cat.glb"), export_format="GLB")
-    render(out, a.size)
+def save_all(out, stem, size):
+    """Save the .blend and the GLB, render the four views, print the triangle count."""
+    bpy.context.preferences.filepaths.save_version = 0  # no cat.blend1 backups
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, f"{stem}.blend"))
+    bpy.ops.export_scene.gltf(filepath=os.path.join(out, f"{stem}.glb"), export_format="GLB")
+    render(out, size)
     tris = sum(len(p.vertices) - 2 for o in bpy.data.objects if o.type == "MESH" for p in o.data.polygons)
     print(f"built\t{out}\ttris={tris}")
 
 
-main()
+def main():
+    a = args()
+    out = os.path.abspath(a.out)
+    os.makedirs(out, exist_ok=True)
+    build(out)
+    save_all(out, "cat", a.size)
+
+
+if __name__ == "__main__":  # blender --python runs it as __main__; an outfit script imports it
+    main()
