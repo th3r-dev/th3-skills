@@ -146,6 +146,9 @@ connected, `screen_capture` after `insert_asset` or the import shows it in place
 
 ## 6. Bench
 
+The four worked cases, with their prompts, every version and what caught each fault, are in
+[`examples/README.md`](examples/README.md): start there for a new asset of the same kind.
+
 A case in `benchmarks/*.toon` holds the prompt as typed, the budget and a rubric;
 `scripts/bench_model.py` scores a built model against it (exit code = failed checks):
 
