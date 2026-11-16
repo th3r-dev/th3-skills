@@ -100,7 +100,9 @@ def build(root: Path) -> tuple[int, int]:
     return changed, len(new)
 
 
-VAULT_PY = Path(__file__).resolve().parents[2] / "rag" / "scripts" / "vault.py"
+_HERE = Path(__file__).resolve().parent
+# vault.py next to this file (a vendored copy) wins; otherwise the agent-kit rag sub-skill.
+VAULT_PY = _HERE / "vault.py" if (_HERE / "vault.py").exists() else _HERE.parents[1] / "rag" / "scripts" / "vault.py"
 
 
 def rag_sections(vault: Path, task: str, top: int) -> tuple[str, str]:
