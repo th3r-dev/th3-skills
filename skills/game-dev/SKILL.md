@@ -7,10 +7,11 @@ description: >-
   until it is cut and shipped. (1) design-lens: design from player motivation (MDA read through
   Octalysis's core drives), with a white-hat / black-hat audit. (2) roblox: Roblox Studio with Luau
   in files (Rojo, Rokit, Selene, StyLua, Lune) and Studio's built-in MCP server wired to the agent
-  for playtests. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
+  for playtests. (3) modeling: 3D models built in Blender from a Python script, exported to the
+  engine's limits and checked before import; Meshy AI generation only when the user opts in. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
   "why is this game not fun", "MDA", "Octalysis", "player motivation", "game brief", "GDD",
   "prototype a mechanic", "Roblox", "Roblox Studio", "Luau", "Rojo", "obby", "tycoon",
-  "simulator", "Studio MCP", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
+  "simulator", "Studio MCP", "3D model", "Blender", "low poly", "polycount", "Meshy", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
   before acting.
 ---
 
@@ -19,7 +20,8 @@ description: >-
 | When the work is… | Read | Scripts |
 |---|---|---|
 | an idea, a brief, "is this fun", a loop, rewards, player types, monetization ethics | [`design-lens/SKILL.md`](design-lens/SKILL.md) | none |
-| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest | [`roblox/SKILL.md`](roblox/SKILL.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory) | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| 3D models: build in Blender, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
 
 ## The flow
 
@@ -35,7 +37,7 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
 | 2 | **Design pass** (`design-lens`): who plays, which motivation the game serves, the loop that delivers it | the motivation, the loop and the first minute are written in one paragraph each |
 | 3 | **One-page brief** at `design/game-brief.md`: the person's words kept, pitch, motivation, core loop, first minute, challenge, the features in build order, what is left for later | the person says "build it" |
 | 4 | **Engine.** Web (any browser, nothing to install) unless the brief needs more. Roblox (`roblox`) when the players are on Roblox or the game is multiplayer and social. Godot, Unity or Unreal for big 3D, consoles or stores | the engine is set up and an empty project runs |
-| 5 | **First build**: the core loop only, every value in one config file | it was **run and looked at**: a browser screenshot, or a Studio playtest's output and capture |
+| 5 | **First build**: the core loop only, every value in one config file; placeholder shapes until the loop is fun, then models (`modeling`) | it was **run and looked at**: a browser screenshot, or a Studio playtest's output and capture |
 | 6 | **Grow**: one feature a sitting. Name it, build it, run it, look at it, commit it. Check it against the brief's "keep" and "avoid" | the feature is in a commit, with what was checked |
 | 7 | **Cut and ship**: list what to cut, a polish list, the date it ships | the person signs off the list |
 
@@ -69,4 +71,5 @@ shell can follow it.
 cd skills/game-dev && uv venv && uv pip install --no-build pytest==9.2.0
 uv run --no-project python -m pytest -q
 uv run --no-project python roblox/scripts/roblox_setup.py --selftest
+uv run --no-project python modeling/scripts/mesh_check.py --selftest
 ```

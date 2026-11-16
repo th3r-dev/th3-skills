@@ -35,4 +35,6 @@ jobs:
       - name: Run tests
         run: uv run --no-project python -m pytest -q
       - name: Script self-checks
-        run: uv run --no-project python roblox/scripts/roblox_setup.py --selftest
+        run: |
+          uv run --no-project python roblox/scripts/roblox_setup.py --selftest
+          uv run --no-project python modeling/scripts/mesh_check.py --selftest
