@@ -35,6 +35,17 @@ PALETTE_SIZE = 16
 PALETTE_MAT = None
 
 
+
+def inside_cwd(path: str) -> str:
+    """`path` resolved, refused unless it lies inside the current directory: a path argument (often
+    written by an agent) can never read or write elsewhere."""
+    base = os.path.realpath(os.getcwd())
+    full = os.path.realpath(path)
+    if os.path.commonpath([base, full]) != base:
+        raise SystemExit(f"{path}: outside the current directory ({base}); run from a folder that contains it")
+    return full
+
+
 def args():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     ap = argparse.ArgumentParser()
@@ -365,7 +376,7 @@ def save_all(out, stem, size):
 
 def main():
     a = args()
-    out = os.path.abspath(a.out)
+    out = inside_cwd(a.out)
     os.makedirs(out, exist_ok=True)
     build(out)
     save_all(out, "cat", a.size)

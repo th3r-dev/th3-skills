@@ -518,14 +518,14 @@ def verify(path):
 
 def main():
     a = args()
-    if a.verify:
-        failed = verify(os.path.abspath(a.verify))
-        print(f"result\t{'PASS' if not failed else f'{failed} FAILED'}")
-        sys.exit(1 if failed else 0)
-    out = os.path.abspath(a.out)
-    os.makedirs(out, exist_ok=True)
     wizard = load_wizard()
     kit = wizard.cat_kit
+    if a.verify:
+        failed = verify(kit.inside_cwd(a.verify))
+        print(f"result\t{'PASS' if not failed else f'{failed} FAILED'}")
+        sys.exit(1 if failed else 0)
+    out = kit.inside_cwd(a.out)
+    os.makedirs(out, exist_ok=True)
     cat = kit.build(out)  # writes palette.png into <out>
     wizard.dress(cat)
     arm = build_armature()

@@ -1,3 +1,4 @@
+import pytest
 import importlib.util
 import json
 import struct
@@ -7,6 +8,12 @@ HERE = Path(__file__).resolve().parent
 _spec = importlib.util.spec_from_file_location("mesh_check", HERE.parent / "scripts" / "mesh_check.py")
 mc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(mc)
+
+
+@pytest.fixture(autouse=True)
+def _run_inside_tmp(tmp_path, monkeypatch):
+    # path arguments are refused outside the current directory, so each test runs inside its own
+    monkeypatch.chdir(tmp_path)
 
 
 def test_selftest():
@@ -73,3 +80,8 @@ def test_worked_cases_score_full_marks():
         case = bm.load_toon((HERE.parent / "benchmarks" / f"{case_name}.toon").read_text(encoding="utf-8"))
         results = bm.run(case, HERE.parent / "examples" / model)
         assert all(ok in (True, None) for ok, _ in results.values()), (case_name, results)
+
+
+def test_model_outside_the_current_directory_is_refused(tmp_path):
+    with pytest.raises(SystemExit, match="outside the current directory"):
+        mc.main([str(tmp_path.parent / "x.glb")])

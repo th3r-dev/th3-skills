@@ -25,21 +25,21 @@ jobs:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
         with:
           version: '0.12.5'
           python-version: ${{ matrix.python-version }}
       - name: Install
         run: "uv venv && uv pip install --no-build pytest==9.2.0"
       - name: Run tests
-        run: uv run --no-project python -m pytest -q
+        run: uv run --no-build --locked --no-project python -m pytest -q
       - name: Script self-checks
         run: |
-          uv run --no-project python roblox/scripts/roblox_setup.py --selftest
-          uv run --no-project python modeling/scripts/mesh_check.py --selftest
-          uv run --no-project python modeling/scripts/bench_model.py --selftest
-          uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/lowpoly-furry-cat.toon modeling/examples/lowpoly-cat/cat.glb
-          uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/lowpoly-wizard-cat.toon modeling/examples/wizard-cat/wizard-cat.glb
-          uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/crystal-ground.toon modeling/examples/crystal-ground/crystal-ground.glb
-          uv run --no-project python modeling/scripts/bench_model.py modeling/benchmarks/wizard-glade.toon modeling/examples/wizard-glade/wizard-glade.glb
+          uv run --no-build --locked --no-project python roblox/scripts/roblox_setup.py --selftest
+          uv run --no-build --locked --no-project python modeling/scripts/mesh_check.py --selftest
+          uv run --no-build --locked --no-project python modeling/scripts/bench_model.py --selftest
+          uv run --no-build --locked --no-project python modeling/scripts/bench_model.py modeling/benchmarks/lowpoly-furry-cat.toon modeling/examples/lowpoly-cat/cat.glb
+          uv run --no-build --locked --no-project python modeling/scripts/bench_model.py modeling/benchmarks/lowpoly-wizard-cat.toon modeling/examples/wizard-cat/wizard-cat.glb
+          uv run --no-build --locked --no-project python modeling/scripts/bench_model.py modeling/benchmarks/crystal-ground.toon modeling/examples/crystal-ground/crystal-ground.glb
+          uv run --no-build --locked --no-project python modeling/scripts/bench_model.py modeling/benchmarks/wizard-glade.toon modeling/examples/wizard-glade/wizard-glade.glb

@@ -368,8 +368,8 @@ def main():
     ap.add_argument("--verify", help="a kit FBX to re-import and check; builds nothing")
     a = ap.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     if a.verify:
-        verify(os.path.abspath(a.verify))
-    out = os.path.abspath(a.out)
+        verify(kit.inside_cwd(a.verify))
+    out = kit.inside_cwd(a.out)
     kit_dir = os.path.join(out, "kit")
     os.makedirs(kit_dir, exist_ok=True)
     bpy.ops.wm.read_factory_settings(use_empty=True)
