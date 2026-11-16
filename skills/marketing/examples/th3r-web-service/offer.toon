@@ -1,0 +1,38 @@
+id: th3r-web-service
+platform: fastwork
+currency: THB
+measured: 2026-11-16
+fee: "0.17"
+fee_source: "Fastwork commission, the most-cited rate (thaiseoboard, Lemon8); not confirmed for 2569, check the seller dashboard"
+days_per_month: 22
+hours_per_day: 8
+hours_source: "standard 8-hour day, 22 working days; assumption until the user gives their own"
+target_income: 30000
+target_source: "example figure (the real case used the seller's salary, kept private)"
+costs[4]{item,kind,thb_month,source}:
+  living,living,18000,"example figure: monthly living costs including utilities (the real case used the seller's own, kept private)"
+  laptop,business,894,"assumption: MacBook Pro M1 launch price 42,900 spread over 48 months (laptop life 3 to 5 years, HP)"
+  knowledge,business,1000,"assumption: no published average; courses, books, tools"
+  cyber,business,1000,"assumption: no published average; security training and tools"
+packages[4]{name,price,unit,hours,days,revisions,support_days}:
+  เริ่มต้น Landing Page หน้าเดียว,6900,Project,24,5,2,14
+  แนะนำ เว็บธุรกิจและหลังบ้านแก้เองได้,14900,Project,56,10,3,30
+  ระบบ Web App สมาชิกและ Dashboard,26900,Project,100,20,3,60
+  ดูแลรายเดือน เว็บไซต์และระบบ,1990,Session,7,30,0,0
+package_hours_source: "estimates for build plus the support period; adjust when real jobs give real hours"
+extra_hour: 260
+extra_hour_source: "at or above the listed target rate (offer.py price), rounded up"
+market[8]{stat,value}:
+  sample,"36 of 40 web-development services on fastwork.co/web-development showed packages"
+  entry_median,3225
+  entry_p25,1500
+  entry_p75,7975
+  three_tier_medians,"4,500 / 14,000 / 20,000"
+  delivery_median_days,14
+  revisions_most_common,"2 then 3"
+  starting_at_or_above_6900,"11 of 36"
+service_max: 2000
+package_max: 5000
+units[5]: Not specified,Project,Hour,Day,Session
+forbidden_symbols: "+·–—"
+avoid_terms[12]: Next.js,NestJS,FastAPI,Angular,React,Node.js,PostgreSQL,Oracle,Kubernetes,Docker,ArgoCD,Figma

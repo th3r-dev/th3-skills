@@ -7,7 +7,7 @@
 Left: the skill's name, its claim, and how to install it. Right: the steps it really runs (from its
 SKILL.md); a marker walks down them, each step inverts while it runs and keeps a tick when done,
 then the output appears. The still (reduced motion) shows every step ticked and the output.
-design-core is not here: it has its own hero (skills/design-core/assets/hero.py).
+design's core sub-skill also has its own hero (skills/design/core/assets/hero.py).
 
 Run: uv run assets/skill_heroes.py [name ...]   (uv installs fonttools + brotli from the header)
 """
@@ -17,7 +17,7 @@ from html import escape
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 _spec = importlib.util.spec_from_file_location(
-    "dc_hero", os.path.join(ROOT, "skills", "design-core", "assets", "hero.py"))
+    "dc_hero", os.path.join(ROOT, "skills", "design", "core", "assets", "hero.py"))
 dc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(dc)
 Doc, embed_fonts, width, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.width, dc.Y, dc.INK, dc.INK2, dc.INK3
@@ -35,13 +35,26 @@ SKILLS = {
          ("Ticket", "issue filed, branch cut"), ("Tests", "a matrix for every requirement"),
          ("Build", "until the tests pass"), ("Ship", "report, push, open the PR")],
         ["a PR that proves it, and what", "a full build would still need"]),
-    "design-flow": (
-        ["Screens in Figma,", "their flow beside them."],
-        ["A developer can build each page", "from one look."],
-        [("Inventory", "the file's tokens, styles, components"), ("Capture", "live page to auto-layout layers"),
-         ("Tokenize", "every value bound to a variable"), ("States", "each result screen captured"),
-         ("Flow", "drawn from the app source"), ("Review", "no crossings, every line lands")],
-        ["a screen and its flow per page,", "an implementation checklist"]),
+    "design": (
+        ["Design from references,", "scored by a critic."],
+        ["Three sub-skills: core, flow,", "banner-design."],
+        [("core", "principles, taste, a scored loop"), ("flow", "Figma screens with their flow"),
+         ("banner-design", "brand side, four jobs, a CTA"), ("bench", "crop, contrast, phone-width checks")],
+        ["a design that passes the critic", "and the bench, not the author"]),
+    "marketing": (
+        ["Price from your costs,", "sell in the form's fields."],
+        ["Three sub-skills: strategy,", "pricing, listing."],
+        [("Market", "measure the category first"), ("Costs", "your numbers, averages for gaps"),
+         ("Price", "no package below break-even"), ("Listing", "field by field, checked"),
+         ("Images", "service, steps, work sample")],
+        ["a listing that pastes clean", "and packages that never lose money"]),
+    "social-media": (
+        ["A post and its cover,", "every claim checked."],
+        ["Two sub-skills: blog-post", "and blog-cover."],
+        [("Brief", "prompt translated, facts listed"), ("Hooks", "five titles, six typed hooks"),
+         ("Draft", "Thai with kien-thai, or English"), ("Review", "humanizer, then bench_post.py"),
+         ("Cover", "banner-design cover, benched")],
+        ["a post that passes its case", "and a cover that reads at 400px"]),
     "agent-kit": (
         ["Cheaper agent runs,", "same prefix every time."],
         ["The right tier, a finish line,", "one cached prefix for every brief."],
