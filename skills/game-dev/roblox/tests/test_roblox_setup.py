@@ -1,3 +1,4 @@
+import pytest
 import importlib.util
 import json
 from pathlib import Path
@@ -6,6 +7,12 @@ HERE = Path(__file__).resolve().parent
 _spec = importlib.util.spec_from_file_location("roblox_setup", HERE.parent / "scripts" / "roblox_setup.py")
 rs = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(rs)
+
+
+@pytest.fixture(autouse=True)
+def _run_inside_tmp(tmp_path, monkeypatch):
+    # path arguments are refused outside the current directory, so each test runs inside its own
+    monkeypatch.chdir(tmp_path)
 
 
 def test_selftest():
@@ -66,3 +73,9 @@ def test_scaffold_keeps_existing_files(tmp_path, capsys):
     assert rs.main(["scaffold", "--root", str(tmp_path)]) == 0
     assert (tmp_path / "rokit.toml").read_text() == "# mine\n"
     assert "EXISTS\trokit.toml" in capsys.readouterr().out
+
+
+def test_root_outside_the_current_directory_is_refused(tmp_path):
+    outside = tmp_path.parent / "elsewhere"
+    with pytest.raises(SystemExit, match="outside the current directory"):
+        rs.main(["scaffold", "--root", str(outside), "--dry-run"])

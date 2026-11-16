@@ -219,8 +219,8 @@ def main(argv=None) -> int:
     if not (a.case and a.model):
         ap.print_help()
         return 2
-    case = load_toon(Path(a.case).read_text(encoding="utf-8"))
-    results = run(case, Path(a.model))
+    case = load_toon(Path(mesh_check.inside_cwd(a.case)).read_text(encoding="utf-8"))
+    results = run(case, Path(mesh_check.inside_cwd(a.model)))
     failed = 0
     for rid, (ok, why) in results.items():
         mark = "MANUAL" if ok is None else "PASS" if ok else "FAIL"

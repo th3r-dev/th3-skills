@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import struct
 import sys
 import tempfile
@@ -30,6 +31,16 @@ TARGETS = {
     "web": {"max_tris_per_mesh": None, "max_texture": 4096},
 }
 GLB_MAGIC, CHUNK_JSON, CHUNK_BIN = b"glTF", 0x4E4F534A, 0x004E4942
+
+
+def inside_cwd(path: str) -> str:
+    """`path` resolved, refused unless it lies inside the current directory: a path argument (often
+    written by an agent) can never read or write elsewhere."""
+    base = os.path.realpath(os.getcwd())
+    full = os.path.realpath(path)
+    if os.path.commonpath([base, full]) != base:
+        raise SystemExit(f"{path}: outside the current directory ({base}); run from a folder that contains it")
+    return full
 
 
 class Unreadable(Exception):
@@ -253,7 +264,7 @@ def main(argv=None) -> int:
         ap.print_help()
         return 2
     t = TARGETS[args.target]
-    return check(Path(args.model), args.max_tris or t["max_tris_per_mesh"],
+    return check(Path(inside_cwd(args.model)), args.max_tris or t["max_tris_per_mesh"],
                  args.max_texture or t["max_texture"], args.max_total)
 
 

@@ -42,6 +42,16 @@ PROJECT_FILES = {
 CLIENTS = (*PROJECT_FILES, "codex")
 
 
+def inside_cwd(path: str) -> str:
+    """`path` resolved, refused unless it lies inside the current directory: a path argument (often
+    written by an agent) can never read or write elsewhere."""
+    base = os.path.realpath(os.getcwd())
+    full = os.path.realpath(path)
+    if os.path.commonpath([base, full]) != base:
+        raise SystemExit(f"{path}: outside the current directory ({base}); run from a folder that contains it")
+    return full
+
+
 def os_name(override: str | None = None) -> str:
     if override:
         return override
@@ -232,6 +242,7 @@ def main(argv=None) -> int:
     if not args.cmd:
         ap.print_help()
         return 2
+    args.root = inside_cwd(args.root)
     return {"doctor": cmd_doctor, "mcp": cmd_mcp, "scaffold": cmd_scaffold}[args.cmd](args)
 
 

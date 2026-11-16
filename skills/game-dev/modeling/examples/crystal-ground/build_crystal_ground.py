@@ -426,7 +426,7 @@ def save(out, size):
 
 def main():
     a = args()
-    out = os.path.abspath(a.out)
+    out = cat_kit.inside_cwd(a.out)
     os.makedirs(out, exist_ok=True)
     failed = check(build(out, a.seed))
     save(out, a.size)
