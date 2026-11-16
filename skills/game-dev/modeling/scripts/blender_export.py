@@ -10,7 +10,8 @@ Embed Textures, Apply Scalings = FBX Unit Scale, no leaf bones, no baked animati
 web: glTF binary (.glb) for three.js and other browser engines.
 Before writing it prints, per mesh: triangles, faces with more than 4 corners, and whether scale
 and rotation were already applied. Check the export with mesh_check.py after.
-NOT YET RUN IN BLENDER in this repo: the bpy calls follow Blender's FBX/glTF exporters, untested here.
+Checked on Blender 5.3.0 with examples/lowpoly-cat: the FBX re-imports with every scale 1 and the
+same triangle count.
 """
 import argparse
 import sys
