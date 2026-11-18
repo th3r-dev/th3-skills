@@ -25,6 +25,11 @@ def test_mcp_dry_run_writes_nothing(tmp_path, capsys):
     assert "would_write\t.cursor/mcp.json\tadded" in capsys.readouterr().out
 
 
+def test_mcp_client_defaults_to_claude(tmp_path):
+    assert rs.main(["mcp", "--root", str(tmp_path), "--os", "macos", "--write"]) == 0
+    assert (tmp_path / ".mcp.json").exists(), "no --client wires Claude Code"
+
+
 def test_mcp_write_keeps_other_servers(tmp_path):
     cfg = tmp_path / ".mcp.json"
     cfg.write_text(json.dumps({"mcpServers": {"figma": {"command": "f"}}}))

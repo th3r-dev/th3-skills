@@ -231,7 +231,8 @@ def main(argv=None) -> int:
         p.add_argument("--root", default=".", help="the game project (default: here)")
         p.add_argument("--os", choices=("macos", "windows", "linux"), help="override the detected OS")
         if name == "mcp":
-            p.add_argument("--client", required=True, choices=CLIENTS)
+            # any agent the skill runs in; Claude Code is the default, the others are one flag away
+            p.add_argument("--client", default="claude", choices=CLIENTS, help="the agent to wire (default: claude)")
             p.add_argument("--write", action="store_true", help="write the project config (default: show it)")
         if name == "scaffold":
             p.add_argument("--dry-run", action="store_true")
