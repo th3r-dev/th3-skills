@@ -27,7 +27,8 @@ description: >-
 | a game thumbnail, Roblox thumbnail, key art, update thumbnail, thumbnail variants, "match this app's look" | [`thumbnail-keyart/SKILL.md`](thumbnail-keyart/SKILL.md) | `banner.py` (`.keyart.toon` → SVG), `bench.py --bottom --max-kb`, `thumbnail-keyart/scripts/critic.py` (vision critic) |
 
 They chain: `core` sets the rules and the review table; `flow`, `banner-design` and `thumbnail-keyart` apply
-them, and their checks feed the same score.
+them, and their checks feed the same score. A Roblox game's interface applies them through game-dev's
+`design-ui` (when that skill is installed).
 
 ## Rules every sub-skill keeps
 

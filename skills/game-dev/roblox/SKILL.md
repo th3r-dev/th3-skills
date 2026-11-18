@@ -64,8 +64,9 @@ can wire Claude Code, Claude Desktop, Codex CLI, Gemini CLI, Cursor, VS Code and
 itself. For a project-level file instead:
 
 ```bash
-python scripts/roblox_setup.py mcp --client claude --root <game folder>          # shows the change
-python scripts/roblox_setup.py mcp --client claude --root <game folder> --write  # on a yes
+python scripts/roblox_setup.py mcp --root <game folder>          # Claude Code (the default): shows the change
+python scripts/roblox_setup.py mcp --root <game folder> --write  # on a yes
+python scripts/roblox_setup.py mcp --client cursor --root <game folder>   # another agent: codex, cursor, gemini, vscode
 ```
 
 | `--client` | Writes | Notes |
