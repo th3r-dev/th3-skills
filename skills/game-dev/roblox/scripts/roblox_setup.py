@@ -13,6 +13,7 @@ Every write is shown first; `mcp` and `scaffold` change files only without --dry
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import platform
@@ -25,21 +26,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SCAFFOLD = HERE.parent / "scaffold"
 TOOLS = ("rokit", "rojo", "selene", "stylua", "lune")
-SERVER = "Roblox_Studio"
 
-# create.roblox.com/docs/studio/mcp, read 2026-11-16
+# The MCP config writer is shared by every engine: it lives in the engine-mcp sub-skill.
+_spec = importlib.util.spec_from_file_location("engine_mcp", HERE.parents[1] / "engine-mcp/scripts/engine_mcp.py")
+engine_mcp = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(engine_mcp)
+CLIENTS = engine_mcp.CLIENTS
+
 MAC_STUDIO = Path("/Applications/RobloxStudio.app")
-MAC_MCP = MAC_STUDIO / "Contents/MacOS/StudioMCP"
-WIN_MCP_ARGS = ["/c", r"%LOCALAPPDATA%\Roblox\mcp.bat"]
-
-# client -> project config file, and the key its servers live under
-PROJECT_FILES = {
-    "claude": (".mcp.json", "mcpServers"),
-    "cursor": (".cursor/mcp.json", "mcpServers"),
-    "gemini": (".gemini/settings.json", "mcpServers"),
-    "vscode": (".vscode/mcp.json", "servers"),
-}
-CLIENTS = (*PROJECT_FILES, "codex")
+MAC_MCP = Path(engine_mcp.ENGINES["roblox"][2]("macos", "")["command"])
 
 
 def inside_cwd(path: str) -> str:
@@ -57,41 +52,6 @@ def os_name(override: str | None = None) -> str:
         return override
     s = platform.system()
     return {"Darwin": "macos", "Windows": "windows"}.get(s, "linux")
-
-
-def server_entry(osn: str, client: str) -> dict:
-    """The Studio MCP server as one client config entry."""
-    if osn == "windows":
-        entry = {"command": "cmd.exe", "args": list(WIN_MCP_ARGS)}
-    elif osn == "macos":
-        entry = {"command": str(MAC_MCP)}
-    else:
-        raise SystemExit("roblox_setup: Roblox Studio runs on macOS and Windows only")
-    if client == "vscode":
-        entry = {"type": "stdio", **entry}
-    return entry
-
-
-def merge_config(text: str | None, key: str, entry: dict) -> tuple[str, str]:
-    """Add the server to a JSON config, keeping every other entry. Returns (new text, what changed)."""
-    data = {} if not (text or "").strip() else json.loads(text)
-    if not isinstance(data, dict):
-        raise ValueError("the config file is not a JSON object")
-    servers = data.setdefault(key, {})
-    if not isinstance(servers, dict):
-        raise ValueError(f'"{key}" is not a JSON object')
-    old = servers.get(SERVER)
-    if old == entry:
-        return json.dumps(data, indent=2) + "\n", "unchanged"
-    servers[SERVER] = entry
-    return json.dumps(data, indent=2) + "\n", "replaced" if old is not None else "added"
-
-
-def codex_snippet(entry: dict) -> str:
-    lines = [f"[mcp_servers.{SERVER}]", f"command = {json.dumps(entry['command'])}"]
-    if entry.get("args"):
-        lines.append("args = [" + ", ".join(json.dumps(a) for a in entry["args"]) + "]")
-    return "\n".join(lines)
 
 
 def tool_version(name: str) -> str:
@@ -137,32 +97,8 @@ def cmd_doctor(args) -> int:
 
 
 def cmd_mcp(args) -> int:
-    osn = os_name(args.os)
-    entry = server_entry(osn, args.client)
-    if args.client == "codex":
-        print("# Codex keeps MCP servers in its global ~/.codex/config.toml; add this block there:")
-        print(codex_snippet(entry))
-        return 0
-    rel, key = PROJECT_FILES[args.client]
-    path = Path(args.root) / rel
-    old = path.read_text(encoding="utf-8") if path.exists() else None
-    try:
-        new, change = merge_config(old, key, entry)
-    except (ValueError, json.JSONDecodeError) as e:
-        print(f"refused\t{rel}\t{e}: fix it by hand, nothing was written")
-        return 3
-    if args.client == "claude":
-        cmd = " ".join([SERVER, "--", entry["command"], *entry.get("args", [])])
-        print(f"# or, without a project file: claude mcp add {cmd}")
-    print(f"{'write' if args.write else 'would_write'}\t{rel}\t{change}")
-    if not args.write:
-        print(new, end="")
-        return 0
-    if change != "unchanged":
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(new, encoding="utf-8")
-    print("next\tin Studio: Assistant > ... > Manage MCP Servers > Enable Studio as MCP server, then restart the agent")
-    return 0
+    args.engine = "roblox"
+    return engine_mcp.cmd_config(args)
 
 
 def cmd_scaffold(args) -> int:
@@ -196,21 +132,8 @@ def cmd_scaffold(args) -> int:
 
 
 def selftest() -> int:
-    mac = server_entry("macos", "claude")
-    assert mac == {"command": str(MAC_MCP)}
-    win = server_entry("windows", "vscode")
-    assert win["type"] == "stdio" and win["command"] == "cmd.exe" and win["args"] == WIN_MCP_ARGS
-    text, ch = merge_config('{"mcpServers": {"other": {"command": "x"}}}', "mcpServers", mac)
-    data = json.loads(text)
-    assert ch == "added" and data["mcpServers"]["other"] == {"command": "x"} and SERVER in data["mcpServers"]
-    assert merge_config(text, "mcpServers", mac)[1] == "unchanged"
-    for bad in ("[]", '{"mcpServers": []}'):
-        try:
-            merge_config(bad, "mcpServers", mac)
-            raise AssertionError("bad config accepted")
-        except ValueError:
-            pass
-    assert 'args = ["/c"' in codex_snippet(server_entry("windows", "codex"))
+    assert engine_mcp.selftest() == 0  # the MCP config writer
+    assert MAC_MCP.name == "StudioMCP"
     with tempfile.TemporaryDirectory() as d:
         ns = argparse.Namespace(root=d, title='a "quoted" game', dry_run=False)
         assert cmd_scaffold(ns) == 0
