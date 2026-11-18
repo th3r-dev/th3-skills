@@ -9,7 +9,10 @@ against the brief (*.keyart.toon), so the check is one the author didn't run.
   read    every title, ribbon and callout string of this variant was read back (exact, case-folded)
   beats   a second, text-only call scores the blind read against the brief's is / loop / goal, 0-2 each:
           pass needs every beat >= 1 and a total >= 4 of 6
-  focus   printed, not scored: the first thing the model's eye landed on (it should be the goal or the hero)
+  focus   the first thing the model's eye landed on: a fail when it is the title (the scene must out-shout the
+          type: the goal or the hero is the brightest, biggest thing)
+  runs    one sample is noise (the same image flipped between pass and fail), so it runs --runs times (default 3)
+          and passes on a majority
 
 Any OpenAI-compatible endpoint with an image-input model works. Defaults: Tokenme
 (https://api.tokenme.limited/api/v1) with deepseek-ai/deepseek-v4.1-flash-1017; the key comes from
@@ -67,6 +70,9 @@ def score(ka, strings, read, beats):
     fails += [f"beat {k!r} scored 0: the thumbnail does not show it" for k, v in got.items() if v < 1]
     if sum(got.values()) < 4:
         fails.append(f"beats total {sum(got.values())}/6, under 4")
+    focus = fold(read.get("focus") or "")
+    if "title" in focus or any(fold(l) in focus for l in ka.get("title", [])):
+        fails.append(f"the eye lands on the title ({read.get('focus')!r}), not the goal or the hero")
     return fails
 
 
@@ -86,12 +92,15 @@ def ask(messages, model, key):
 
 
 def selftest():
-    ka = {"is": "a mountain adventure", "loop": "fight, level up", "goal": "buy the key"}
+    ka = {"is": "a mountain adventure", "loop": "fight, level up", "goal": "buy the key", "title": ["CRAGHOLD", "QUEST"]}
     strings = ["CRAGHOLD", "QUEST", "DUNGEON UPDATE", "KEY", "12,500 GOLD"]
-    read = {"text": ["Craghold", "Quest", "Dungeon Update", "KEY", "12,500 GOLD"]}
+    read = {"text": ["Craghold", "Quest", "Dungeon Update", "KEY", "12,500 GOLD"], "focus": "the glowing key in the gate"}
     assert score(ka, strings, read, {"is": 2, "loop": 1, "goal": 2}) == []
     assert score(ka, strings, dict(read, text=["CRAGHOLD", "QUEST"]), {"is": 2, "loop": 2, "goal": 2}) == \
         ["not read: 'DUNGEON UPDATE'", "not read: 'KEY'", "not read: '12,500 GOLD'"]
+    for f_ in ("The large CRAGHOLD QUEST title.", "the title text"):
+        assert score(ka, strings, dict(read, focus=f_), {"is": 2, "loop": 2, "goal": 2}) == \
+            [f"the eye lands on the title ({f_!r}), not the goal or the hero"]
     f = score(ka, strings, read, {"is": 2, "loop": 1, "goal": 0})
     assert f == ["beat 'goal' scored 0: the thumbnail does not show it", "beats total 3/6, under 4"], f
     brief = os.path.join(HERE, "..", "examples", "craghold", "craghold.keyart.toon")
@@ -106,6 +115,7 @@ def main():
     ap.add_argument("brief", nargs="?")
     ap.add_argument("png", nargs="?")
     ap.add_argument("--model", default=MODEL)
+    ap.add_argument("--runs", type=int, default=3, help="samples; the verdict is the majority (default 3)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
@@ -125,21 +135,24 @@ def main():
     key = os.environ.get("KEYART_CRITIC_KEY") or os.environ.get("TOKENME_API_KEY")
     if not key:
         sys.exit("no key: set $KEYART_CRITIC_KEY or $TOKENME_API_KEY (the critic is NOT ASSESSED without one)")
-    read = ask(blind, a.model, key)
     brief = "\n".join(f"{k}: {ka.get(k)}" for k in ("is", "loop", "goal"))
-    seen = "\n".join(f"{k}: {read.get(k)}" for k in ("game", "action", "goal"))
-    beats = ask([{"role": "user", "content": f"{JUDGE}\n\nBrief\n{brief}\n\nPlayer's read\n{seen}"}], a.model, key)
-    fails = score(ka, strings, read, beats)
-    print(f"{os.path.basename(a.png)}  critic {a.model}")
-    for k, kb in (("game", "is"), ("action", "loop"), ("goal", "goal")):
-        print(f"  {kb:<5} {beats.get(kb, 0)}/2  read: {read.get(k)!s:.110}")
-    print(f"  text  read: {read.get('text')}")
-    print(f"  focus {read.get('focus')}")
-    print(f"  why   {beats.get('why')}")
-    for f in fails:
-        print("  FAIL", f)
-    print("critic:", "pass" if not fails else f"{len(fails)} failures")
-    return len(fails)
+    print(f"{os.path.basename(a.png)}  critic {a.model}  {a.runs} runs")
+    passed = 0
+    for n in range(1, a.runs + 1):
+        read = ask(blind, a.model, key)
+        seen = "\n".join(f"{k}: {read.get(k)}" for k in ("game", "action", "goal"))
+        beats = ask([{"role": "user", "content": f"{JUDGE}\n\nBrief\n{brief}\n\nPlayer's read\n{seen}"}], a.model, key)
+        fails = score(ka, strings, read, beats)
+        passed += not fails
+        print(f" run {n}: {'pass' if not fails else 'FAIL'}  is {beats.get('is', 0)} loop {beats.get('loop', 0)} "
+              f"goal {beats.get('goal', 0)}  focus: {read.get('focus')}")
+        for k, kb in (("game", "is"), ("action", "loop"), ("goal", "goal")):
+            print(f"    {kb:<5} read: {read.get(k)!s:.110}")
+        for f in fails:
+            print("    FAIL", f)
+    ok = passed * 2 > a.runs
+    print(f"critic: {passed}/{a.runs} runs pass,", "pass" if ok else "FAIL")
+    return 0 if ok else a.runs - passed
 
 
 if __name__ == "__main__":

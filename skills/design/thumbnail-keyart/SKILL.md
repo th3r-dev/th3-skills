@@ -51,17 +51,20 @@ win over anything here, the same order of authority as [`../core/SKILL.md`](../c
    no text in the bottom band, where the player count sits; PNG under 3 MB). It writes the 1×, 2×,
    400 px and crop PNGs.
 6. **Critic**: `uv run scripts/critic.py <game>.keyart.toon <…-400.png>`. A vision model that never
-   saw the brief says what the game is, what you do, what the goal is and every word it reads; a
-   second call scores that read against the brief. Fails: a string not read back, a beat scored 0,
-   or under 4 of 6. It also prints where the eye landed. Endpoint, model and key: the script's
-   `--help`. With no key it is NOT ASSESSED, never a pass.
+   saw the brief says what the game is, what you do, what the goal is, every word it reads and where
+   its eye lands; a second call scores that read against the brief. A run fails on a string not read
+   back, a beat scored 0, a total under 4 of 6, or the eye landing on the title. One sample is noise
+   (the same image flipped between pass and fail), so it runs three times (`--runs`) and passes on a
+   majority. Endpoint, model and key: the script's `--help`. With no key it is NOT ASSESSED, never a
+   pass.
 7. **Look**, one class of flaw per pass, in this order: composition → legibility →
    lighting/contrast → detail. Three passes; a flaw that survives three needs a different
    approach, not new numbers. Then the QA gate below.
 8. **Variants.** Roblox personalises between 2-5 active thumbnails. Make each one a different
    moment aimed at a different player motivation (mastery, exploration, collection, social), not
-   a colour swap. A variant row can carry its own art, ribbon and `goal`, and a callout marked
-   `only` stays in its variant.
+   a colour swap. A variant row can carry its own art, ribbon, `goal` and `loop`, and a callout
+   marked `only` stays in its variant. Keep the current best thumbnail in every new test: since
+   July 2025 Roblox doesn't reset the traffic of a test that includes its winner.
 
 ## The brief (`<game>.keyart.toon`)
 
@@ -74,6 +77,8 @@ loop: "Fight monsters on the way up, level up, earn gold"
 goal: "Buy the dungeon key and open the gate"
 title[2]: CRAGHOLD,QUEST
 kicker: DUNGEON UPDATE
+title_at: top-left
+title_max: 76
 art: art-dungeon.svg
 style: dark
 colors[2]{token,value}:
@@ -82,29 +87,31 @@ colors[2]{token,value}:
 anchors[2]{beat,anchor,where}:
   goal,"gold key burning in the arch + its price",right third
   progression,"LVL bar over the first enemy",left third
-callouts[2]{kind,text,sub,x,y,fill,only}:
-  badge,KEY,"12,500 GOLD",0.78,0.43,,dungeon
-  bar,LVL 5,,0.24,0.42,0.35,dungeon
+callouts[2]{kind,text,sub,x,y,fill,only,tx,ty}:
+  badge,KEY,"12,500 GOLD",0.80,0.21,,dungeon,0.775,0.47
+  bar,LVL 5,,0.60,0.36,0.35,dungeon,0.655,0.45
 prompt: "…scene only, no text…"
 negative: "text, letters, numbers, logo, watermark, …"
-variants[2]{id,motivation,art,kicker,goal}:
-  dungeon,mastery and reward,art-dungeon.svg,DUNGEON UPDATE,
-  summit,exploration,art-summit.svg,NEW SUMMIT,"Climb to the summit flag"
+variants[2]{id,motivation,art,kicker,goal,loop}:
+  dungeon,mastery and reward,art-dungeon.svg,DUNGEON UPDATE,,
+  summit,exploration,art-summit.svg,NEW SUMMIT,"Climb to the summit flag","Climb the path to new peaks"
 ```
 
-- `title`: one or two lines, fitted from 100 px down to 56 px on the 1280 grid (it refuses
-  to render a title that doesn't fit). Line 1 takes `fg`, line 2 `accent`; `panel` is the outline,
+- `title`: one or two lines, fitted from 100 px (or `title_max`) down to 56 px on the 1280 grid (it
+  refuses to render a title that doesn't fit). `title_at: top-left` frees the centre for the scene. Line 1 takes `fg`, line 2 `accent`; `panel` is the outline,
   the stepped side and the callout plates; `cta` / `on_cta` the ribbon; `bar` the level bar.
   `colors` override a preset (`style`), so a palette needs only the tokens it changes.
 - `callouts`: `badge` (a label and an optional big `sub`) or `bar` (a label and a `fill` from 0 to 1),
-  centred at `x`, `y` as fractions of the frame. Pin each to its prop in the scene.
+  centred at `x`, `y` as fractions of the frame. `tx`, `ty` draw a red arrow from the plate to its prop
+  (the level bar to its enemy, the price to the key): a plate floating free of its prop reads as UI.
 - `fonts[n]{role,font}` maps text roles to `family-weight` for a Thai title (`title,kanit-700`).
 - `anchors`, `prompt` and `negative` don't render. They travel with the brief so anyone can make
   the image again and see why each element is there.
 
 ## QA gate
 
-- [ ] The critic passes: every string read back, every beat ≥ 1, total ≥ 4 of 6.
+- [ ] The critic passes on a majority of 3 runs: every string read back, every beat ≥ 1, total
+      ≥ 4 of 6, and the eye not on the title.
 - [ ] The bench passes: core text inside the safe zone, contrast ≥ 4.5:1 (≥ 3:1 large bold),
       nothing in the bottom band, the PNG under the limit.
 - [ ] The title reads at 400 px wide (the `-400.png`) and in grayscale.
@@ -113,6 +120,9 @@ variants[2]{id,motivation,art,kicker,goal}:
 - [ ] Every anchor is in the frame and you can find it within two seconds; nothing in the frame
       lacks an anchor.
 - [ ] Text is only the title, the ribbon and the callouts; about three words besides the title.
+      Callout text is at least 42 px at 1920 (28 on the 1280 grid, the `keyart` default).
+- [ ] The hero has a face that reacts (eyes, brows, mouth), and the loop is shown, not written:
+      the hit, the coins, the thing being climbed.
 - [ ] At most two hue families plus one accent; the goal carries the accent.
 - [ ] Honest: everything shown is in the game today. Family-friendly, your own assets, no other
       game's names or characters.
