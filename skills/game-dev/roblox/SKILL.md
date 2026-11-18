@@ -7,7 +7,7 @@ description: >-
   agent can playtest, read the output and take screenshots. Use WHENEVER the work is "Roblox",
   "Roblox Studio", "Luau", "Rojo", "Rokit", "obby", "tycoon", "simulator", "RemoteEvent",
   "DataStore", "leaderstats", "Studio MCP", "connect Claude/Codex/Cursor to Roblox Studio",
-  "playtest my Roblox game", "เกม Roblox", or before writing Luau for a Roblox place.
+  "playtest my Roblox game", "VFX", "particles", "ability effects", "เกม Roblox", or before writing Luau for a Roblox place.
 ---
 
 # Roblox Studio
@@ -116,8 +116,40 @@ what the Luau VM rewards, and a review checklist, with each rule's source.
 - **Ask first:** `save_place` (writes a new place version), publishing, anything paid, and any
   asset upload.
 - **API from the docs.** Read `create.roblox.com/docs/reference/engine/classes/<Class>.md` (or MCP
-  `http_get`) before using an API you have not checked; Roblox changes weekly.
+  `http_get`) before using an API you have not checked; Roblox changes weekly. To find the page,
+  start from the indexes `create.roblox.com/docs/llms.txt` and
+  `create.roblox.com/docs/reference/engine/llms.txt`.
+- **Effects.** Particles, beams, trails, highlights, ability visuals: read
+  [`../roblox-vfx/SKILL.md`](../roblox-vfx/SKILL.md).
 - **Design:** for a young audience, run `design-lens`'s black-hat audit on anything paid.
+
+## Deeper reference: roblox-suite
+
+[roblox-suite](https://github.com/nonlooped/roblox-suite/tree/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae)
+(MIT) has one specialist skill per area. Pinned to commit `fc1c3dd`, `last_reviewed` 2026-06-17.
+
+| Topic | Suite skill |
+|---|---|
+| Core (services, RunContext) | [`roblox-core`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-core/SKILL.md) |
+| Networking (remotes, server authority, exploits) | [`roblox-networking`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-networking/SKILL.md) |
+| DataStores (safe saves, versioning, quotas) | [`roblox-datastores`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-datastores/SKILL.md) |
+| UI | [`roblox-user-interfaces`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-user-interfaces/SKILL.md) |
+| Animation (Animator, IK, TweenService, markers) | [`roblox-animation`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-animation/SKILL.md) |
+| Audio (audio graph vs Sound) | [`roblox-audio`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-audio/SKILL.md) |
+| Monetization (passes, products, subscriptions, PolicyService) | [`roblox-gamepasses`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-gamepasses/SKILL.md) |
+| Open Cloud | [`roblox-open-cloud`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-open-cloud/SKILL.md) |
+| Teleport | [`roblox-teleport`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-teleport/SKILL.md) |
+| Rojo | [`roblox-rojo`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-rojo/SKILL.md) |
+| Studio MCP | [`roblox-mcp`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-mcp/SKILL.md) |
+| Physics (constraints, network ownership) | [`roblox-physics`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-physics/SKILL.md) |
+| NPCs (PathfindingService) | [`roblox-npcs`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-npcs/SKILL.md) |
+| Testing (Developer Console, MicroProfiler) | [`roblox-testing`](https://github.com/nonlooped/roblox-suite/blob/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-testing/SKILL.md) |
+
+Read the matching file before writing code in that area. This skill's house rules win where they
+disagree (class + factory from `references/luau.md`, Lune tests instead of TestEZ, `.luau` files,
+the Rojo layout from the scaffold); the engine docs win over both. The suite's `.lua` scripts are
+examples to adapt, never files to drop into `src/`. VFX is not in the table: it goes to
+[`../roblox-vfx/SKILL.md`](../roblox-vfx/SKILL.md).
 
 ## Full template
 
