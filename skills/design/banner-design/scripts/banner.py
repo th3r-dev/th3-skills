@@ -15,7 +15,7 @@ Run: uv run banner.py <spec.banner.json | brief.keyart.toon> [layout-style ...] 
      writes {layout}-{style}-{W}x{H}.svg next to the spec; bench.py checks each
      uv run banner.py --selftest
 """
-import argparse, csv, importlib.util, json, os, re, sys
+import argparse, csv, importlib.util, json, math, os, re, sys
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -1138,13 +1138,13 @@ def selftest():
         "callouts[2]{kind,text,sub,x,y,fill,only,tx,ty}:\n  badge,KEY,\"1,000 GOLD\",0.7,0.6,,a c,0.8,0.8\n  bar,LVL 5,,0.1,0.6,0.4,,,\n"
         "variants[2]{id,motivation,art,kicker,goal,loop}:\n  a,competition,,,,\n  b,exploration,,NEW,the top,climb\n"))
     assert ks["sizes"] == [[1920, 1080], [1280, 720]] and ks["style"] == "t", "sizes and a palette over a preset"
-    assert ks["keyart"]["callouts"][0]["sub"] == "1,000 GOLD" and ks["keyart"]["callouts"][1]["fill"] == 0.4
+    assert ks["keyart"]["callouts"][0]["sub"] == "1,000 GOLD" and math.isclose(ks["keyart"]["callouts"][1]["fill"], 0.4)
     ks["_styles"] = dict(STYLES, **ks["styles"])
     ks["keyart"]["art"] = png.name
     js = jobs(ks)
     assert [(j[3], j[0]["keyart"]["kicker"]) for j in js] == [("keyart-a", "UPDATE"), ("keyart-b", "NEW")], "a file per variant"
     assert [len(j[0]["keyart"]["callouts"]) for j in js] == [2, 1], "a callout marked `only` stays in its variant"
-    assert ks["keyart"]["callouts"][0]["to"] == (0.8, 0.8) and ks["keyart"]["callouts"][1]["to"] is None, "tx, ty: the pointer target"
+    assert all(map(math.isclose, ks["keyart"]["callouts"][0]["to"], (0.8, 0.8))) and ks["keyart"]["callouts"][1]["to"] is None, "tx, ty: the pointer target"
     assert [j[0]["keyart"]["goal"] for j in js] == ["a key", "the top"], "a variant's own goal overrides the brief's"
     assert [j[0]["keyart"]["loop"] for j in js] == ["fight", "climb"], "and its own loop"
     capped = build(dict(js[0][0], keyart=dict(js[0][0]["keyart"], title_max=64)), "keyart", "t")
