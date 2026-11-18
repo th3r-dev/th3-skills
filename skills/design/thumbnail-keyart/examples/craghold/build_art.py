@@ -29,7 +29,7 @@ def ridge(peaks, base, x0=0, x1=W, col=32, step=24):
     return tops
 
 
-def range_svg(tops, base, rock, lip, snow, snow_below, col=32, rnd=None, shade="#C9D7E8"):
+def range_svg(tops, rock, lip, snow, snow_below, col=32, rnd=None, shade="#C9D7E8"):
     """One rect per column plus a lighter lip on every step; snow only above `snow_below`, so the cap
     never floods the whole silhouette (the trap: snow drawn per column down to the base). Snow on a slope
     falling away from the sun (top-left) takes the `shade` tone, so a peak reads as a solid, not a flat blob."""
@@ -133,7 +133,7 @@ def blocky(x, y, s, skin, shirt, pants, flip=False, hood=None, eyes="#1B1B1B", r
     out = [part(-34, -330, 62, 150, shirt, rot=40 * run, ox=31, oy=10, rim=False),     # back arm, swung back
            part(-30, -175, 66, 175, pants, rot=-32 * run, ox=33, oy=0, rim=False),     # back leg
            part(-62, -340, 124, 170, shirt),                                           # torso
-           f'<rect x="{x + (-62 if not flip else -62) * s:.0f}" y="{y - 205 * s:.0f}" width="{124 * s:.0f}" height="{18 * s:.0f}" fill="#3A2618"/>',
+           f'<rect x="{x - 62 * s:.0f}" y="{y - 205 * s:.0f}" width="{124 * s:.0f}" height="{18 * s:.0f}" fill="#3A2618"/>',
            part(-36, -175, 66, 175, pants, rot=30 * run, ox=33, oy=0)]                 # front leg
     out.append(part(-52, -450, 104, 104, skin))                                        # head
     # the face carries the emotion at phone size: big eyes, brows angled in, gritted teeth
@@ -252,19 +252,17 @@ def scene(variant, seed=7):
     far = ridge([(420, 250, 420), (980, 360, 360), (1560, 420, 380)], 820)
     rock = (("#A79BCB", "#C3B8E0", "#F6E9F0", "#D8C7DE"), ("#5A5C96", "#7779B2", "#FBE7DA", "#D9C3D0")) if sunrise else \
            (("#9DB6E0", "#BCD0EE", "#F2F6FB", "#C9D7E8"), ("#4F6896", "#6A84B0", "#EEF3F9", "#C9D7E8"))
-    out.append(range_svg(far, 820, *rock[0][:3], 400, rnd=rnd, shade=rock[0][3]))
+    out.append(range_svg(far, *rock[0][:3], 400, rnd=rnd, shade=rock[0][3]))
     out.append('<rect x="0" y="560" width="1920" height="260" fill="url(#haze)"/>')
     mid = ridge([(240, 560, 300), (700, 600, 260), crag_peak], 1000)
-    out.append(range_svg(mid, 1000, *rock[1][:3], 470, rnd=rnd, shade=rock[1][3]))
+    out.append(range_svg(mid, *rock[1][:3], 470, rnd=rnd, shade=rock[1][3]))
     out.append('<rect x="0" y="760" width="1920" height="140" fill="url(#haze)" opacity=".6"/>')
     trees = ((1840, 1.3),) if variant == "loop" else ((60, 1.35), (170, 1.05), (1840, 1.3))
-    out += [pine(x, 900 + rnd.randint(-10, 10), s) for x, s in trees]
-    out.append(bridge())
+    out += [pine(x, 900 + rnd.randint(-10, 10), s) for x, s in trees] + [bridge()]
     if variant == "loop":                        # the farm: where every run starts and you level up to 10
-        out.append('<polygon points="0,812 600,836 600,968 0,1092" fill="#86AE63"/>'
-                   '<polygon points="0,812 600,836 600,846 0,824" fill="#F4F8FC"/>')
-        out.append(pen(20, 560, 935))
-        out.append(animal(110, 990, 1.0, "pig") + animal(330, 975, 0.95, "cow"))
+        out.extend(['<polygon points="0,812 600,836 600,968 0,1092" fill="#86AE63"/>'
+                    '<polygon points="0,812 600,836 600,846 0,824" fill="#F4F8FC"/>',
+                    pen(20, 560, 935), animal(110, 990, 1.0, "pig") + animal(330, 975, 0.95, "cow")])
     if variant in ("dungeon", "loop"):
         out.append(gate())
         out.append('<polygon points="1395,792 1595,792 1250,1080 600,1080" fill="url(#spill)"/>')   # the key's light down the bridge
@@ -296,7 +294,7 @@ def selftest():
         assert "<text" not in svg, "the art carries no text; the title is live text on top"
     tops = ridge([(500, 200, 300)], 800)
     assert min(y for _, y in tops) == 192 and max(y for _, y in tops) == 792, "snapped to the 24px voxel grid"
-    snow = range_svg([(0, 200), (32, 700)], 800, "#000", "#111", "#FFF", 470)
+    snow = range_svg([(0, 200), (32, 700)], "#000", "#111", "#FFF", 470)
     assert snow.count('fill="#FFF"') == 1, "only the column above the snow line gets a cap"
     print("selftest ok")
 
