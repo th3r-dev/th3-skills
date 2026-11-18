@@ -22,6 +22,7 @@ description: >-
 | an idea, a brief, "is this fun", a loop, rewards, player types, monetization ethics | [`design-lens/SKILL.md`](design-lens/SKILL.md) | none |
 | Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory); deeper topics (DataStores, networking, UI, physics...) route to roblox-suite | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
 | visual effects: particles, beams, trails, highlights, ability / power effects, the anime look (layers, timing, black layers, recolour), fill-rate budget | [`roblox-vfx/SKILL.md`](roblox-vfx/SKILL.md), [`roblox-vfx/references/particles.md`](roblox-vfx/references/particles.md), [`roblox-vfx/references/abilities.md`](roblox-vfx/references/abilities.md), [`roblox-vfx/references/look.md`](roblox-vfx/references/look.md) | none |
+| a thumbnail, key art or update thumbnail for the game (what it is, the loop, the goal in one image) | the design skill's [`thumbnail-keyart`](../design/thumbnail-keyart/SKILL.md) (its brief takes the game read from `design/game-brief.md`) | design's `banner.py`, `bench.py`, `critic.py` |
 | 3D models: build in Blender, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
 
 ## The flow

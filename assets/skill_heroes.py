@@ -37,9 +37,9 @@ SKILLS = {
         ["a PR that proves it, and what", "a full build would still need"]),
     "design": (
         ["Design from references,", "scored by a critic."],
-        ["Three sub-skills: core, flow,", "banner-design."],
+        ["Four sub-skills: core, flow,", "banner-design, thumbnail-keyart."],
         [("core", "principles, taste, a scored loop"), ("flow", "Figma screens with their flow"),
-         ("banner-design", "brand side, four jobs, a CTA"), ("bench", "crop, contrast, phone-width checks")],
+         ("banner-design", "brand side, four jobs, a CTA"), ("thumbnail-keyart", "a game in one frame, read back blind")],
         ["a design that passes the critic", "and the bench, not the author"]),
     "marketing": (
         ["Price from your costs,", "sell in the form's fields."],
