@@ -3,12 +3,15 @@ name: game-dev-roblox-vfx
 description: >-
   Build Roblox visual effects that look right and stay cheap: ParticleEmitter (parenting, the
   property stack, shapes, flipbooks), Beam, Trail and Highlight, a fill-rate budget, client-side
-  playback driven by a server RemoteEvent, and the power-ability recipe (press a key, rocks burst
-  out of the ground, dust, hit applied on the server). Use WHENEVER the work is "Roblox VFX",
+  playback driven by a server RemoteEvent, the power-ability recipe (press a key, rocks burst
+  out of the ground, dust, hit applied on the server), and the anime-style look (one role per
+  layer, flash/impact/residue timing, black silhouette layers, Brightness and Bloom, recolourable
+  white templates, frozen-frame checks). Use WHENEVER the work is "Roblox VFX",
   "ParticleEmitter", "particles", "Emit", "flipbook", "Beam", "Trail", "Highlight", "fire", "smoke",
-  "explosion", "impact", "aura", "magic", "ability effect", "power", "skill effect", "rocks out of
+  "explosion", "impact", "aura", "awakening aura", "slash", "crescent", "shock ring", "impact
+  frame", "black layer", "anime VFX", "recolor the effect", "effect washed out in daylight", "magic", "ability effect", "power", "skill effect", "rocks out of
   the ground", "ground slam", "shockwave", "fill rate", "overdraw", "laggy effects", "เอฟเฟกต์
-  Roblox", "ท่าไม้ตาย", or before adding any effect to a Roblox place.
+  Roblox", "เอฟเฟกต์อนิเมะ", "ท่าไม้ตาย", or before adding any effect to a Roblox place.
 ---
 
 # Roblox VFX
@@ -16,7 +19,8 @@ description: >-
 An effect is cheap to write and easy to get wrong: `Rate` and `Size` set blindly look flat and cost
 fill rate. This file is the rules; property tables and recipes are in
 [`references/particles.md`](references/particles.md), the ability code in
-[`references/abilities.md`](references/abilities.md). Set the project up first with
+[`references/abilities.md`](references/abilities.md), the art direction in
+[`references/look.md`](references/look.md). Set the project up first with
 [`../roblox/SKILL.md`](../roblox/SKILL.md).
 
 ## Parenting
@@ -30,7 +34,7 @@ fill rate. This file is the rules; property tables and recipes are in
 
 | # | Property | Rule |
 |---|---|---|
-| 1 | `Texture` | PNG with alpha. Grayscale + `LightEmission = 1` hides the dark areas |
+| 1 | `Texture` | PNG with alpha, white or grey: colour comes from `Color`, so one template recolours. `LightEmission = 1` hides the dark areas but washes out in daylight |
 | 2 | `Color` | a ColorSequence over the life, not one flat colour |
 | 3 | `Size` | a NumberSequence; large = fill-rate cost |
 | 4 | `Transparency` | always fade in and/or out, or particles pop |
@@ -40,6 +44,20 @@ fill rate. This file is the rules; property tables and recipes are in
 Then motion: `Speed`, `SpreadAngle`, `Acceleration` (gravity), `Drag` + `WindAffectsDrag`,
 `VelocityInheritance`, `LockedToPart`, `TimeScale`. Shapes, flipbooks, `Orientation` and `ZOffset`:
 [`references/particles.md`](references/particles.md).
+
+## Look
+
+How it reads matters as much as what it costs. Full guide: [`references/look.md`](references/look.md).
+
+- **One role per emitter**: flash, rings and crescents (`VelocityPerpendicular`, the main shape),
+  sparks (`VelocityParallel`), debris and smoke, a **black layer** with the same texture that
+  keeps the silhouette readable in daylight.
+- **Three stages**: flash up to 0.1 s, impact to 0.4 s, residue 0.5-4 s, set per emitter with the
+  `EmitDelay` attribute.
+- **Light**: `LightInfluence = 0`; 1-2 core layers bright enough to bloom, coloured layers at a
+  moderate `Brightness`, black layers at 0. Test with the game's Bloom, in daylight.
+- **Size eases out**; high `Speed` with high `Drag` makes a punch.
+- **White templates, tinted per element**; tag black layers and white flashes `NoColor`.
 
 ## Budget: fill rate and overdraw
 
@@ -103,7 +121,9 @@ A visual change is not done until it was run and looked at, with the MCP setup f
 [`../roblox/SKILL.md`](../roblox/SKILL.md):
 
 1. `start_stop_play`, then trigger the effect (`user_keyboard_input`).
-2. `screen_capture` at the **lowest** and the **highest** quality level.
+2. `screen_capture` at the **lowest** and the **highest** quality level. Capture lags ~1-2 s, so
+   for a burst freeze it first (`TimeScale = 0` on every emitter) at the flash, the impact and the
+   residue ([`references/look.md`](references/look.md)). Look in daylight and with one other tint.
 3. `get_console_output`: no errors or warnings from the effect's code.
 4. The Fill Rate stat while it plays.
 5. `start_stop_play` to stop.
@@ -128,3 +148,6 @@ Luau style, classes and the review checklist:
 Adapted from [nonlooped/roblox-suite@fc1c3dd](https://github.com/nonlooped/roblox-suite/tree/fc1c3dd26fef67ee4d7b6e20b1299b44fc6101ae/roblox-vfx)
 (MIT, © 2026 nonlooped) and the DevForum thread
 [Roblox VFX and power abilities](https://devforum.roblox.com/t/roblox-vfx-and-power-abilities/1537223).
+The look is based on lef's **Roblox VFX Design** guide,
+[Wongsakorn-krub/SKILL_AI_VFXROBLOX@7d42130](https://github.com/Wongsakorn-krub/SKILL_AI_VFXROBLOX/tree/7d4213017038899d895374cf0f59801fc957af84)
+(no licence stated: linked and restated, not copied).

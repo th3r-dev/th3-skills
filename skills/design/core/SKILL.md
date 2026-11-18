@@ -1,6 +1,6 @@
 ---
 name: design-core
-description: Shared design principles that the other design skills build on. Covers visual composition (alignment, contrast, hierarchy, proximity, white space, repetition, unity), interface writing (voice, tone, labels, errors, empty states, field hints), and an interface quality baseline (states, accessibility, focus, motion, copy, AI tells). Use when designing or reviewing a screen, page, component, flow, or UI copy, when another design skill (design-flow, figma-generate-design, a frontend build) is about to place or write something, or when the user asks "review this design", "is this layout right", "check the UI copy", "design principles", "หลักการออกแบบ", "ตรวจงานดีไซน์", "เขียนข้อความบนหน้าจอ", or says a screen or page "looks generic", "looks AI-made" or "needs more taste", or wants to design from reference images, Inspo or Awwwards references, three variants, or a long "cook" iteration loop scored against references, or hands over one picture of a robotic animal, machine or device to rebuild in three.js as an object that takes itself apart (a "cutaway", "exploded view", "make this image a 3D model that comes apart", a 60 fps teardown film with a synced score). Not a style of its own: it never overrides the file's or product's existing design system.
+description: Shared design principles that the other design skills build on. Covers visual composition (alignment, contrast, hierarchy, proximity, white space, repetition, unity), interface writing (voice, tone, labels, errors, empty states, field hints), and an interface quality baseline (states, accessibility, focus, motion, copy, AI tells). Use when designing or reviewing a screen, page, component, flow, or UI copy, when another design skill (design-flow, figma-generate-design, a frontend build) is about to place or write something, or when the user asks "review this design", "is this layout right", "check the UI copy", "design principles", "หลักการออกแบบ", "ตรวจงานดีไซน์", "เขียนข้อความบนหน้าจอ", or says a screen or page "looks generic", "looks AI-made" or "needs more taste", or an open creative choice (a name, headline, palette, poster, cover, game idea) is left to the agent or called "too generic", "boring", "typical AI", "too safe", "cliché" or "seen it before", or wants to design from reference images, Inspo or Awwwards references, three variants, or a long "cook" iteration loop scored against references, or hands over one picture of a robotic animal, machine or device to rebuild in three.js as an object that takes itself apart (a "cutaway", "exploded view", "make this image a 3D model that comes apart", a 60 fps teardown film with a synced score). Not a style of its own: it never overrides the file's or product's existing design system.
 ---
 
 # Design Core
@@ -56,6 +56,18 @@ When two rules here disagree with the product, report the gap. Don't silently re
   score never decides; a user's correction becomes a calibration offset.
 - Feedback is marked-up screenshots and the build's own terms (grid, padding, hex), not "cleaner".
 
+**Off-default** (detail: [references/off-default.md](references/off-default.md))
+
+- Before an open creative choice, write "the default here is X", then leave X unless the case asks
+  for it. Its well-known opposite is the second default.
+- Start from the case's own facts; when the request is thin, from
+  [`scripts/seed.py`](scripts/seed.py) (`visual`, `text`, `idea`), never from "what would be most
+  interesting".
+- Every choice gets a one-sentence reason from a fact about this project.
+- Posters and covers: the AI look is the finish, so pick a making method and let its marks replace
+  it. Interfaces keep their grid; the working parts (what must be read or pressed) stay whole.
+- An escape that worked last time is the next default.
+
 **Cutaway** (detail: [references/cutaway.md](references/cutaway.md))
 
 - One picture in, a three.js object built from code out, opened part by part. The build runs in
@@ -108,7 +120,7 @@ self-contained animated SVGs.
 | Copy (labels, errors, empty states) | writing.md |
 | States and edge cases | interface-quality.md |
 | Accessibility | interface-quality.md |
-| Fit to kind, no generic look | taste.md |
+| Fit to kind, no generic look | taste.md, off-default.md |
 | Closeness to the references (when there are any) | reference-first.md, cook-loop.md |
 
 Report findings as `screen or file:location — issue → fix`, most severe first. A finding needs
@@ -135,5 +147,9 @@ type, display type, layout model, mood, density, and what to exclude.
   timeline-synced score); the runtime stays in that skill
 - [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT): the method only (kind
   first, copy first, deliberate choices, checks with ids, waivers), not its kit or scripts
+- [mankidev/antialgorithm](https://github.com/mankidev/antialgorithm/tree/8706a2d49511954d0d092f732eb5853497ad25fc)
+  (MIT): name the default and leave it, the seed (`scripts/seed.py`, vendored unchanged), making
+  methods over the AI finish, the escape becoming a default; its `rough.py` and `check.py` stay
+  in that repo
 
 The references paraphrase these sources. Re-check them when a rule seems out of date.

@@ -16,7 +16,18 @@ and pass that checklist, but they were checked with Selene and StyLua only (no t
 | `src/server/init.server.luau` | server | request checks, cooldown, the hit, `FireAllClients` |
 
 Templates are made in Studio under `ReplicatedStorage.VfxTemplates`: a Folder `RockDust` holding
-the dust `ParticleEmitter`s, and a part `Rock`. Nothing here mutates them.
+the dust `ParticleEmitter`s, a part `Rock`, and a layered hit `Impact` built the way
+[`look.md`](look.md) describes. Nothing here mutates them.
+
+Per-emitter attributes, set in Studio on a template's emitters:
+
+| Attribute | Type | Effect |
+|---|---|---|
+| `EmitCount` | number | particles for this emitter; default the definition's `burst` |
+| `EmitDelay` | number | seconds after `play`; this is how one template holds flash, impact and residue |
+| `NoColor` | boolean | the definition's `tint` skips it (black layers, white flashes) |
+
+`EmitDuration` (emission spread over time) is not read: add it when a template needs it.
 
 ## Definitions
 
@@ -27,7 +38,8 @@ the dust `ParticleEmitter`s, and a part `Rock`. Nothing here mutates them.
 export type Definition = {
 	kind: "burst" | "rockRise",
 	template: string, -- emitters, under ReplicatedStorage.VfxTemplates
-	burst: number, -- particles per emitter
+	burst: number, -- particles per emitter without an EmitCount attribute
+	tint: Color3?, -- multiplies Color on every emitter without NoColor; white templates take it as is
 	rock: string?, -- rockRise: BasePart template name
 	rocks: number?,
 	distance: number?, -- studs in front of the root
@@ -37,6 +49,19 @@ export type Definition = {
 
 local VfxDefinitions: { [string]: Definition } = table.freeze({
 	impactDust = table.freeze({ kind = "burst", template = "RockDust", burst = 20 }),
+	-- one white layered template, recoloured per element
+	impactFire = table.freeze({
+		kind = "burst",
+		template = "Impact",
+		burst = 1,
+		tint = Color3.fromRGB(255, 120, 20),
+	}),
+	impactFrost = table.freeze({
+		kind = "burst",
+		template = "Impact",
+		burst = 1,
+		tint = Color3.fromRGB(70, 150, 255),
+	}),
 	rockRise = table.freeze({
 		kind = "rockRise",
 		template = "RockDust",
@@ -54,15 +79,31 @@ return VfxDefinitions
 
 ## Effect (emitters only)
 
-Port of `EffectBurst`: clone every emitter under the template, never touch the template, emit,
-destroy after the longest `Lifetime.Max`. The clones sit under a tiny invisible part, so Sphere and
-Cylinder shapes work and the `CFrame` aims them.
+Port of `EffectBurst`: clone every emitter under the template, never touch the template, emit each
+by its `EmitCount` at its `EmitDelay`, destroy after the last delay plus its `Lifetime.Max`. The
+clones sit under a tiny invisible part, so Sphere and Cylinder shapes work and the `CFrame` aims them.
 
 ```lua
 --!strict
--- One playing burst: cloned emitters under a holder part, removed after the longest lifetime.
+-- One playing burst: cloned emitters under a holder part, each emitted by its EmitCount at its
+-- EmitDelay, removed once the last one has finished.
 
 local VfxDefinitions = require("@game/ReplicatedStorage/Shared/VfxDefinitions")
+
+local function numberAttribute(instance: Instance, name: string, default: number): number
+	local value = instance:GetAttribute(name)
+	return if typeof(value) == "number" then value else default
+end
+
+local function tinted(sequence: ColorSequence, tint: Color3): ColorSequence
+	local keypoints = {}
+	for _, keypoint in sequence.Keypoints do
+		local c = keypoint.Value
+		local value = Color3.new(c.R * tint.R, c.G * tint.G, c.B * tint.B)
+		table.insert(keypoints, ColorSequenceKeypoint.new(keypoint.Time, value))
+	end
+	return ColorSequence.new(keypoints)
+end
 
 local Effect = {}
 Effect.__index = Effect
@@ -73,6 +114,7 @@ export type Effect = typeof(setmetatable(
 		_emitters: { ParticleEmitter },
 		_burst: number,
 		_lifetime: number,
+		_pending: { thread },
 		_cleanup: thread?,
 		_destroyed: boolean,
 	},
@@ -99,9 +141,13 @@ function Effect.new(templates: Instance, definition: VfxDefinitions.Definition):
 			local emitter = descendant:Clone()
 			emitter.Enabled = false
 			emitter.Rate = 0
+			if definition.tint and emitter:GetAttribute("NoColor") ~= true then
+				emitter.Color = tinted(emitter.Color, definition.tint)
+			end
 			emitter.Parent = holder
 			table.insert(emitters, emitter)
-			lifetime = math.max(lifetime, emitter.Lifetime.Max)
+			lifetime =
+				math.max(lifetime, numberAttribute(emitter, "EmitDelay", 0) + emitter.Lifetime.Max)
 		end
 	end
 	assert(#emitters > 0, `template "{definition.template}" has no ParticleEmitter`)
@@ -111,6 +157,7 @@ function Effect.new(templates: Instance, definition: VfxDefinitions.Definition):
 		_emitters = emitters,
 		_burst = definition.burst,
 		_lifetime = lifetime,
+		_pending = {} :: { thread },
 		_cleanup = nil :: thread?,
 		_destroyed = false,
 	}
@@ -124,7 +171,18 @@ function Effect.play(self: Effect, cframe: CFrame)
 	self._holder.CFrame = cframe
 	self._holder.Parent = workspace
 	for _, emitter in self._emitters do
-		emitter:Emit(self._burst)
+		local count = numberAttribute(emitter, "EmitCount", self._burst)
+		local delay = numberAttribute(emitter, "EmitDelay", 0)
+		if delay > 0 then
+			table.insert(
+				self._pending,
+				task.delay(delay, function()
+					emitter:Emit(count)
+				end)
+			)
+		else
+			emitter:Emit(count)
+		end
 	end
 	self._cleanup = task.delay(self._lifetime, function()
 		self._cleanup = nil
@@ -141,6 +199,12 @@ function Effect.destroy(self: Effect)
 		task.cancel(self._cleanup)
 		self._cleanup = nil
 	end
+	for _, pending in self._pending do
+		if coroutine.status(pending) == "suspended" then
+			task.cancel(pending)
+		end
+	end
+	table.clear(self._pending)
 	for _, emitter in self._emitters do
 		emitter.Enabled = false
 		emitter:Clear()
@@ -420,4 +484,5 @@ end)
 - [ ] Every class that makes Instances has `destroy()`, and every `play` path reaches it
 - [ ] Visual parts are anchored with `CanCollide`, `CanTouch` and `CanQuery` off
 - [ ] No `BodyVelocity` or other BodyMover, no global `wait`/`spawn`/`delay`, no `Humanoid:LoadAnimation`
-- [ ] Played in Studio at the lowest and highest quality level; Fill Rate read; otherwise NOT ASSESSED
+- [ ] Layered templates: one role per emitter, `EmitDelay` per stage, black layers and flashes tagged `NoColor` ([`look.md`](look.md))
+- [ ] Played in Studio at the lowest and highest quality level; Fill Rate read; frozen frames captured per stage; otherwise NOT ASSESSED

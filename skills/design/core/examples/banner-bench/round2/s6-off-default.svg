@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: order of authority as concentric rings around one focal point">
+<title>design-core</title>
+<rect width="1280" height="640" fill="#F2EEE5"/>
+<circle cx="1010" cy="320" r="230" fill="none" stroke="#17161A" stroke-width="2"/>
+<circle cx="1010" cy="320" r="170" fill="none" stroke="#E2DCCE" stroke-width="3"/>
+<circle cx="1010" cy="320" r="110" fill="none" stroke="#E2DCCE" stroke-width="3"/>
+<circle cx="1010" cy="320" r="56" fill="none" stroke="#17161A" stroke-width="2"/>
+<circle cx="1017" cy="315" r="56" fill="#E5452B"/>
+<text x="1017" y="320" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="#17161A">1 request</text>
+<rect x="954.0" y="79" width="112.0" height="22" fill="#F2EEE5"/>
+<text x="1010" y="95" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">4 defaults</text>
+<rect x="954.0" y="139" width="112.0" height="22" fill="#F2EEE5"/>
+<text x="1010" y="155" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">3 platform</text>
+<rect x="925.2" y="199" width="169.6" height="22" fill="#F2EEE5"/>
+<text x="1010" y="215" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">2 product system</text>
+<text x="80" y="300" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="108" font-weight="700" letter-spacing="-3" fill="#17161A">design-core</text>
+<rect x="82" y="330" width="96" height="8" fill="#E5452B"/>
+<text x="80" y="402" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#5E5A50">The shared principles the other</text>
+<text x="80" y="441" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#5E5A50">design skills build on.</text>
+<line x1="80" y1="540" x2="700" y2="540" stroke="#E2DCCE" stroke-width="2"/>
+<text x="80" y="576" font-family="Menlo, Consolas, monospace" font-size="17" fill="#17161A">composition  /  writing  /  interface baseline</text>
+</svg>

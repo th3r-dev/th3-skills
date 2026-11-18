@@ -37,7 +37,8 @@ When the product leaves a choice open (palette, type pairing, hero layout, card 
 
 - Name two or three options that fit the kind and the subject, pick one, and write one sentence
   on why it fits. Don't take the first idea that comes to mind; that is where the generic look
-  comes from.
+  comes from. How to name that first idea and move off it, and where to start when the request
+  is thin: [off-default.md](off-default.md).
 - Record the pick in the plan so sibling screens or pages stay consistent, or differ on purpose.
 - Violet/lavender accents, glow gradients and a three-card feature row need a product reason.
 - When the user hands over a reference, take its technique, not its composition. List what it

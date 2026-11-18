@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="t">
+<title id="t">design-core: shared design principles</title>
+<rect width="1280" height="640" fill="#F1EDE4"/>
+<g stroke="#16161A" stroke-opacity=".09" stroke-width="1">
+<path d="M80 0V640M160 0V640M240 0V640M320 0V640M400 0V640M480 0V640M560 0V640M640 0V640M720 0V640M800 0V640M880 0V640M960 0V640M1040 0V640M1120 0V640M1200 0V640"/>
+<path d="M0 80H1280M0 160H1280M0 240H1280M0 320H1280M0 400H1280M0 480H1280M0 560H1280"/>
+</g>
+<!-- construction figure -->
+<g transform="translate(0,0)">
+<rect x="800" y="80" width="320" height="400" fill="none" stroke="#16161A" stroke-width="2"/>
+<rect x="800" y="80" width="320" height="80" fill="#16161A"/>
+<rect x="832" y="112" width="120" height="16" fill="#F1EDE4"/>
+<circle cx="960" cy="320" r="80" fill="#E8452C"/>
+<path d="M800 320H1120M960 160V480" stroke="#16161A" stroke-width="1.5" stroke-dasharray="6 6"/>
+<rect x="832" y="432" width="256" height="10" fill="#16161A"/>
+<rect x="832" y="454" width="160" height="10" fill="#16161A" fill-opacity=".35"/>
+<rect x="832" y="200" width="80" height="10" fill="#16161A" fill-opacity=".35"/>
+<rect x="832" y="222" width="56" height="10" fill="#16161A" fill-opacity=".35"/>
+<path d="M1120 320H1160M1160 312V328" stroke="#E8452C" stroke-width="2"/>
+<text x="1168" y="325" font-family="Menlo,Consolas,monospace" font-size="16" fill="#16161A">1 focal</text>
+</g>
+<!-- title -->
+<g font-family="Helvetica Neue,Helvetica,Arial,sans-serif" fill="#16161A">
+<text x="80" y="136" font-family="Menlo,Consolas,monospace" font-size="18" letter-spacing="3" fill="#E8452C">SKILL / DESIGN</text>
+<text x="80" y="280" font-size="116" font-weight="700" letter-spacing="-4">design-</text>
+<text x="80" y="390" font-size="116" font-weight="700" letter-spacing="-4">core</text>
+<text x="80" y="450" font-size="26" fill-opacity=".8">Shared principles every design skill builds on.</text>
+</g>
+<!-- rule strip -->
+<path d="M80 520H1200" stroke="#16161A" stroke-width="2"/>
+<g font-family="Menlo,Consolas,monospace" font-size="18" fill="#16161A">
+<text x="80" y="560">composition</text>
+<text x="360" y="560">writing</text>
+<text x="560" y="560">interface baseline</text>
+<text x="880" y="560">off-default</text>
+</g>
+<g fill="#E8452C"><rect x="80" y="520" width="40" height="6"/><rect x="360" y="520" width="40" height="6" fill-opacity="0"/></g>
+</svg>

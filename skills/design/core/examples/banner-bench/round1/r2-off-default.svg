@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: a form screen marked up in red pen, with one focal point, equal gaps and a verb-first button.">
+<title>design-core: shared design principles, shown as a marked-up screen</title>
+<rect width="1280" height="640" fill="#F3EFE4"/>
+<g stroke="#111" stroke-opacity=".08" stroke-width="1">
+<path d="M80 0V640M160 0V640M240 0V640M320 0V640M400 0V640M480 0V640M560 0V640M640 0V640M720 0V640M800 0V640M880 0V640M960 0V640M1040 0V640M1120 0V640M1200 0V640"/>
+<path d="M0 80H1280M0 160H1280M0 240H1280M0 320H1280M0 400H1280M0 480H1280M0 560H1280"/>
+</g>
+<g font-family="Helvetica Neue,Helvetica,Arial,sans-serif" fill="#111">
+<text x="80" y="104" font-family="Menlo,Consolas,monospace" font-size="18" letter-spacing="1.5">th3-skills / design</text>
+<text x="76" y="318" font-size="104" font-weight="800" letter-spacing="-4">design-</text>
+<text x="76" y="414" font-size="104" font-weight="800" letter-spacing="-4">core</text>
+<rect x="80" y="440" width="120" height="10" fill="#FFD60A"/>
+<text x="80" y="498" font-size="26">Shared rules for layout, wording</text>
+<text x="80" y="532" font-size="26">and screen states. Every design skill reads them.</text>
+<text x="80" y="580" font-family="Menlo,Consolas,monospace" font-size="17" fill="#111" fill-opacity=".7">hierarchy 9 · alignment 8 · copy 9 · states 8</text>
+
+<!-- screen -->
+<rect x="716" y="92" width="480" height="456" fill="#fff" stroke="#111" stroke-width="3"/>
+<rect x="716" y="92" width="480" height="36" fill="#111"/>
+<circle cx="738" cy="110" r="5" fill="#F3EFE4"/><circle cx="758" cy="110" r="5" fill="#F3EFE4" fill-opacity=".5"/>
+<text x="756" y="196" font-size="36" font-weight="800" letter-spacing="-1">Send invoice</text>
+<rect x="756" y="224" width="320" height="10" fill="#111" fill-opacity=".14"/>
+<rect x="756" y="244" width="240" height="10" fill="#111" fill-opacity=".14"/>
+<text x="756" y="298" font-size="15" font-weight="700">Due date</text>
+<rect x="756" y="308" width="400" height="44" fill="#fff" stroke="#D7261E" stroke-width="2"/>
+<text x="770" y="336" font-size="17" fill="#111" fill-opacity=".5">32/01/2027</text>
+<text x="756" y="378" font-size="14" fill="#D7261E">Pick a date in January or later.</text>
+<rect x="756" y="424" width="132" height="52" fill="#FFD60A" stroke="#111" stroke-width="3"/>
+<text x="822" y="457" font-size="20" font-weight="800" text-anchor="middle">Send</text>
+<rect x="904" y="424" width="170" height="52" fill="none" stroke="#111" stroke-width="2"/>
+<text x="989" y="457" font-size="19" text-anchor="middle">Save draft</text>
+
+<!-- red pen -->
+<g fill="none" stroke="#D7261E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<path d="M744 414C760 400 850 400 895 412C902 440 896 482 880 486C830 492 764 490 746 478C734 460 734 430 744 414Z"/>
+<path d="M650 440C680 436 712 438 738 446M728 436L740 447L726 456"/>
+<path d="M756 492H888M822 492V502" stroke-width="2"/>
+</g>
+<g font-family="Menlo,Consolas,monospace" font-size="17" fill="#D7261E" font-weight="700">
+<text x="560" y="436" text-anchor="middle">one focal point</text>
+<text x="756" y="526" font-size="15">verb first, says what happens</text>
+</g>
+</g>
+</svg>

@@ -1,0 +1,15 @@
+id: craghold
+skill: design/thumbnail-keyart
+prompt: "Make a Roblox thumbnail for my game: a blocky adventure on a snow mountain, you fight up from the farm, level up and earn gold to buy the dungeon key. This is the dungeon update, and I want a second one for players who like exploring."
+prompt_read_as: "Two variants of one game at 1920 x 1080 (and 1280 x 720): the dungeon update for mastery (hero, first enemy with a level bar, the key and its price in the gate) and the summit for exploration (the path to a flag on the peak). One brief, art without text, live title and ribbon."
+brief: ../examples/craghold/craghold.keyart.toon
+rubric[9]{id,check}:
+  read,"the brief has is, loop and goal lines and an anchor table of five or fewer rows, written before the art"
+  path,"the image tool was probed first and the hand-over names the path that made the art (model or vector)"
+  notext,"the art files hold no text: grep '<text' on the art SVG, or the prompt's negative bans text"
+  regen,"the art regenerates from a script or a prompt kept in the brief; banner.py renders every variant from the brief"
+  bench,"bench.py --bottom 120 --max-kb 3000 passes on every 1920 x 1080 render (--bottom 80 at 1280 x 720)"
+  critic,"critic.py passes on every variant's -400.png on a majority of 3 runs: all strings read back, every beat >= 1, total >= 4 of 6; no key = NOT ASSESSED"
+  variants,"2-5 variants, each a different moment for a different player motivation, not a colour swap"
+  focus,"manual: the goal or the hero is the brightest thing in the frame at 400 px (the critic's focus line names any logo first, so it is not the check)"
+  honest,"manual: every anchor is something the game has; no other game's name, characters or art"

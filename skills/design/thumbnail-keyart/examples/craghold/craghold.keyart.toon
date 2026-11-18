@@ -1,0 +1,39 @@
+id: craghold
+size[2]: 1920,1080
+sizes[2]: 1920x1080,1280x720
+is: "A blocky fantasy adventure on a snow mountain"
+loop: "Fight monsters on the way up, level up, earn gold"
+goal: "Buy the dungeon key and open the gate"
+title[2]: CRAGHOLD,QUEST
+kicker: DUNGEON UPDATE
+title_at: top-left
+title_max: 76
+art: art-dungeon.svg
+style: dark
+colors[9]{token,value}:
+  fg,#FFF6E2
+  title2,#FFD98A
+  accent,#FFB23F
+  panel,#14213D
+  on_panel,#FFFFFF
+  cta,#C8302A
+  on_cta,#FFFFFF
+  fg3,#FFFFFF
+  bar,#5BD15B
+anchors[5]{beat,anchor,where}:
+  world,"snowy voxel peaks behind everything",backdrop
+  loop,"hero mid-stride, gritted teeth, sword into the enemy",centre
+  progression,"LVL bar pointing at the enemy the hero is hitting, coins flying",centre-right
+  goal,"gold key burning in the arch + its price",right third
+  update,"stone gate with a lit arch at the end of the bridge",right third
+callouts[4]{kind,text,sub,x,y,fill,only,tx,ty}:
+  badge,KEY,"12,500 GOLD",0.80,0.21,,dungeon loop,0.775,0.47
+  bar,LVL 1-10,,0.17,0.62,0.6,loop,0.15,0.77
+  bar,LVL 5,,0.60,0.36,0.35,dungeon,0.655,0.45
+  badge,SUMMIT,"4,200 M",0.64,0.30,,summit,0.79,0.21
+prompt: "Blocky low-poly fantasy game scene, 16:9, bright daylight. A hooded blocky adventurer runs along a stone bridge toward a stone dungeon gate on the right, sword held forward with a cold blue edge-glow, determined face. Behind him on the left a green blocky zombie with red eyes, arms forward. Inside the gate's arch a gold key glows with a burst of light. Snowy blocky mountains behind, soft haze, warm torchlight on the gate. Rule of thirds: hero centre, gate and key right third. Empty sky across the top centre for a title."
+negative: "text, letters, numbers, logo, watermark, signature, UI, frame, blood, gore, real brand characters, photorealistic people"
+variants[3]{id,motivation,art,kicker,goal,loop}:
+  dungeon,mastery and reward,art-dungeon.svg,DUNGEON UPDATE,,
+  summit,exploration,art-summit.svg,NEW SUMMIT,"Climb to the summit flag","Climb the mountain path to new peaks"
+  loop,progression,art-loop.svg,DUNGEON UPDATE,,"Level up on the farm, fight monsters for gold, buy the dungeon key"
