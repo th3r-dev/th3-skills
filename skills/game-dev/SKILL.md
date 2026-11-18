@@ -8,10 +8,10 @@ description: >-
   Octalysis's core drives), with a white-hat / black-hat audit. (2) roblox: Roblox Studio with Luau
   in files (Rojo, Rokit, Selene, StyLua, Lune) and Studio's built-in MCP server wired to the agent
   for playtests. (3) modeling: 3D models built in Blender from a Python script, exported to the
-  engine's limits and checked before import; Meshy AI generation only when the user opts in. (4) roblox-vfx: Roblox visual effects with ParticleEmitter, Beam, Trail and Highlight under a fill-rate budget, the server deciding and the client rendering, plus a recipe for power abilities. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
+  engine's limits and checked before import; Meshy AI generation only when the user opts in. (4) roblox-vfx: Roblox visual effects with ParticleEmitter, Beam, Trail and Highlight under a fill-rate budget, the server deciding and the client rendering, plus a recipe for power abilities. (5) design-ui: the game's interface (HUD, shop, menus) as design-core applied to Roblox: an approved brief per surface with every state, phone-first layout in the safe insets, tokens from the game's look, the server deciding every purchase, checked in a Studio playtest per device. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
   "why is this game not fun", "MDA", "Octalysis", "player motivation", "game brief", "GDD",
   "prototype a mechanic", "Roblox", "Roblox Studio", "Luau", "Rojo", "obby", "tycoon",
-  "simulator", "Studio MCP", "3D model", "Blender", "low poly", "polycount", "Meshy", "VFX", "ParticleEmitter", "Beam", "Trail", "power ability", "เอฟเฟกต์", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
+  "simulator", "Studio MCP", "Roblox UI", "HUD", "shop UI", "game UI", "ScreenGui", "ออกแบบ UI เกม Roblox", "3D model", "Blender", "low poly", "polycount", "Meshy", "VFX", "ParticleEmitter", "Beam", "Trail", "power ability", "เอฟเฟกต์", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
   before acting.
 ---
 
@@ -21,6 +21,7 @@ description: >-
 |---|---|---|
 | an idea, a brief, "is this fun", a loop, rewards, player types, monetization ethics | [`design-lens/SKILL.md`](design-lens/SKILL.md) | none |
 | Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory); deeper topics (DataStores, networking, UI, physics...) route to roblox-suite | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| the interface: HUD, shop, inventory, rewards, menus, onboarding prompts, mobile layout, UI tokens, a UI review | [`design-ui/SKILL.md`](design-ui/SKILL.md) (design-core applied to Roblox), its [`references/`](design-ui/references/) | none (the example's Luau is tested with Lune) |
 | visual effects: particles, beams, trails, highlights, ability / power effects, the anime look (layers, timing, black layers, recolour), fill-rate budget | [`roblox-vfx/SKILL.md`](roblox-vfx/SKILL.md), [`roblox-vfx/references/particles.md`](roblox-vfx/references/particles.md), [`roblox-vfx/references/abilities.md`](roblox-vfx/references/abilities.md), [`roblox-vfx/references/look.md`](roblox-vfx/references/look.md) | none |
 | a thumbnail, key art or update thumbnail for the game (what it is, the loop, the goal in one image) | the design skill's [`thumbnail-keyart`](../design/thumbnail-keyart/SKILL.md) (its brief takes the game read from `design/game-brief.md`) | design's `banner.py`, `bench.py`, `critic.py` |
 | 3D models: build in Blender, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
@@ -40,7 +41,7 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
 | 3 | **One-page brief** at `design/game-brief.md`: the person's words kept, pitch, motivation, core loop, first minute, challenge, the features in build order, what is left for later | the person says "build it" |
 | 4 | **Engine.** Web (any browser, nothing to install) unless the brief needs more. Roblox (`roblox`) when the players are on Roblox or the game is multiplayer and social. Godot, Unity or Unreal for big 3D, consoles or stores | the engine is set up and an empty project runs |
 | 5 | **First build**: the core loop only, every value in one config file; placeholder shapes until the loop is fun, then models (`modeling`) | it was **run and looked at**: a browser screenshot, or a Studio playtest's output and capture |
-| 6 | **Grow**: one feature a sitting. Name it, build it, run it, look at it, commit it. Check it against the brief's "keep" and "avoid" | the feature is in a commit, with what was checked |
+| 6 | **Grow**: one feature a sitting. Name it, build it, run it, look at it, commit it. Check it against the brief's "keep" and "avoid". A feature with a screen gets its UI brief approved first (`design-ui`) | the feature is in a commit, with what was checked |
 | 7 | **Cut and ship**: list what to cut, a polish list, the date it ships | the person signs off the list |
 
 ## Rules every step keeps

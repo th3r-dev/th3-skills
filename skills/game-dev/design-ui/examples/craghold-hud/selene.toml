@@ -1,0 +1,2 @@
+# selene src — Roblox globals; tests/ run under Lune and are not linted with them.
+std = "roblox"

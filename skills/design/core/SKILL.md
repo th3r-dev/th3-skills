@@ -110,6 +110,9 @@ kind, a v1 rejected for copying its reference, the open choices behind v2, and t
 checks that found and fixed real overflow bugs. Its `src/build.py` can be reused for other
 self-contained animated SVGs.
 
+**On Roblox**, game-dev's [`design-ui`](../../game-dev/design-ui/SKILL.md) applies these rules to a game's
+HUD and menus: the brief gate, Roblox's safe insets and conventions, three more review rows.
+
 **When reviewing**, score each dimension 0–10 and say what a 10 would look like for this screen:
 
 | Dimension | Source |
