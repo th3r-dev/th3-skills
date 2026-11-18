@@ -1,0 +1,34 @@
+id: craghold
+size[2]: 1920,1080
+sizes[2]: 1920x1080,1280x720
+is: "A blocky fantasy adventure on a snow mountain"
+loop: "Fight monsters on the way up, level up, earn gold"
+goal: "Buy the dungeon key and open the gate"
+title[2]: CRAGHOLD,QUEST
+kicker: DUNGEON UPDATE
+art: art-dungeon.svg
+style: dark
+colors[8]{token,value}:
+  fg,#5BB8FF
+  accent,#FFB23F
+  panel,#14213D
+  on_panel,#FFFFFF
+  cta,#C8302A
+  on_cta,#FFFFFF
+  fg3,#FFFFFF
+  bar,#5BD15B
+anchors[5]{beat,anchor,where}:
+  world,"snowy voxel peaks behind everything",backdrop
+  loop,"hero mid-stride, sword forward",centre
+  progression,"LVL bar over the first enemy",left third
+  goal,"gold key burning in the arch + its price",right third
+  update,"stone gate with a lit arch at the end of the bridge",right third
+callouts[3]{kind,text,sub,x,y,fill,only}:
+  badge,KEY,"12,500 GOLD",0.78,0.43,,dungeon
+  bar,LVL 5,,0.24,0.42,0.35,dungeon
+  badge,SUMMIT,"4,200 M",0.83,0.47,,summit
+prompt: "Blocky low-poly fantasy game scene, 16:9, bright daylight. A hooded blocky adventurer runs along a stone bridge toward a stone dungeon gate on the right, sword held forward with a cold blue edge-glow, determined face. Behind him on the left a green blocky zombie with red eyes, arms forward. Inside the gate's arch a gold key glows with a burst of light. Snowy blocky mountains behind, soft haze, warm torchlight on the gate. Rule of thirds: hero centre, gate and key right third. Empty sky across the top centre for a title."
+negative: "text, letters, numbers, logo, watermark, signature, UI, frame, blood, gore, real brand characters, photorealistic people"
+variants[2]{id,motivation,art,kicker,goal}:
+  dungeon,mastery and reward,art-dungeon.svg,DUNGEON UPDATE,
+  summit,exploration,art-summit.svg,NEW SUMMIT,"Climb to the summit flag"

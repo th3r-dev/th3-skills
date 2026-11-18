@@ -8,13 +8,14 @@
   contrast     every <text> fill vs the nearest data-bg behind it, >= 4.5:1 (>= 3:1 at 24px+ bold)
   type size    smallest text >= 14px per 1280px of width; core text >= 10px at phone width (400px),
                which is the 32px headline minimum at 1280
-  file size    the 1x PNG is under 1 MB (GitHub's social preview limit)
+  file size    the 1x PNG is under --max-kb (default 1024: GitHub's social preview; Roblox takes 3000)
+  bottom band  with --bottom N, no text in the bottom N px (Roblox lays the player count over it)
   overlap      no two lines of text drawn over each other
 
 Writes <name>.png (1x), <name>@2x.png, <name>-400.png (two-second test) and <name>-crop.png
 (the 1.91:1 link-unfurl crop) next to the SVG, for the eye checks: grayscale and spelling stay human.
 
-Run: uv run bench.py banner.svg [--margin N]   exit code = number of failures
+Run: uv run bench.py banner.svg [--margin N] [--bottom N] [--max-kb N]   exit code = number of failures
 """
 import argparse, pathlib, sys
 from playwright.sync_api import sync_playwright
@@ -56,6 +57,9 @@ def main():
     ap.add_argument("--clear", help="cx,cy,r in canvas px: a circle the platform covers (an avatar); no text may touch it")
     ap.add_argument("--safe-ratio", help="a crop the platform shows, e.g. 4:3 (Fastwork's service card): core "
                                          "content must sit inside the centred crop, and a -safe.png preview is written")
+    ap.add_argument("--bottom", type=int, default=0, help="a band in px along the bottom edge the platform covers "
+                                                         "(Roblox's player count: 120 at 1080); no text may enter it")
+    ap.add_argument("--max-kb", type=int, default=1024, help="the 1x PNG's limit (default 1024, GitHub; Roblox: 3000)")
     a = ap.parse_args()
     src = pathlib.Path(a.svg).resolve()
     stem = src.with_suffix("")
@@ -138,9 +142,11 @@ def main():
             nx, ny = min(max(ccx, x0), x1), min(max(ccy, y0), y1)
             if (nx - ccx) ** 2 + (ny - ccy) ** 2 < cr ** 2:
                 fails.append(f"{t['s']!r} sits under the covered circle {a.clear}")
+    if a.bottom:
+        fails += [f"{t['s']!r} reaches into the bottom {a.bottom}px band" for t in m["texts"] if t["box"][3] > H - a.bottom]
     kb = pathlib.Path(f"{stem}.png").stat().st_size / 1024
-    if kb >= 1024:
-        fails.append(f"{stem.name}.png is {kb:.0f} KB, over 1 MB")
+    if kb >= a.max_kb:
+        fails.append(f"{stem.name}.png is {kb:.0f} KB, over {a.max_kb} KB")
 
     small = min(t["size"] for t in m["texts"] if t["core"]) * 400 / SW
     print(f"{src.name}: {W}x{H}, {len(m['core'])} core boxes, {len(m['texts'])} texts")

@@ -3,18 +3,19 @@
 # dependencies = ["fonttools==4.65.0", "brotli==1.2.1"]
 # ///
 """Render a banner spec (*.banner.json) to SVG: brand on one side, four steps, one CTA.
+A game thumbnail brief (*.keyart.toon, thumbnail-keyart) renders through the same code as the `keyart` layout.
 
 The spec is the shareable part: copy, size, mark, icons, custom styles and the variants to build.
 This script holds the four layouts (references/layouts.md) and three preset styles
 (references/sizes-and-styles.md). Every layout is drawn on a 1280-wide design grid and scaled to
 the spec's size, so 1280 x 640, 1920 x 1080 and 1500 x 500 come from the same code.
 
-Run: uv run banner.py <spec.banner.json> [layout-style ...]   default: the spec's "variants",
+Run: uv run banner.py <spec.banner.json | brief.keyart.toon> [layout-style ...]   default: the spec's "variants",
      at every size in "sizes" (or the one "size")
      writes {layout}-{style}-{W}x{H}.svg next to the spec; bench.py checks each
      uv run banner.py --selftest
 """
-import argparse, importlib.util, json, os, re, sys
+import argparse, csv, importlib.util, json, os, re, sys
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -40,11 +41,83 @@ STYLES = {
 TOKENS = set(STYLES["flat"])
 
 
+# ---- TOON: the reader marketing/scripts/offer.py and social-media/scripts/bench_post.py also carry
+# ponytail: a copy per script, since each skill installs on its own; a shared module if they ever ship together
+HEAD = re.compile(r"^(\w[\w-]*)(?:\[(\d+)\])?(?:\{([^}]*)\})?:\s?(.*)$")
+
+
+def scalar(v):
+    v = v.strip()
+    if len(v) >= 2 and v[0] == v[-1] == '"':
+        return v[1:-1].replace('\\"', '"')
+    return int(v) if re.fullmatch(r"-?\d+", v) else v
+
+
+def row(line):
+    return [scalar(f'"{c}"') if c else "" for c in next(csv.reader([line.strip()], skipinitialspace=True))]
+
+
+def load_toon(text):
+    out, lines, i = {}, text.splitlines(), 0
+    while i < len(lines):
+        line = lines[i]
+        i += 1
+        if not line.strip() or line.startswith(" "):
+            continue
+        m = HEAD.match(line)
+        assert m, f"line {i}: not TOON: {line!r}"
+        key_, n, cols, rest = m.groups()
+        if cols:
+            names = [c.strip() for c in cols.split(",")]
+            rows = []
+            while i < len(lines) and lines[i].startswith("  "):
+                rows.append(dict(zip(names, row(lines[i]))))
+                i += 1
+            assert len(rows) == int(n), f"{key_}: declared {n} rows, found {len(rows)}"
+            out[key_] = rows
+        elif n is not None:
+            items = row(rest) if rest else []
+            assert len(items) == int(n), f"{key_}: declared {n} items, found {len(items)}"
+            out[key_] = items
+        else:
+            out[key_] = scalar(rest)
+    return out
+
+
+def keyart_spec(o):
+    """A thumbnail brief (thumbnail-keyart's *.keyart.toon) as a render spec. The brief keeps the game read
+    (is, loop, goal), the anchor table, the prompt and the variants in one file; the render uses the title,
+    kicker, art, callouts and colours, and the rest travels with it so the image can be made again."""
+    anchors = o.get("anchors", [])
+    assert len(anchors) <= 5, f"{len(anchors)} anchors: a thumbnail reads in under a second, keep five or fewer"
+    style = o.get("style", "dark")
+    assert style in STYLES, f"style {style!r}: pick a preset ({', '.join(STYLES)}) and override it with `colors`"
+    s = {"size": [int(v) for v in o["size"]], "id": o["id"]}
+    if o.get("sizes"):
+        s["sizes"] = [[int(v) for v in z.split("x")] for z in o["sizes"]]
+    if o.get("colors"):                       # a game palette over a preset, named after the game
+        s["styles"] = {o["id"]: dict(STYLES[style], **{c["token"]: c["value"] for c in o["colors"]})}
+        style = o["id"]
+    if o.get("fonts"):
+        s["fonts"] = {f["role"]: f["font"] for f in o["fonts"]}
+    s["style"] = style
+    s["keyart"] = {
+        "title": o["title"], "kicker": o.get("kicker", ""), "art": o.get("art"),
+        "title_at": o.get("title_at", "top-center"),
+        "is": o.get("is", ""), "loop": o.get("loop", ""), "goal": o.get("goal", ""),
+        "anchors": anchors, "prompt": o.get("prompt", ""), "negative": o.get("negative", ""),
+        "callouts": [dict(c, x=float(c["x"]), y=float(c["y"]), fill=float(c["fill"]) if c.get("fill") != "" else None)
+                     for c in o.get("callouts", [])],
+        "variants": o.get("variants", []),
+    }
+    return s
+
+
 # ---- spec
 
 def load(path):
     with open(path, encoding="utf-8") as fh:
-        s = json.load(fh)
+        s = keyart_spec(load_toon(fh.read())) if path.endswith(".toon") else json.load(fh)
     base = os.path.dirname(os.path.abspath(path))
     rel = lambda p: os.path.normpath(os.path.join(base, p)) if p else None
     s["_dir"] = base
@@ -56,6 +129,10 @@ def load(path):
                 it["icon"] = rel(it.get("icon"))
         if "hook" in part:
             part["hook"]["image"] = rel(part["hook"].get("image"))
+        if "keyart" in part:                   # the scene, and each variant's own scene
+            part["keyart"]["art"] = rel(part["keyart"].get("art"))
+            for v in part["keyart"].get("variants", []):
+                v["art"] = rel(v.get("art"))
         if "showcase" in part:                 # work-sample screenshots, relative to the spec
             sc = part["showcase"]
             sc["image"] = rel(sc.get("image"))
@@ -66,8 +143,8 @@ def load(path):
         assert not missing, f"style {name!r} lacks tokens {sorted(missing)}"
         styles[name] = t
     s["_styles"] = styles
-    assert "pages" in s or "cover" in s or len(s.get("steps", [])) == 4, \
-        "the step layouts take four steps; a cover takes a `cover` block; a post takes `pages`"
+    assert "pages" in s or "cover" in s or "keyart" in s or len(s.get("steps", [])) == 4, \
+        "the step layouts take four steps; a cover takes a `cover` block; a post takes `pages`; a thumbnail a `.keyart.toon`"
     return s
 
 
@@ -459,12 +536,12 @@ def step(d, s, t, DH):
     return out
 
 
-def image_tag(path, x, y, w, h, cid):
-    """A raster image embedded as data, clipped to a rounded box."""
+def image_tag(path, x, y, w, h, cid, rx=10):
+    """A raster (or SVG) image embedded as data, clipped to a rounded box."""
     import base64, mimetypes
     mime = mimetypes.guess_type(path)[0] or "image/png"
     data = base64.b64encode(open(path, "rb").read()).decode()
-    return (f'<clipPath id="{cid}"><rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="10"/></clipPath>'
+    return (f'<clipPath id="{cid}"><rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{rx}"/></clipPath>'
             f'<image href="data:{mime};base64,{data}" x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" '
             f'preserveAspectRatio="xMidYMid slice" clip-path="url(#{cid})"/>')
 
@@ -836,6 +913,71 @@ def hook(d, s, t, DH):
 LAYOUTS["hook"] = hook
 LAYOUTS["orbit"] = orbit
 LAYOUTS["halo"] = halo
+
+def keyart(d, s, t, DH):
+    """A game thumbnail: the scene full-bleed (an image model's render or vector art, no text in it), the
+    title in block type with a stepped side, the update on a ribbon under it, and a few callouts pinned to
+    props in the scene (a level bar over the first enemy, the price over the goal). The scene says what the
+    game is; the type only names it. Colours: fg and accent are the title's two lines, panel the outline,
+    the side and the callout plates, cta / on_cta the ribbon, `bar` (else accent) the level bar."""
+    ka = s["keyart"]
+    dark = t["panel"]
+    out = []
+    if ka.get("art"):
+        out.append(image_tag(ka["art"], 0, 0, DW, DH, "art", rx=0))
+    lines = ka["title"]
+    left = ka.get("title_at", "top-center") == "top-left"
+    TW = 560 if left else 760
+    fk = key(d, "title")
+    tz = next((z for z in (100, 92, 84, 76, 64, 56) if all(dc.width(l, z, fk) <= TW for l in lines)), None)
+    assert tz, f"title {lines} does not fit {TW}px at 56px: shorten it or break the line"
+    lh, stroke, depth = round(tz * 0.98), max(6, round(tz * 0.11)), max(4, round(tz * 0.06))
+    x, anchor = (M, None) if left else (DW / 2, "middle")
+    ty = M + round(tz * 0.92)
+    fills = (t["fg"], t.get("accent", t["fg"]))
+    side, face = [], []
+    for i, l in enumerate(lines):
+        y = ty + i * lh
+        side += [T(d, s, "title", x, y + k * 2, l, tz, dark, anchor=anchor) for k in range(depth, 0, -1)]
+        face.append(T(d, s, "title", x, y, l, tz, fills[i % 2], anchor=anchor, maxw=TW))
+    sw = f'stroke="{dark}" stroke-width="{stroke}" stroke-linejoin="round" paint-order="stroke"'
+    # ponytail: contrast is measured against the outline, the only colour sure to sit behind the letters
+    out.append(f'<g data-zone="decor" aria-hidden="true" {sw}>' + "".join(side) + "</g>")
+    out.append(f'<g data-zone="core" data-bg="{dark}" {sw}>' + "".join(face) + "</g>")
+    if ka.get("kicker"):
+        kz, rh, notch = 26, 48, 16
+        ky = ty + (len(lines) - 1) * lh + stroke + depth * 2 + 18
+        kw = dc.width(ka["kicker"], kz, key(d, "strong")) + 56
+        kx = M + notch if left else DW / 2 - kw / 2
+        pts = [(kx - notch, ky), (kx + kw + notch, ky), (kx + kw, ky + rh / 2), (kx + kw + notch, ky + rh),
+               (kx - notch, ky + rh), (kx, ky + rh / 2)]          # a ribbon with swallowtail ends
+        out.append(f'<g data-zone="support" data-bg="{t["cta"]}">'
+                   f'<polygon points="{" ".join(f"{a:.1f},{b:.1f}" for a, b in pts)}" fill="{t["cta"]}" '
+                   f'stroke="{dark}" stroke-width="4" stroke-linejoin="round"/>'
+                   + T(d, s, "strong", kx + kw / 2, ky + rh / 2 + kz * 0.36, ka["kicker"], kz, t["on_cta"], anchor="middle")
+                   + "</g>")
+    for i, c in enumerate(ka.get("callouts", [])):
+        cx, cy = c["x"] * DW, c["y"] * DH                     # the callout's centre, as fractions of the scene
+        if c["kind"] == "bar":
+            bw = 150
+            w, h = bw + 32, 70
+            body = (T(d, s, "strong", cx - bw / 2, cy - 6, c["text"], 22, t["on_panel"])
+                    + f'<rect x="{cx - bw / 2:.1f}" y="{cy + 6:.1f}" width="{bw}" height="16" rx="8" fill="{t["fg3"]}" opacity=".35"/>'
+                    + f'<rect x="{cx - bw / 2:.1f}" y="{cy + 6:.1f}" width="{bw * (c["fill"] or 0):.1f}" height="16" rx="8" '
+                      f'fill="{t.get("bar", t.get("accent", t["fg"]))}"/>')
+        else:
+            sub_ = c.get("sub") or ""
+            w = max(dc.width(c["text"], 20, key(d, "strong")), dc.width(sub_, 34, key(d, "title")) if sub_ else 0) + 40
+            h = 88 if sub_ else 52
+            body = (T(d, s, "strong", cx, cy - (h / 2 - 32), c["text"], 20, t["on_panel"], anchor="middle")
+                    + (T(d, s, "title", cx, cy + h / 2 - 16, sub_, 34, t.get("accent", t["on_panel"]), anchor="middle") if sub_ else ""))
+        out.append(f'<g data-zone="support" data-bg="{dark}">'
+                   f'<rect x="{cx - w / 2:.1f}" y="{cy - h / 2:.1f}" width="{w:.1f}" height="{h}" rx="12" fill="{dark}" '
+                   f'stroke="{t.get("accent", t["fg"])}" stroke-width="3"/>' + body + "</g>")
+    return out
+
+
+LAYOUTS["keyart"] = keyart
 BRAND_LEFT = ("columns", "rail", "stairs", "stack")    # layouts whose brand panel runs from x = 0
 
 
@@ -866,7 +1008,11 @@ def build(s, layout, style):
             return plain(x, y, text, size, fill, int(fw), family=fam, **kw)
         d.t = themed
     body = LAYOUTS[layout](d, s, t, DH)
-    if layout == "halo":
+    if layout == "keyart":
+        ka = s["keyart"]
+        label = ". ".join(p for p in (" ".join(ka["title"]) + (f": {ka['kicker']}" if ka.get("kicker") else ""),
+                                      ka.get("is"), ka.get("loop"), ka.get("goal")) if p)
+    elif layout == "halo":
         hl = s["halo"]
         label = f"{hl['left']['name']}: {' '.join(hl['left']['tagline'])}. " + ", ".join(n["label"] for n in hl["nodes"])
     elif layout == "orbit":
@@ -902,13 +1048,32 @@ def build(s, layout, style):
             + f'<g transform="translate({ox:g} 0) scale({k:g})">{"".join(body)}</g></svg>')
 
 
+def jobs(s, picked=()):
+    """(spec, layout, style, file prefix) for every image a spec makes."""
+    if "pages" in s:
+        # a post: every page names its layout; "render" lists the styles (a page may override it)
+        return [(dict(s, **pg), pg["layout"], st, pg["id"]) for pg in s["pages"]
+                for st in pg.get("render", s["render"])]
+    if "keyart" in s:
+        # a thumbnail set: one image per variant row, each its own scene and ribbon (Roblox tests 2-5 at once)
+        ka = s["keyart"]
+        # a callout with `only` set belongs to that variant (the key's price has no place in the summit scene)
+        # a variant aimed at another motivation may promise another goal (`goal` column), so its critic scores that
+        return [(dict(s, keyart=dict(ka, art=v.get("art") or ka["art"], kicker=v.get("kicker") or ka["kicker"],
+                                     goal=v.get("goal") or ka["goal"],
+                                     callouts=[c for c in ka["callouts"] if c.get("only", "") in ("", v["id"])])),
+                 "keyart", s["style"], f"keyart-{v['id']}") for v in ka["variants"]] \
+            or [(s, "keyart", s["style"], "keyart")]
+    return [(s, *v.split("-", 1), None) for v in picked or s["variants"]]
+
+
 def selftest():
     assert wrap("dependency-vuln-explainer", 100, 14) == ["dependency-", "vuln-", "explainer"]
     assert wrap("a, b, c", 1000, 14, sep=r"[^ ]+ ?") == ["a, b, c"]
     s = {"size": [1920, 1080], "brand": {"name": "Name", "promise": ["one", "two"]},
          "steps": [{"num": f"0{i}", "verb": "Verb", "line": ["a", "b"], "items": [{"name": "x"}]} for i in range(1, 5)],
          "cta": {"verb": "Go"}, "_styles": STYLES}
-    for lay in (l for l in LAYOUTS if l not in ("cover", "step", "showcase", "hook", "orbit", "halo")):
+    for lay in (l for l in LAYOUTS if l not in ("cover", "step", "showcase", "hook", "orbit", "halo", "keyart")):
         svg = build(s, lay, "flat")
         __import__("xml.dom.minidom").dom.minidom.parseString(svg)
         assert 'viewBox="0 0 1920 1080"' in svg and "scale(1.5)" in svg, lay
@@ -941,6 +1106,28 @@ def selftest():
               + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b"")); png.close()
     three = build(dict(sh, showcase=dict(sh["showcase"], images=[png.name] * 3)), "showcase", "flat")
     assert three.count("<image ") == 3 and "Coming soon" not in three, "three screenshots replace the placeholder"
+    ks = keyart_spec(load_toon(
+        "id: t\nsize[2]: 1920,1080\nsizes[2]: 1920x1080,1280x720\nis: a game\nloop: fight\ngoal: a key\n"
+        "title[2]: TEST,QUEST\nkicker: UPDATE\nstyle: dark\ncolors[1]{token,value}:\n  cta,#C8102E\n"
+        "anchors[1]{beat,anchor,where}:\n  goal,key,right\n"
+        "callouts[2]{kind,text,sub,x,y,fill,only}:\n  badge,KEY,\"1,000 GOLD\",0.7,0.6,,a\n  bar,LVL 5,,0.1,0.6,0.4,\n"
+        "variants[2]{id,motivation,art,kicker,goal}:\n  a,competition,,,\n  b,exploration,,NEW,the top\n"))
+    assert ks["sizes"] == [[1920, 1080], [1280, 720]] and ks["style"] == "t", "sizes and a palette over a preset"
+    assert ks["keyart"]["callouts"][0]["sub"] == "1,000 GOLD" and ks["keyart"]["callouts"][1]["fill"] == 0.4
+    ks["_styles"] = dict(STYLES, **ks["styles"])
+    ks["keyart"]["art"] = png.name
+    js = jobs(ks)
+    assert [(j[3], j[0]["keyart"]["kicker"]) for j in js] == [("keyart-a", "UPDATE"), ("keyart-b", "NEW")], "a file per variant"
+    assert [len(j[0]["keyart"]["callouts"]) for j in js] == [2, 1], "a callout marked `only` stays in its variant"
+    assert [j[0]["keyart"]["goal"] for j in js] == ["a key", "the top"], "a variant's own goal overrides the brief's"
+    ka = build(js[0][0], "keyart", "t")
+    xml.dom.minidom.parseString(ka)
+    assert ka.count("<image ") == 1 and 'data-bg="#C8102E"' in ka and "TEST QUEST: UPDATE. a game" in ka
+    try:
+        keyart_spec(load_toon("id: t\nsize[2]: 1,1\ntitle[1]: T\nanchors[6]{beat,anchor,where}:\n" + "  a,b,c\n" * 6))
+        raise SystemExit("six anchors must be refused")
+    except AssertionError:
+        pass
     os.unlink(png.name)
     th = dict(s, fonts={"title": "kanit-700", "text": "anuphan-500", "mono": "anuphan-500"},
               steps=[dict(st, verb="หน้าเว็บ", items=[{"name": "ทดสอบ"}]) for st in s["steps"]])
@@ -967,13 +1154,7 @@ if __name__ == "__main__":
     if not a.spec:
         ap.error("give a spec file or --selftest")
     s = load(a.spec)
-    if "pages" in s:
-        # a post: every page names its layout; "render" lists the styles (a page may override it)
-        jobs = [(dict(s, **pg), pg["layout"], st, pg["id"]) for pg in s["pages"]
-                for st in pg.get("render", s["render"])]
-    else:
-        jobs = [(s, *v.split("-", 1), None) for v in a.variants or s["variants"]]
-    for spec, layout, style, pid in jobs:
+    for spec, layout, style, pid in jobs(s, a.variants):
         for W, H in spec.get("sizes") or [spec["size"]]:   # one spec, several placements (OG card, 16:9 post)
             spec = dict(spec, size=[W, H])
             path = os.path.join(s["_dir"], f"{pid or layout}-{style}-{W}x{H}.svg")
