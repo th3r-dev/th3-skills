@@ -103,10 +103,11 @@ def keyart_spec(o):
     s["style"] = style
     s["keyart"] = {
         "title": o["title"], "kicker": o.get("kicker", ""), "art": o.get("art"),
-        "title_at": o.get("title_at", "top-center"),
+        "title_at": o.get("title_at", "top-center"), "title_max": int(o.get("title_max", 100)),
         "is": o.get("is", ""), "loop": o.get("loop", ""), "goal": o.get("goal", ""),
         "anchors": anchors, "prompt": o.get("prompt", ""), "negative": o.get("negative", ""),
-        "callouts": [dict(c, x=float(c["x"]), y=float(c["y"]), fill=float(c["fill"]) if c.get("fill") != "" else None)
+        "callouts": [dict(c, x=float(c["x"]), y=float(c["y"]), fill=float(c["fill"]) if c.get("fill", "") != "" else None,
+                          to=(float(c["tx"]), float(c["ty"])) if c.get("tx", "") != "" else None)
                      for c in o.get("callouts", [])],
         "variants": o.get("variants", []),
     }
@@ -914,6 +915,25 @@ LAYOUTS["hook"] = hook
 LAYOUTS["orbit"] = orbit
 LAYOUTS["halo"] = halo
 
+def pointer(cx, cy, w, h, tx, ty, fill, dark):
+    """A bent arrow from a callout plate's edge to the prop it names (the level bar to its enemy, the price
+    to the key): a callout that floats free of its prop reads as UI, not as part of the scene."""
+    import math
+    sx, sy = min(max(tx, cx - w / 2), cx + w / 2), min(max(ty, cy - h / 2), cy + h / 2)   # nearest point on the plate
+    dx, dy = tx - sx, ty - sy
+    n = math.hypot(dx, dy) or 1
+    ux, uy = dx / n, dy / n
+    mx, my = (sx + tx) / 2 - uy * n * 0.25, (sy + ty) / 2 + ux * n * 0.25    # bend a quarter of the length sideways
+    hx, hy = tx - ux * 26, ty - uy * 26                                       # the shaft stops where the head starts
+    head = f"{tx:.1f},{ty:.1f} {hx - uy * 18:.1f},{hy + ux * 18:.1f} {hx + uy * 18:.1f},{hy - ux * 18:.1f}"
+    shaft = f'M{sx:.1f} {sy:.1f} Q{mx:.1f} {my:.1f} {hx:.1f} {hy:.1f}'
+    return (f'<g aria-hidden="true" stroke-linejoin="round" stroke-linecap="round">'
+            f'<path d="{shaft}" fill="none" stroke="{dark}" stroke-width="20"/>'
+            f'<polygon points="{head}" fill="{dark}" stroke="{dark}" stroke-width="10"/>'
+            f'<path d="{shaft}" fill="none" stroke="{fill}" stroke-width="11"/>'
+            f'<polygon points="{head}" fill="{fill}"/></g>')
+
+
 def keyart(d, s, t, DH):
     """A game thumbnail: the scene full-bleed (an image model's render or vector art, no text in it), the
     title in block type with a stepped side, the update on a ribbon under it, and a few callouts pinned to
@@ -929,7 +949,9 @@ def keyart(d, s, t, DH):
     left = ka.get("title_at", "top-center") == "top-left"
     TW = 560 if left else 760
     fk = key(d, "title")
-    tz = next((z for z in (100, 92, 84, 76, 64, 56) if all(dc.width(l, z, fk) <= TW for l in lines)), None)
+    # title_max caps the size: the scene, not the name, should be the first thing seen (the critic checks)
+    tz = next((z for z in (100, 92, 84, 76, 68, 64, 56) if z <= ka.get("title_max", 100)
+               and all(dc.width(l, z, fk) <= TW for l in lines)), None)
     assert tz, f"title {lines} does not fit {TW}px at 56px: shorten it or break the line"
     lh, stroke, depth = round(tz * 0.98), max(6, round(tz * 0.11)), max(4, round(tz * 0.06))
     x, anchor = (M, None) if left else (DW / 2, "middle")
@@ -956,21 +978,24 @@ def keyart(d, s, t, DH):
                    f'stroke="{dark}" stroke-width="4" stroke-linejoin="round"/>'
                    + T(d, s, "strong", kx + kw / 2, ky + rh / 2 + kz * 0.36, ka["kicker"], kz, t["on_cta"], anchor="middle")
                    + "</g>")
+    # callout type is 28px on the 1280 grid (42px at 1920, about 9px at phone width): smaller is lost at 400px
     for i, c in enumerate(ka.get("callouts", [])):
         cx, cy = c["x"] * DW, c["y"] * DH                     # the callout's centre, as fractions of the scene
         if c["kind"] == "bar":
-            bw = 150
-            w, h = bw + 32, 70
-            body = (T(d, s, "strong", cx - bw / 2, cy - 6, c["text"], 22, t["on_panel"])
-                    + f'<rect x="{cx - bw / 2:.1f}" y="{cy + 6:.1f}" width="{bw}" height="16" rx="8" fill="{t["fg3"]}" opacity=".35"/>'
-                    + f'<rect x="{cx - bw / 2:.1f}" y="{cy + 6:.1f}" width="{bw * (c["fill"] or 0):.1f}" height="16" rx="8" '
+            bw = 170
+            w, h = bw + 36, 86
+            body = (T(d, s, "strong", cx - bw / 2, cy - 8, c["text"], 28, t["on_panel"])
+                    + f'<rect x="{cx - bw / 2:.1f}" y="{cy + 6:.1f}" width="{bw}" height="18" rx="9" fill="{t["fg3"]}" opacity=".35"/>'
+                    + f'<rect x="{cx - bw / 2:.1f}" y="{cy + 6:.1f}" width="{bw * (c["fill"] or 0):.1f}" height="18" rx="9" '
                       f'fill="{t.get("bar", t.get("accent", t["fg"]))}"/>')
         else:
             sub_ = c.get("sub") or ""
-            w = max(dc.width(c["text"], 20, key(d, "strong")), dc.width(sub_, 34, key(d, "title")) if sub_ else 0) + 40
-            h = 88 if sub_ else 52
-            body = (T(d, s, "strong", cx, cy - (h / 2 - 32), c["text"], 20, t["on_panel"], anchor="middle")
-                    + (T(d, s, "title", cx, cy + h / 2 - 16, sub_, 34, t.get("accent", t["on_panel"]), anchor="middle") if sub_ else ""))
+            w = max(dc.width(c["text"], 28, key(d, "strong")), dc.width(sub_, 44, key(d, "title")) if sub_ else 0) + 44
+            h = 112 if sub_ else 60
+            body = (T(d, s, "strong", cx, cy - 18 if sub_ else cy + 10, c["text"], 28, t["on_panel"], anchor="middle")
+                    + (T(d, s, "title", cx, cy + 38, sub_, 44, t.get("accent", t["on_panel"]), anchor="middle") if sub_ else ""))
+        if c.get("to"):
+            out.append(pointer(cx, cy, w, h, c["to"][0] * DW, c["to"][1] * DH, t["cta"], dark))
         out.append(f'<g data-zone="support" data-bg="{dark}">'
                    f'<rect x="{cx - w / 2:.1f}" y="{cy - h / 2:.1f}" width="{w:.1f}" height="{h}" rx="12" fill="{dark}" '
                    f'stroke="{t.get("accent", t["fg"])}" stroke-width="3"/>' + body + "</g>")
@@ -1060,7 +1085,7 @@ def jobs(s, picked=()):
         # a callout with `only` set belongs to that variant (the key's price has no place in the summit scene)
         # a variant aimed at another motivation may promise another goal (`goal` column), so its critic scores that
         return [(dict(s, keyart=dict(ka, art=v.get("art") or ka["art"], kicker=v.get("kicker") or ka["kicker"],
-                                     goal=v.get("goal") or ka["goal"],
+                                     goal=v.get("goal") or ka["goal"], loop=v.get("loop") or ka["loop"],
                                      callouts=[c for c in ka["callouts"] if c.get("only", "") in ("", v["id"])])),
                  "keyart", s["style"], f"keyart-{v['id']}") for v in ka["variants"]] \
             or [(s, "keyart", s["style"], "keyart")]
@@ -1110,8 +1135,8 @@ def selftest():
         "id: t\nsize[2]: 1920,1080\nsizes[2]: 1920x1080,1280x720\nis: a game\nloop: fight\ngoal: a key\n"
         "title[2]: TEST,QUEST\nkicker: UPDATE\nstyle: dark\ncolors[1]{token,value}:\n  cta,#C8102E\n"
         "anchors[1]{beat,anchor,where}:\n  goal,key,right\n"
-        "callouts[2]{kind,text,sub,x,y,fill,only}:\n  badge,KEY,\"1,000 GOLD\",0.7,0.6,,a\n  bar,LVL 5,,0.1,0.6,0.4,\n"
-        "variants[2]{id,motivation,art,kicker,goal}:\n  a,competition,,,\n  b,exploration,,NEW,the top\n"))
+        "callouts[2]{kind,text,sub,x,y,fill,only,tx,ty}:\n  badge,KEY,\"1,000 GOLD\",0.7,0.6,,a,0.8,0.8\n  bar,LVL 5,,0.1,0.6,0.4,,,\n"
+        "variants[2]{id,motivation,art,kicker,goal,loop}:\n  a,competition,,,,\n  b,exploration,,NEW,the top,climb\n"))
     assert ks["sizes"] == [[1920, 1080], [1280, 720]] and ks["style"] == "t", "sizes and a palette over a preset"
     assert ks["keyart"]["callouts"][0]["sub"] == "1,000 GOLD" and ks["keyart"]["callouts"][1]["fill"] == 0.4
     ks["_styles"] = dict(STYLES, **ks["styles"])
@@ -1119,10 +1144,15 @@ def selftest():
     js = jobs(ks)
     assert [(j[3], j[0]["keyart"]["kicker"]) for j in js] == [("keyart-a", "UPDATE"), ("keyart-b", "NEW")], "a file per variant"
     assert [len(j[0]["keyart"]["callouts"]) for j in js] == [2, 1], "a callout marked `only` stays in its variant"
+    assert ks["keyart"]["callouts"][0]["to"] == (0.8, 0.8) and ks["keyart"]["callouts"][1]["to"] is None, "tx, ty: the pointer target"
     assert [j[0]["keyart"]["goal"] for j in js] == ["a key", "the top"], "a variant's own goal overrides the brief's"
+    assert [j[0]["keyart"]["loop"] for j in js] == ["fight", "climb"], "and its own loop"
+    capped = build(dict(js[0][0], keyart=dict(js[0][0]["keyart"], title_max=64)), "keyart", "t")
+    assert 'font-size="64"' in capped and 'font-size="100"' not in capped, "title_max caps the title size"
     ka = build(js[0][0], "keyart", "t")
     xml.dom.minidom.parseString(ka)
     assert ka.count("<image ") == 1 and 'data-bg="#C8102E"' in ka and "TEST QUEST: UPDATE. a game" in ka
+    assert ka.count("<polygon points=") == 3, "the ribbon plus one pointer head (outline and fill)"
     try:
         keyart_spec(load_toon("id: t\nsize[2]: 1,1\ntitle[1]: T\nanchors[6]{beat,anchor,where}:\n" + "  a,b,c\n" * 6))
         raise SystemExit("six anchors must be refused")

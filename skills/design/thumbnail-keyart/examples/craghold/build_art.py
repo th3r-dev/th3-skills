@@ -28,27 +28,33 @@ def ridge(peaks, base, x0=0, x1=W, col=32, step=24):
     return tops
 
 
-def range_svg(tops, base, rock, lip, snow, snow_below, col=32, rnd=None):
+def range_svg(tops, base, rock, lip, snow, snow_below, col=32, rnd=None, shade="#C9D7E8"):
     """One rect per column plus a lighter lip on every step; snow only above `snow_below`, so the cap
-    never floods the whole silhouette (the trap: snow drawn per column down to the base)."""
-    out = []
+    never floods the whole silhouette (the trap: snow drawn per column down to the base). Snow on a slope
+    falling away from the sun (top-left) takes the `shade` tone, so a peak reads as a solid, not a flat blob."""
+    out, prev = [], None
     for x, y in tops:
+        lit = prev is None or y <= prev
+        prev = y
         out.append(f'<rect x="{x}" y="{y}" width="{col}" height="{H - y}" fill="{rock}"/>')
         out.append(f'<rect x="{x}" y="{y}" width="{col}" height="6" fill="{lip}"/>')
         if y < snow_below:
             depth = snow_below - y + (rnd.choice((0, 24, 48)) if rnd else 0)
-            out.append(f'<rect x="{x}" y="{y}" width="{col}" height="{depth}" fill="{snow}"/>'
+            out.append(f'<rect x="{x}" y="{y}" width="{col}" height="{depth}" fill="{snow if lit else shade}"/>'
                        f'<rect x="{x}" y="{y}" width="{col}" height="5" fill="#FFFFFF"/>')
     return "".join(out)
 
 
 def pine(x, y, s, dark="#24492F", light="#2F6140"):
-    """A voxel pine: three stacked blocks narrowing upward, the lit side on the right."""
+    """A voxel pine: three stacked blocks narrowing upward, the lit side on the right, snow on every ledge
+    (the snow world has to reach the foreground, or a phone-size read misses it)."""
     out = [f'<rect x="{x - 6 * s}" y="{y - 30 * s}" width="{12 * s}" height="{30 * s}" fill="#4A3020"/>']
     for i, (w, h) in enumerate(((90, 60), (66, 54), (40, 50))):
         top = y - 30 * s - sum(hh for _, hh in ((90, 60), (66, 54), (40, 50))[:i + 1]) * s
         out.append(f'<rect x="{x - w / 2 * s}" y="{top}" width="{w * s}" height="{h * s}" fill="{dark}"/>'
-                   f'<rect x="{x}" y="{top}" width="{w / 2 * s}" height="{h * s}" fill="{light}"/>')
+                   f'<rect x="{x}" y="{top}" width="{w / 2 * s}" height="{h * s}" fill="{light}"/>'
+                   f'<rect x="{x - w / 2 * s}" y="{top}" width="{w * s}" height="{12 * s}" fill="#F4F8FC"/>'
+                   f'<rect x="{x - w / 2 * s + 8 * s}" y="{top + 12 * s}" width="{10 * s}" height="{8 * s}" fill="#F4F8FC"/>')
     return "".join(out)
 
 
@@ -67,14 +73,17 @@ def bridge():
         f = j / 6
         out.append(f'<line x1="{near[0] + (near[2] - near[0]) * f:.0f}" y1="1080" x2="{far[0] + (far[2] - far[0]) * f:.0f}" '
                    f'y2="{far[1]}" stroke="#6D7178" stroke-width="2.5"/>')
+    for x0, x1 in ((0, far[0]), (near[2], far[2])):           # snow drifted against both kerbs
+        out.append(f'<line x1="{x0}" y1="1080" x2="{x1}" y2="{far[1]}" stroke="#F4F8FC" stroke-width="16" stroke-linecap="round"/>')
     return "".join(out)
 
 
 def gate(cx=1495, base=792):
     """Two stone pillars, a lintel, a dark arch lit from inside, a torch on each pillar."""
     pw, ph, gw = 86, 330, 220
-    out = ['<radialGradient id="glow" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="#FFB347"/>'
-           '<stop offset=".55" stop-color="#C2501E"/><stop offset="1" stop-color="#2A1414"/></radialGradient>']
+    # the arch is near-black so the key is the brightest thing on screen; a lit arch competes with it
+    out = ['<radialGradient id="glow" cx=".5" cy=".75" r=".7"><stop offset="0" stop-color="#3A1A12"/>'
+           '<stop offset="1" stop-color="#0B0607"/></radialGradient>']
     out.append(f'<path d="M{cx - gw / 2} {base} V{base - ph + 110} A{gw / 2} {gw / 2} 0 0 1 {cx + gw / 2} {base - ph + 110} '
                f'V{base} Z" fill="url(#glow)"/>')
     for side in (-1, 1):
@@ -88,14 +97,16 @@ def gate(cx=1495, base=792):
                    f'<path d="M{fx} {fy - 40} Q{fx + 20} {fy - 10} {fx} {fy + 2} Q{fx - 20} {fy - 10} {fx} {fy - 40}Z" fill="#FFD25A"/>')
     lx0, lx1 = cx - gw / 2 - pw - 24, cx + gw / 2 + pw + 24
     out.append(f'<rect x="{lx0}" y="{base - ph - 60}" width="{lx1 - lx0}" height="64" fill="#8C9098" stroke="#3B3E44" stroke-width="5"/>'
-               f'<rect x="{lx0 + 30}" y="{base - ph - 96}" width="{lx1 - lx0 - 60}" height="40" fill="#757980" stroke="#3B3E44" stroke-width="5"/>')
+               f'<rect x="{lx0 + 30}" y="{base - ph - 96}" width="{lx1 - lx0 - 60}" height="40" fill="#757980" stroke="#3B3E44" stroke-width="5"/>'
+               f'<rect x="{lx0 + 26}" y="{base - ph - 110}" width="{lx1 - lx0 - 52}" height="16" rx="6" fill="#F4F8FC"/>'
+               f'<rect x="{lx0 - 4}" y="{base - ph - 70}" width="{lx1 - lx0 + 8}" height="12" rx="5" fill="#F4F8FC"/>')
     return "".join(out)
 
 
 def key(cx, cy, s=1.0):
     """The goal: a gold key in a burst of light, brighter than anything else in the frame."""
     rays = "".join(f'<polygon points="{cx},{cy} {cx + 190 * s * math.cos(a - .05):.0f},{cy + 190 * s * math.sin(a - .05):.0f} '
-                   f'{cx + 190 * s * math.cos(a + .05):.0f},{cy + 190 * s * math.sin(a + .05):.0f}" fill="#FFF3B0" opacity=".55"/>'
+                   f'{cx + 190 * s * math.cos(a + .05):.0f},{cy + 190 * s * math.sin(a + .05):.0f}" fill="#FFF3B0" opacity=".75"/>'
                    for a in (i * math.pi / 6 for i in range(12)))
     return ('<radialGradient id="keyglow"><stop offset="0" stop-color="#FFF6C8"/><stop offset=".4" stop-color="#FFD54A" stop-opacity=".8"/>'
             '<stop offset="1" stop-color="#FFB000" stop-opacity="0"/></radialGradient>'
@@ -124,11 +135,15 @@ def blocky(x, y, s, skin, shirt, pants, flip=False, hood=None, eyes="#1B1B1B", r
            f'<rect x="{x + (-62 if not flip else -62) * s:.0f}" y="{y - 205 * s:.0f}" width="{124 * s:.0f}" height="{18 * s:.0f}" fill="#3A2618"/>',
            part(-36, -175, 66, 175, pants, rot=30 * run, ox=33, oy=0)]                 # front leg
     out.append(part(-52, -450, 104, 104, skin))                                        # head
-    ex = x + (8 if not flip else -40) * s
-    out.append(f'<rect x="{ex:.0f}" y="{y - 412 * s:.0f}" width="{12 * s:.0f}" height="{18 * s:.0f}" fill="{eyes}"/>'
-               f'<rect x="{ex + 26 * s:.0f}" y="{y - 412 * s:.0f}" width="{12 * s:.0f}" height="{18 * s:.0f}" fill="{eyes}"/>'
-               f'<line x1="{ex - 4 * s:.0f}" y1="{y - 424 * s:.0f}" x2="{ex + 16 * s:.0f}" y2="{y - 418 * s:.0f}" stroke="#1C1A1A" stroke-width="{6 * s:.1f}"/>'
-               f'<line x1="{ex + 22 * s:.0f}" y1="{y - 418 * s:.0f}" x2="{ex + 42 * s:.0f}" y2="{y - 424 * s:.0f}" stroke="#1C1A1A" stroke-width="{6 * s:.1f}"/>')
+    # the face carries the emotion at phone size: big eyes, brows angled in, gritted teeth
+    ex = x + (4 if not flip else -50) * s
+    L = lambda a, b, c, e, w: f'<line x1="{ex + a * s:.0f}" y1="{y + b * s:.0f}" x2="{ex + c * s:.0f}" y2="{y + e * s:.0f}" stroke="#1C1A1A" stroke-width="{w * s:.1f}" stroke-linecap="round"/>'
+    out.append(f'<rect x="{ex:.0f}" y="{y - 420 * s:.0f}" width="{18 * s:.0f}" height="{24 * s:.0f}" fill="{eyes}"/>'
+               f'<rect x="{ex + 28 * s:.0f}" y="{y - 420 * s:.0f}" width="{18 * s:.0f}" height="{24 * s:.0f}" fill="{eyes}"/>'
+               + L(-6, -436, 20, -424, 9) + L(26, -424, 52, -436, 9)
+               + f'<rect x="{ex + 4 * s:.0f}" y="{y - 390 * s:.0f}" width="{40 * s:.0f}" height="{18 * s:.0f}" fill="#1C1A1A"/>'
+               f'<rect x="{ex + 7 * s:.0f}" y="{y - 387 * s:.0f}" width="{34 * s:.0f}" height="{12 * s:.0f}" fill="#FFFFFF"/>'
+               + "".join(L(7 + 8.5 * i, -387, 7 + 8.5 * i, -375, 2.5) for i in range(1, 4)))
     if hood:
         hx = x - 60 * s
         st = f'fill="{hood}" stroke="#1C1A1A" stroke-width="{5 * s:.1f}" stroke-linejoin="round"'
@@ -153,6 +168,20 @@ def sword(x, y, s):
             '<rect x="-60" y="-8" width="44" height="16" fill="#4A3020" stroke="#1C1A1A" stroke-width="5"/></g>')
 
 
+def coin(cx, cy, r=18):
+    """A gold coin flying out of a hit: the 'earn gold' half of the loop, shown instead of written."""
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#FFC83D" stroke="#7A4A00" stroke-width="5"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r * .55:.1f}" fill="none" stroke="#FFE58A" stroke-width="3"/>'
+            f'<rect x="{cx - r * .5:.1f}" y="{cy - r * .7:.1f}" width="{r * .25:.1f}" height="{r * .5:.1f}" fill="#FFFFFF"/>')
+
+
+def spark(cx, cy, r=60):
+    """The hit: an eight-point white star with a cold rim, where the blade meets the enemy."""
+    pts = " ".join(f"{cx + (r if i % 2 == 0 else r * .35) * math.cos(i * math.pi / 8):.0f},"
+                   f"{cy + (r if i % 2 == 0 else r * .35) * math.sin(i * math.pi / 8):.0f}" for i in range(16))
+    return f'<polygon points="{pts}" fill="#FFFFFF" stroke="#6FE3FF" stroke-width="6" stroke-linejoin="round"/>'
+
+
 def flag(x, y):
     """The summit marker: a pole, a pennant in the game's accent and a halo so it reads from far."""
     return (f'<circle cx="{x + 40}" cy="{y - 120}" r="120" fill="#FFF1A8" opacity=".75"/>'
@@ -170,8 +199,10 @@ def scene(variant, seed=7):
            '<stop offset=".5" stop-color="#FFFFFF" stop-opacity=".7"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'
            '<radialGradient id="sun" cx=".18" cy=".08" r=".45"><stop offset="0" stop-color="#FFF8E0" stop-opacity=".95"/>'
            '<stop offset="1" stop-color="#FFF8E0" stop-opacity="0"/></radialGradient>'
-           '<radialGradient id="vignette" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/>'
-           '<stop offset="1" stop-color="#0B1020" stop-opacity=".55"/></radialGradient></defs>',
+           '<radialGradient id="vignette" cx=".7" cy=".55" r=".85"><stop offset=".5" stop-color="#000" stop-opacity="0"/>'
+           '<stop offset="1" stop-color="#0B1020" stop-opacity=".55"/></radialGradient>'
+           '<linearGradient id="spill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC060" stop-opacity=".55"/>'
+           '<stop offset="1" stop-color="#FFC060" stop-opacity="0"/></linearGradient></defs>',
            f'<rect width="{W}" height="{H}" fill="url(#sky)"/><rect width="{W}" height="{H}" fill="url(#sun)"/>']
     far = ridge([(420, 250, 420), (980, 360, 360), (1560, 420, 380)], 820)
     out.append(range_svg(far, 820, "#A9BCD6", "#C3D2E6", "#F2F6FB", 400, rnd=rnd))
@@ -184,16 +215,23 @@ def scene(variant, seed=7):
     out.append(bridge())
     if variant == "dungeon":
         out.append(gate())
-        out.append(blocky(430, 900, 0.78, "#6FAE4E", "#5B4A36", "#3E4A3A", flip=False, eyes="#FF3B30", run=0.6)[0])   # the first enemy
-        out.append(key(1495, 640, 0.9))
+        out.append('<polygon points="1395,792 1595,792 1250,1080 600,1080" fill="url(#spill)"/>')   # the key's light down the bridge
+        out.append(key(1495, 610, 1.4))
+        # the first enemy, between the hero and the gate and facing him: the fight is the loop
+        out.append(blocky(1270, 905, 0.95, "#6FAE4E", "#5B4A36", "#3E4A3A", flip=True, eyes="#FF3B30", run=0.7)[0])
     else:                                       # a stepped trail from the bridge's end up to the flag
         top = min(y for x, y in mid if 1540 <= x <= 1620)
         out += [f'<rect x="{1500 + 10 * i - 40 * (i % 2):.0f}" y="{792 - i * (792 - top) / 9:.0f}" width="90" height="22" '
                 f'fill="#B9BDC4" stroke="#5B5F67" stroke-width="4"/>' for i in range(9)]
         out.append(flag(1580, top))
-    hero, hand = blocky(900, 1075, 1.05, "#E8B98A", "#6B4A2F", "#3F5A3A", hood="#2F6FD0")                     # the hero
+    hero, hand = blocky(900, 1075, 1.4, "#E8B98A", "#6B4A2F", "#3F5A3A", hood="#2F6FD0")                      # the hero
     out.append(hero)
-    out.append(sword(*hand, 1.1))
+    out.append(sword(*hand, 1.25))
+    if variant == "dungeon":                    # where the blade meets the enemy: a spark and the gold it drops
+        out.append(spark(1236, 648, 50))          # on the chest, clear of the face that sells the threat
+        out += [coin(cx, cy, r) for cx, cy, r in ((1080, 520, 20), (1135, 475, 17), (1190, 505, 22), (1050, 585, 15))]
+    out += [f'<rect x="{rnd.randint(0, W)}" y="{rnd.randint(0, H)}" width="{z}" height="{z}" fill="#FFFFFF" opacity=".85"/>'
+            for z in (rnd.choice((4, 6, 8)) for _ in range(70))]                                           # falling snow
     out.append(f'<rect width="{W}" height="{H}" fill="url(#vignette)"/></svg>')
     return "".join(out)
 

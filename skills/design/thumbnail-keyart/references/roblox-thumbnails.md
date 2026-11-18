@@ -38,6 +38,20 @@ Experiences that use it saw an average +12% relative lift in qualified play-thro
 
 From the thread: winning segments are reported by age group; staff said gender is being tested.
 
+## Discovery since 2025
+
+- **Recommendations weigh retention, not clicks.** In June 2026 Roblox moved Recommended For You
+  from 7-day to 28-day retention and split qPTR into play-through, session quality and spend,
+  naming "games that win attention with exciting thumbnails" as what it corrects. A thumbnail that
+  over-promises now costs reach.
+  [Roblox newsroom, 15 Jun 2026](https://about.roblox.com/newsroom/2026/06/optimizing-discovery-great-games-reach-millions-players-roblox)
+- **Keep the winner in every test.** A new personalization test no longer resets traffic if it
+  includes the current winning thumbnail; the cap is still 5.
+  [DevForum, 1 Jul 2025](https://devforum.roblox.com/t/thumbnail-personalization-now-remembers-your-existing-winning-thumbnails/3793665)
+- **Preview it among its neighbours.** Creators check a thumbnail inside a simulated home grid
+  (phone, desktop, TV; Home, Search, Charts) before publishing, e.g. qptr.io.
+  [DevForum, 18 Jun 2026](https://devforum.roblox.com/t/qptr-io-see-your-thumbnail-the-way-players-will/4690127)
+
 ## Composition and type (Simplified, ToyBox)
 
 - **One moment of stakes** (a boss, a reward, a near miss) with **one focal point**: the character
