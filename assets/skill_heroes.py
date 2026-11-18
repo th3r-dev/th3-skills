@@ -97,7 +97,7 @@ SKILLS = {
         ["a matching PDF and DOCX,", "changes highlighted"]),
     "game-dev": (
         ["Idea to playable game,", "motivation first."],
-        ["Sub-skills design-lens, roblox,", "modeling, roblox-vfx, any agent."],
+        ["Design, Roblox, VFX, models,", "and MCP for every engine."],
         [("Motivation", "who plays and which drive"), ("Brief", "one page, the loop first"),
          ("Engine", "web, or Roblox Studio"), ("Build", "the core loop, run and looked at"),
          ("Playtest", "through Studio's MCP server"), ("Grow", "one feature a sitting")],
