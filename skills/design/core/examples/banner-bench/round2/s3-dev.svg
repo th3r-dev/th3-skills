@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: shared design principles">
+<rect width="1280" height="640" fill="#F2EEE5"/>
+<g stroke="#E2DCCE" stroke-width="2" fill="none">
+<path d="M780 80V560M885 80V560M990 80V560M1095 80V560M1200 80V560"/>
+<path d="M780 80H1200M780 185H1200M780 290H1200M780 395H1200M780 500H1200M780 560H1200"/>
+</g>
+<rect x="780" y="80" width="105" height="105" fill="#17161A"/>
+<rect x="780" y="290" width="210" height="105" fill="#17161A"/>
+<rect x="1095" y="395" width="105" height="165" fill="#17161A"/>
+<rect x="885" y="185" width="210" height="210" fill="#E5452B"/>
+<g fill="none" stroke="#17161A" stroke-width="3"><rect x="990" y="80" width="105" height="105"/><rect x="1095" y="185" width="105" height="105"/></g>
+<text x="80" y="330" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="116" font-weight="700" letter-spacing="-4" fill="#17161A">design-core</text>
+<text x="84" y="394" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#5E5A50">The shared principles behind every design skill.</text>
+<path d="M84 500H720" stroke="#E2DCCE" stroke-width="2"/>
+<g font-family="Menlo, Consolas, monospace" font-size="18" fill="#5E5A50"><text x="84" y="536">composition</text><text x="244" y="536">writing</text><text x="364" y="536">states</text><text x="474" y="536">references</text></g>
+</svg>

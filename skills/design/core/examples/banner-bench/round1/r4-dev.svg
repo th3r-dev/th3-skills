@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: shared design principles. Order of authority: your request, the product's own system, platform rules, then core defaults that only fill gaps."><title>design-core: shared design principles</title>
+<style>
+text{font-family:-apple-system,"Helvetica Neue",Arial,sans-serif}
+.m{font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+<rect width="1280" height="640" fill="#F4F0E8"/>
+<g stroke="#E2DCCE" stroke-width="1"><path d="M80 0V640M640 0V640M1200 0V640M0 80H1280M0 560H1280"/></g>
+<circle cx="94" cy="112" r="14" fill="#E4472B"/>
+<text x="122" y="119" font-size="22" font-weight="600" fill="#1B1A17" class="m">th3-skills / design</text>
+<text x="80" y="330" font-size="100" font-weight="800" fill="#1B1A17" letter-spacing="-3">design-core</text>
+<text x="84" y="400" font-size="34" fill="#1B1A17">The principles every design skill</text>
+<text x="84" y="446" font-size="34" fill="#1B1A17">builds on. Never a style of its own.</text>
+<text x="84" y="520" font-size="20" fill="#5E5A50" class="m">composition · writing · interface quality</text>
+<g font-size="28" font-weight="600">
+<text x="700" y="112" font-size="18" fill="#5E5A50" font-weight="500" class="m" letter-spacing="2">ORDER OF AUTHORITY</text>
+<rect x="700" y="140" width="500" height="84" rx="6" fill="#E4472B"/>
+<text x="732" y="192" fill="#fff">1  Your request</text>
+<rect x="700" y="240" width="500" height="84" rx="6" fill="#1B1A17"/>
+<text x="732" y="292" fill="#F4F0E8">2  The product's own system</text>
+<rect x="701" y="341" width="498" height="82" rx="6" fill="none" stroke="#1B1A17" stroke-width="2"/>
+<text x="732" y="392" fill="#1B1A17">3  Platform rules</text>
+<rect x="701" y="441" width="498" height="82" rx="6" fill="none" stroke="#8A8577" stroke-width="2" stroke-dasharray="8 7"/>
+<text x="732" y="492" fill="#5E5A50" font-weight="500">4  Core defaults: fill gaps</text>
+</g>
+</svg>
