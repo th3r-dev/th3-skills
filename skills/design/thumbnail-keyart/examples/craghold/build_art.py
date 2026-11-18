@@ -4,10 +4,11 @@
 No text in the art: the title, ribbon and callouts are live text added by banner.py's keyart layout,
 so they stay spellable and the bench can measure them.
 
-  dungeon  the hero runs the bridge toward the gate; the first enemy behind; the key glows in the arch
-  summit   the same hero and bridge, the path climbing to a flag on the snow peak
+  dungeon  the hero hits the first enemy on the bridge for gold; the key blazes in the gate behind it
+  summit   sunrise: the hero points his sword up a switchback path to the flag on the peak
+  loop     the core loop left to right: level up on the farm, fight for gold, buy the key to the gate
 
-Run: python3 build_art.py            writes art-dungeon.svg and art-summit.svg next to this file
+Run: python3 build_art.py            writes art-dungeon.svg, art-summit.svg and art-loop.svg next to this file
      python3 build_art.py --selftest
 Stdlib only.
 """
@@ -118,7 +119,7 @@ def key(cx, cy, s=1.0):
             '<rect x="48" y="8" width="14" height="26" fill="#FFC83D"/><rect x="66" y="8" width="14" height="18" fill="#FFC83D"/></g>')
 
 
-def blocky(x, y, s, skin, shirt, pants, flip=False, hood=None, eyes="#1B1B1B", run=1.0):
+def blocky(x, y, s, skin, shirt, pants, flip=False, hood=None, eyes="#1B1B1B", run=1.0, reach=-70):
     """A blocky avatar mid-stride, feet at (x, y). Back limbs first, then body, then the front limbs."""
     k = -1 if flip else 1
     def part(px, py, w, h, fill, rot=0, ox=0, oy=0, rim=True):
@@ -151,17 +152,17 @@ def blocky(x, y, s, skin, shirt, pants, flip=False, hood=None, eyes="#1B1B1B", r
                    f'H{hx + 26 * s:.0f} V{y - 346 * s:.0f}Z" {st}/>'
                    f'<path d="M{hx + 10 * s:.0f} {y - 352 * s:.0f} L{hx - 150 * s:.0f} {y - 380 * s:.0f} '
                    f'L{hx - 130 * s:.0f} {y - 348 * s:.0f} L{hx + 10 * s:.0f} {y - 326 * s:.0f}Z" {st}/>')
-    out.append(part(26, -330, 62, 150, shirt if hood else skin, rot=-70 * run, ox=31, oy=10))   # front arm, reaching forward
+    out.append(part(26, -330, 62, 150, shirt if hood else skin, rot=reach * run, ox=31, oy=10))   # front arm (reach: -70 forward, -140 up)
     # the hand: the arm's far end, rotated about the shoulder like the arm itself (a prop placed by eye floats)
-    a = math.radians(-70 * run * k)
+    a = math.radians(reach * run * k)
     sx, sy = x + 57 * s * k, y - 320 * s
     hand = (sx - 135 * s * math.sin(a), sy + 135 * s * math.cos(a))
     return "".join(out), hand
 
 
-def sword(x, y, s):
-    """The blade held forward from the hand at (x, y), with a cold edge-glow so it reads against the warm gate."""
-    return (f'<g transform="translate({x:.0f} {y:.0f}) rotate(-24) scale({s})">'
+def sword(x, y, s, angle=-24):
+    """The blade held from the hand at (x, y), with a cold edge-glow so it reads against warm light."""
+    return (f'<g transform="translate({x:.0f} {y:.0f}) rotate({angle}) scale({s})">'
             '<rect x="-10" y="-14" width="250" height="28" rx="6" fill="#6FE3FF" opacity=".35"/>'
             '<polygon points="0,-9 220,-9 246,0 220,9 0,9" fill="#E6F0FA" stroke="#1C1A1A" stroke-width="5"/>'
             '<rect x="-18" y="-26" width="16" height="52" fill="#7A4A00" stroke="#1C1A1A" stroke-width="5"/>'
@@ -183,17 +184,58 @@ def spark(cx, cy, r=60):
 
 
 def flag(x, y):
-    """The summit marker: a pole, a pennant in the game's accent and a halo so it reads from far."""
-    return (f'<circle cx="{x + 40}" cy="{y - 120}" r="120" fill="#FFF1A8" opacity=".75"/>'
-            f'<rect x="{x - 5}" y="{y - 200}" width="10" height="200" fill="#4A3020" stroke="#1C1A1A" stroke-width="4"/>'
+    """The summit marker: a pole and a pennant, lit from behind by the sunrise (a halo disc read as a moon)."""
+    return (f'<rect x="{x - 5}" y="{y - 200}" width="10" height="200" fill="#4A3020" stroke="#1C1A1A" stroke-width="4"/>'
             f'<polygon points="{x + 5},{y - 200} {x + 120},{y - 168} {x + 5},{y - 136}" fill="#E8432E" stroke="#1C1A1A" stroke-width="5"/>')
+
+
+def switchback(x0, y0, x1, y1, legs=5, swing=150):
+    """A path cut into the slope, zig-zagging from the bridge's end up to the peak: a trail you can
+    follow with the eye, where floating steps read as platforms."""
+    pts = [(x0, y0)] + [(x1 + (swing if i % 2 else -swing) * (1 - i / legs), y0 + (y1 - y0) * i / legs)
+                        for i in range(1, legs)] + [(x1, y1)]
+    d = "M" + " L".join(f"{x:.0f} {y:.0f}" for x, y in pts)
+    return (f'<path d="{d}" fill="none" stroke="#3B3E44" stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>'
+            f'<path d="{d}" fill="none" stroke="#E2D6C3" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>')
+
+
+def animal(x, y, s, kind):
+    """A voxel farm animal facing left, feet at (x, y): the farm zone where you level up."""
+    o = 'stroke="#1C1A1A" stroke-width="4"'
+    body, head, nose = (("#F2A7B5", "#F2A7B5", "#E07C92") if kind == "pig" else ("#F4F4F0", "#F4F4F0", "#F2A7B5"))
+    bw, bh = (120, 70) if kind == "pig" else (150, 84)
+    out = [f'<rect x="{x + dx * s:.0f}" y="{y - 30 * s:.0f}" width="{16 * s:.0f}" height="{30 * s:.0f}" fill="{body}" {o}/>'
+           for dx in (8, 34, bw - 52, bw - 26)]                                                      # legs
+    out.append(f'<rect x="{x:.0f}" y="{y - (30 + bh) * s:.0f}" width="{bw * s:.0f}" height="{bh * s:.0f}" fill="{body}" {o}/>')
+    if kind == "cow":                                                                                 # patches
+        out += [f'<rect x="{x + px * s:.0f}" y="{y - (30 + bh - py) * s:.0f}" width="{w * s:.0f}" height="{h * s:.0f}" fill="#1C1A1A"/>'
+                for px, py, w, h in ((30, 10, 36, 26), (90, 34, 30, 30), (60, 56, 22, 18))]
+    hx, hy = x - 44 * s, y - (30 + bh + 14) * s
+    out.append(f'<rect x="{hx:.0f}" y="{hy:.0f}" width="{60 * s:.0f}" height="{56 * s:.0f}" fill="{head}" {o}/>'
+               f'<rect x="{hx - 14 * s:.0f}" y="{hy + 26 * s:.0f}" width="{28 * s:.0f}" height="{24 * s:.0f}" fill="{nose}" {o}/>'
+               f'<rect x="{hx + 10 * s:.0f}" y="{hy + 12 * s:.0f}" width="{9 * s:.0f}" height="{11 * s:.0f}" fill="#1C1A1A"/>'
+               f'<rect x="{hx + 34 * s:.0f}" y="{hy + 12 * s:.0f}" width="{9 * s:.0f}" height="{11 * s:.0f}" fill="#1C1A1A"/>')
+    if kind == "cow":
+        out.append(f'<rect x="{hx + 4 * s:.0f}" y="{hy - 14 * s:.0f}" width="{10 * s:.0f}" height="{14 * s:.0f}" fill="#E8DCC0" {o}/>'
+                   f'<rect x="{hx + 44 * s:.0f}" y="{hy - 14 * s:.0f}" width="{10 * s:.0f}" height="{14 * s:.0f}" fill="#E8DCC0" {o}/>')
+    return "".join(out)
+
+
+def pen(x0, x1, y):
+    """A wooden fence: the farm is a fenced training zone you grow out of."""
+    o = 'fill="#8A5A34" stroke="#1C1A1A" stroke-width="4"'
+    posts = "".join(f'<rect x="{x:.0f}" y="{y - 90}" width="18" height="96" {o}/>' for x in range(int(x0), int(x1) + 1, 110))
+    return (f'<rect x="{x0}" y="{y - 74}" width="{x1 - x0 + 18}" height="14" {o}/>'
+            f'<rect x="{x0}" y="{y - 38}" width="{x1 - x0 + 18}" height="14" {o}/>' + posts)
 
 
 def scene(variant, seed=7):
     rnd = random.Random(seed)
+    sunrise = variant == "summit"               # the summit is its own moment: dawn on the peak, not the dungeon's noon
+    sky = (('#33397F', '.45', '#E7836C', '#FFE2B5') if sunrise else ('#2F63C4', '.55', '#9CC3E8', '#E6F0F8'))
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
-           '<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B6CB7"/>'
-           '<stop offset=".55" stop-color="#9CC3E8"/><stop offset="1" stop-color="#E6F0F8"/></linearGradient>'
+           f'<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{sky[0]}"/>'
+           f'<stop offset="{sky[1]}" stop-color="{sky[2]}"/><stop offset="1" stop-color="{sky[3]}"/></linearGradient>'
            # haze: soft stops at both ends, or the band draws a hard shelf across the sky
            '<linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>'
            '<stop offset=".5" stop-color="#FFFFFF" stop-opacity=".7"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'
@@ -203,31 +245,41 @@ def scene(variant, seed=7):
            '<stop offset="1" stop-color="#0B1020" stop-opacity=".55"/></radialGradient>'
            '<linearGradient id="spill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC060" stop-opacity=".55"/>'
            '<stop offset="1" stop-color="#FFC060" stop-opacity="0"/></linearGradient></defs>',
-           f'<rect width="{W}" height="{H}" fill="url(#sky)"/><rect width="{W}" height="{H}" fill="url(#sun)"/>']
+           f'<rect width="{W}" height="{H}" fill="url(#sky)"/>' + ('' if sunrise else f'<rect width="{W}" height="{H}" fill="url(#sun)"/>')]
+    crag_peak = (1580, 230, 420) if sunrise else (1500, 150, 430)
+    if sunrise:                                  # the sun just behind the peak: the rim light that makes it the goal
+        out.append('<circle cx="1640" cy="300" r="150" fill="#FFF2C8" opacity=".55"/><circle cx="1640" cy="300" r="95" fill="#FFF6DA"/>')
     far = ridge([(420, 250, 420), (980, 360, 360), (1560, 420, 380)], 820)
-    out.append(range_svg(far, 820, "#A9BCD6", "#C3D2E6", "#F2F6FB", 400, rnd=rnd))
+    rock = (("#A79BCB", "#C3B8E0", "#F6E9F0", "#D8C7DE"), ("#5A5C96", "#7779B2", "#FBE7DA", "#D9C3D0")) if sunrise else \
+           (("#9DB6E0", "#BCD0EE", "#F2F6FB", "#C9D7E8"), ("#4F6896", "#6A84B0", "#EEF3F9", "#C9D7E8"))
+    out.append(range_svg(far, 820, *rock[0][:3], 400, rnd=rnd, shade=rock[0][3]))
     out.append('<rect x="0" y="560" width="1920" height="260" fill="url(#haze)"/>')
-    crag_peak = (1500, 150, 430) if variant == "dungeon" else (1580, 300, 420)
     mid = ridge([(240, 560, 300), (700, 600, 260), crag_peak], 1000)
-    out.append(range_svg(mid, 1000, "#66778F", "#7F90A8", "#EEF3F9", 470, rnd=rnd))
+    out.append(range_svg(mid, 1000, *rock[1][:3], 470, rnd=rnd, shade=rock[1][3]))
     out.append('<rect x="0" y="760" width="1920" height="140" fill="url(#haze)" opacity=".6"/>')
-    out += [pine(x, 900 + rnd.randint(-10, 10), s) for x, s in ((60, 1.35), (170, 1.05), (1840, 1.3))]
+    trees = ((1840, 1.3),) if variant == "loop" else ((60, 1.35), (170, 1.05), (1840, 1.3))
+    out += [pine(x, 900 + rnd.randint(-10, 10), s) for x, s in trees]
     out.append(bridge())
-    if variant == "dungeon":
+    if variant == "loop":                        # the farm: where every run starts and you level up to 10
+        out.append('<polygon points="0,812 600,836 600,968 0,1092" fill="#86AE63"/>'
+                   '<polygon points="0,812 600,836 600,846 0,824" fill="#F4F8FC"/>')
+        out.append(pen(20, 560, 935))
+        out.append(animal(110, 990, 1.0, "pig") + animal(330, 975, 0.95, "cow"))
+    if variant in ("dungeon", "loop"):
         out.append(gate())
         out.append('<polygon points="1395,792 1595,792 1250,1080 600,1080" fill="url(#spill)"/>')   # the key's light down the bridge
         out.append(key(1495, 610, 1.4))
         # the first enemy, between the hero and the gate and facing him: the fight is the loop
         out.append(blocky(1270, 905, 0.95, "#6FAE4E", "#5B4A36", "#3E4A3A", flip=True, eyes="#FF3B30", run=0.7)[0])
-    else:                                       # a stepped trail from the bridge's end up to the flag
-        top = min(y for x, y in mid if 1540 <= x <= 1620)
-        out += [f'<rect x="{1500 + 10 * i - 40 * (i % 2):.0f}" y="{792 - i * (792 - top) / 9:.0f}" width="90" height="22" '
-                f'fill="#B9BDC4" stroke="#5B5F67" stroke-width="4"/>' for i in range(9)]
+    else:                                       # a path cut up the slope from the bridge's end to the flag
+        top = min(y for x, y in mid if 1550 <= x <= 1610)
+        out.append(switchback(1490, 800, 1580, top + 6, legs=6, swing=120))
         out.append(flag(1580, top))
-    hero, hand = blocky(900, 1075, 1.4, "#E8B98A", "#6B4A2F", "#3F5A3A", hood="#2F6FD0")                      # the hero
+    up = variant == "summit"                     # on the summit he points the blade at the flag: the eye follows it
+    hero, hand = blocky(900, 1075, 1.4, "#E8B98A", "#6B4A2F", "#3F5A3A", hood="#2F6FD0", reach=-140 if up else -70)
     out.append(hero)
-    out.append(sword(*hand, 1.25))
-    if variant == "dungeon":                    # where the blade meets the enemy: a spark and the gold it drops
+    out.append(sword(*hand, 1.25, angle=-50 if up else -24))
+    if variant in ("dungeon", "loop"):                    # where the blade meets the enemy: a spark and the gold it drops
         out.append(spark(1236, 648, 50))          # on the chest, clear of the face that sells the threat
         out += [coin(cx, cy, r) for cx, cy, r in ((1080, 520, 20), (1135, 475, 17), (1190, 505, 22), (1050, 585, 15))]
     out += [f'<rect x="{rnd.randint(0, W)}" y="{rnd.randint(0, H)}" width="{z}" height="{z}" fill="#FFFFFF" opacity=".85"/>'
@@ -238,7 +290,7 @@ def scene(variant, seed=7):
 
 def selftest():
     import xml.dom.minidom
-    for v in ("dungeon", "summit"):
+    for v in ("dungeon", "summit", "loop"):
         svg = scene(v)
         xml.dom.minidom.parseString(svg)
         assert "<text" not in svg, "the art carries no text; the title is live text on top"
@@ -252,7 +304,7 @@ def selftest():
 if __name__ == "__main__":
     if "--selftest" in sys.argv:
         selftest(); sys.exit(0)
-    for v in ("dungeon", "summit"):
+    for v in ("dungeon", "summit", "loop"):
         with open(os.path.join(HERE, f"art-{v}.svg"), "w", encoding="utf-8") as fh:
             fh.write(scene(v))
         print(f"art-{v}.svg")

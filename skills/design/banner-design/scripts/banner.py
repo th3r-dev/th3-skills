@@ -938,7 +938,7 @@ def keyart(d, s, t, DH):
     """A game thumbnail: the scene full-bleed (an image model's render or vector art, no text in it), the
     title in block type with a stepped side, the update on a ribbon under it, and a few callouts pinned to
     props in the scene (a level bar over the first enemy, the price over the goal). The scene says what the
-    game is; the type only names it. Colours: fg and accent are the title's two lines, panel the outline,
+    game is; the type only names it. Colours: fg and title2 (else accent) are the title's two lines, panel the outline,
     the side and the callout plates, cta / on_cta the ribbon, `bar` (else accent) the level bar."""
     ka = s["keyart"]
     dark = t["panel"]
@@ -956,7 +956,7 @@ def keyart(d, s, t, DH):
     lh, stroke, depth = round(tz * 0.98), max(6, round(tz * 0.11)), max(4, round(tz * 0.06))
     x, anchor = (M, None) if left else (DW / 2, "middle")
     ty = M + round(tz * 0.92)
-    fills = (t["fg"], t.get("accent", t["fg"]))
+    fills = (t["fg"], t.get("title2", t.get("accent", t["fg"])))
     side, face = [], []
     for i, l in enumerate(lines):
         y = ty + i * lh
@@ -1082,11 +1082,11 @@ def jobs(s, picked=()):
     if "keyart" in s:
         # a thumbnail set: one image per variant row, each its own scene and ribbon (Roblox tests 2-5 at once)
         ka = s["keyart"]
-        # a callout with `only` set belongs to that variant (the key's price has no place in the summit scene)
+        # a callout with `only` set belongs to those variants, space-separated (no key price in the summit scene)
         # a variant aimed at another motivation may promise another goal (`goal` column), so its critic scores that
         return [(dict(s, keyart=dict(ka, art=v.get("art") or ka["art"], kicker=v.get("kicker") or ka["kicker"],
                                      goal=v.get("goal") or ka["goal"], loop=v.get("loop") or ka["loop"],
-                                     callouts=[c for c in ka["callouts"] if c.get("only", "") in ("", v["id"])])),
+                                     callouts=[c for c in ka["callouts"] if not c.get("only") or v["id"] in c["only"].split()])),
                  "keyart", s["style"], f"keyart-{v['id']}") for v in ka["variants"]] \
             or [(s, "keyart", s["style"], "keyart")]
     return [(s, *v.split("-", 1), None) for v in picked or s["variants"]]
@@ -1135,7 +1135,7 @@ def selftest():
         "id: t\nsize[2]: 1920,1080\nsizes[2]: 1920x1080,1280x720\nis: a game\nloop: fight\ngoal: a key\n"
         "title[2]: TEST,QUEST\nkicker: UPDATE\nstyle: dark\ncolors[1]{token,value}:\n  cta,#C8102E\n"
         "anchors[1]{beat,anchor,where}:\n  goal,key,right\n"
-        "callouts[2]{kind,text,sub,x,y,fill,only,tx,ty}:\n  badge,KEY,\"1,000 GOLD\",0.7,0.6,,a,0.8,0.8\n  bar,LVL 5,,0.1,0.6,0.4,,,\n"
+        "callouts[2]{kind,text,sub,x,y,fill,only,tx,ty}:\n  badge,KEY,\"1,000 GOLD\",0.7,0.6,,a c,0.8,0.8\n  bar,LVL 5,,0.1,0.6,0.4,,,\n"
         "variants[2]{id,motivation,art,kicker,goal,loop}:\n  a,competition,,,,\n  b,exploration,,NEW,the top,climb\n"))
     assert ks["sizes"] == [[1920, 1080], [1280, 720]] and ks["style"] == "t", "sizes and a palette over a preset"
     assert ks["keyart"]["callouts"][0]["sub"] == "1,000 GOLD" and ks["keyart"]["callouts"][1]["fill"] == 0.4

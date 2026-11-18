@@ -53,7 +53,8 @@ win over anything here, the same order of authority as [`../core/SKILL.md`](../c
 6. **Critic**: `uv run scripts/critic.py <game>.keyart.toon <…-400.png>`. A vision model that never
    saw the brief says what the game is, what you do, what the goal is, every word it reads and where
    its eye lands; a second call scores that read against the brief. A run fails on a string not read
-   back, a beat scored 0, a total under 4 of 6, or the eye landing on the title. One sample is noise
+   back, a beat scored 0, or a total under 4 of 6. Focus is printed, not scored: on a published
+   thumbnail the model named the logo first every time, so "the title" says nothing. One sample is noise
    (the same image flipped between pass and fail), so it runs three times (`--runs`) and passes on a
    majority. Endpoint, model and key: the script's `--help`. With no key it is NOT ASSESSED, never a
    pass.
@@ -111,12 +112,14 @@ variants[2]{id,motivation,art,kicker,goal,loop}:
 ## QA gate
 
 - [ ] The critic passes on a majority of 3 runs: every string read back, every beat ≥ 1, total
-      ≥ 4 of 6, and the eye not on the title.
+      ≥ 4 of 6.
 - [ ] The bench passes: core text inside the safe zone, contrast ≥ 4.5:1 (≥ 3:1 large bold),
       nothing in the bottom band, the PNG under the limit.
 - [ ] The title reads at 400 px wide (the `-400.png`) and in grayscale.
-- [ ] One focal point, and it is the goal or the hero: the brightest thing in the frame. If the
-      critic's eye lands on the title, the scene is too quiet.
+- [ ] One focal point, and it is the goal or the hero: the brightest thing in the frame. Judge it
+      by eye on the 400 px PNG; the critic's focus line names the logo on any thumbnail.
+- [ ] Vector style, built from code. A painted, AI-looking render is not the target; the loop
+      reading in one frame is.
 - [ ] Every anchor is in the frame and you can find it within two seconds; nothing in the frame
       lacks an anchor.
 - [ ] Text is only the title, the ribbon and the callouts; about three words besides the title.
