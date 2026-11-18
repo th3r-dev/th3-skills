@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: shared design principles. Headline: the default here is X, with X struck out. Right: four tiers of authority, the user's request, the product's system, platform rules, and last, this skill's defaults.">
+<title>design-core: the default here is X, struck out; four tiers of authority</title>
+<style>
+.m{font-family:ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace}
+.s{font-family:Georgia,"Times New Roman",serif}
+</style>
+<rect width="1280" height="640" fill="#F2EEE4"/>
+<rect x="64" y="64" width="6" height="512" fill="#E4572E"/>
+<text x="96" y="92" class="m" font-size="20" fill="#6B665A" letter-spacing="2">DESIGN-CORE</text>
+<text x="96" y="228" class="s" font-size="84" font-weight="700" fill="#1B1A17">The default</text>
+<text x="96" y="318" class="s" font-size="84" font-weight="700" fill="#1B1A17">here is <tspan fill="#8A857A">X</tspan>.</text>
+<line x1="402" y1="318" x2="478" y2="254" stroke="#E4572E" stroke-width="9" stroke-linecap="round"/>
+<line x1="402" y1="254" x2="478" y2="318" stroke="#E4572E" stroke-width="9" stroke-linecap="round"/>
+<text x="96" y="400" class="s" font-size="40" font-style="italic" fill="#1B1A17">Name it. Then leave it.</text>
+<text x="96" y="520" class="m" font-size="21" fill="#4A463D">composition · writing · states · taste</text>
+<text x="96" y="552" class="m" font-size="21" fill="#4A463D">never overrides the product's own system</text>
+<g class="m" font-size="18">
+<text x="700" y="92" fill="#6B665A" letter-spacing="2">ORDER OF AUTHORITY</text>
+<rect x="700" y="124" width="516" height="96" fill="#1B1A17"/>
+<text x="728" y="162" fill="#E4572E" font-size="22">01</text>
+<text x="728" y="196" fill="#F2EEE4" font-size="26">The user's request</text>
+<rect x="700" y="236" width="516" height="96" fill="none" stroke="#1B1A17" stroke-width="3"/>
+<text x="728" y="274" fill="#E4572E" font-size="22">02</text>
+<text x="728" y="308" fill="#1B1A17" font-size="26">The product's own system</text>
+<rect x="700" y="348" width="516" height="96" fill="none" stroke="#1B1A17" stroke-width="3" stroke-opacity="0.55"/>
+<text x="728" y="386" fill="#6B665A" font-size="22">03</text>
+<text x="728" y="420" fill="#4A463D" font-size="26">Platform rules</text>
+<rect x="700" y="460" width="516" height="96" fill="none" stroke="#8A857A" stroke-width="3" stroke-dasharray="10 8"/>
+<text x="728" y="498" fill="#8A857A" font-size="22">04</text>
+<text x="728" y="532" fill="#6B665A" font-size="26">These defaults: gaps only</text>
+</g>
+</svg>

@@ -107,6 +107,8 @@ the kind of move, or say why this case needs it.
 
 ## Check before showing
 
+What this file changes, measured on 12 banners: [examples/banner-bench](../examples/banner-bench/README.md).
+
 Add these to the review's "Fit to kind, no generic look" row:
 
 | Id | Question | Fail |

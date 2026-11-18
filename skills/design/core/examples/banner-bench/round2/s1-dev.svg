@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: shared design principles">
+<rect width="1280" height="640" fill="#F2EEE5"/>
+<text x="80" y="96" font-family="Menlo, Consolas, monospace" font-size="16" fill="#5E5A50">th3-skills / design</text>
+<rect x="80" y="262" width="64" height="8" fill="#E5452B"/>
+<text x="76" y="362" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="100" font-weight="700" letter-spacing="-3" fill="#17161A">design-core</text>
+<text x="80" y="426" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" fill="#5E5A50">Shared principles for layout, writing</text>
+<text x="80" y="464" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" fill="#5E5A50">and interface quality.</text>
+<text x="760" y="96" font-family="Menlo, Consolas, monospace" font-size="16" fill="#5E5A50">order of authority</text>
+<line x1="760" y1="130" x2="1200" y2="130" stroke="#E2DCCE" stroke-width="2"/>
+<rect x="760" y="166" width="14" height="14" fill="#E5452B" opacity="1"/>
+<text x="796" y="180" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#17161A">Your request</text>
+<text x="796" y="208" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">wins</text>
+<line x1="760" y1="230" x2="1200" y2="230" stroke="#E2DCCE" stroke-width="2"/>
+<rect x="760" y="266" width="14" height="14" fill="#17161A" opacity="1"/>
+<text x="796" y="280" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="500" fill="#17161A">The product's own system</text>
+<text x="796" y="308" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">tokens, components, terms</text>
+<line x1="760" y1="330" x2="1200" y2="330" stroke="#E2DCCE" stroke-width="2"/>
+<rect x="760" y="366" width="14" height="14" fill="#17161A" opacity="1"/>
+<text x="796" y="380" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="500" fill="#17161A">Platform rules</text>
+<text x="796" y="408" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">HIG, Material, WCAG</text>
+<line x1="760" y1="430" x2="1200" y2="430" stroke="#E2DCCE" stroke-width="2"/>
+<rect x="760" y="466" width="14" height="14" fill="#17161A" opacity="1"/>
+<text x="796" y="480" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="500" fill="#17161A">This skill's defaults</text>
+<text x="796" y="508" font-family="Menlo, Consolas, monospace" font-size="15" fill="#5E5A50">fill gaps, never replace</text>
+<line x1="760" y1="530" x2="1200" y2="530" stroke="#E2DCCE" stroke-width="2"/>
+</svg>

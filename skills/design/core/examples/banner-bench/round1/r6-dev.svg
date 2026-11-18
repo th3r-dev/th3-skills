@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="design-core: shared design principles for composition, writing and interface states. A wireframe screen with one highlighted focal point sits on a visible grid.">
+<title>design-core: shared design principles for composition, writing and interface states</title>
+<rect width="1280" height="640" fill="rgb(20,24,31)"/>
+<g stroke="rgb(42,49,61)" stroke-width="1"><path d="M0 80H1280M0 560H1280M80 0V640M1200 0V640"/></g>
+<g font-family="Helvetica Neue,Arial,sans-serif">
+<text x="80" y="232" font-size="92" font-weight="700" fill="rgb(242,239,232)" letter-spacing="-2">design-core</text>
+<text x="80" y="300" font-size="30" fill="rgb(170,178,192)">Shared design principles for screens,</text>
+<text x="80" y="340" font-size="30" fill="rgb(170,178,192)">copy and states.</text>
+<g font-size="22" fill="rgb(242,239,232)">
+<rect x="80" y="440" width="150" height="44" rx="6" fill="none" stroke="rgb(74,83,101)"/><text x="155" y="470" text-anchor="middle">Composition</text>
+<rect x="246" y="440" width="104" height="44" rx="6" fill="none" stroke="rgb(74,83,101)"/><text x="298" y="470" text-anchor="middle">Writing</text>
+<rect x="366" y="440" width="104" height="44" rx="6" fill="none" stroke="rgb(74,83,101)"/><text x="418" y="470" text-anchor="middle">States</text>
+</g>
+<text x="80" y="526" font-size="20" fill="rgb(125,135,152)">Product system first. Defaults fill gaps.</text>
+</g>
+<!-- screen -->
+<rect x="700" y="80" width="500" height="480" rx="12" fill="rgb(28,34,44)" stroke="rgb(74,83,101)"/>
+<g stroke="rgb(232,163,61)" stroke-width="1" stroke-dasharray="4 5" opacity=".55"><path d="M740 80V560M1160 80V560M740 200H1160"/></g>
+<rect x="740" y="120" width="280" height="14" rx="3" fill="rgb(74,83,101)"/>
+<rect x="740" y="150" width="340" height="40" rx="4" fill="rgb(232,163,61)"/>
+<rect x="740" y="224" width="420" height="10" rx="3" fill="rgb(58,66,82)"/>
+<rect x="740" y="246" width="400" height="10" rx="3" fill="rgb(58,66,82)"/>
+<rect x="740" y="268" width="330" height="10" rx="3" fill="rgb(58,66,82)"/>
+<g fill="none" stroke="rgb(74,83,101)"><rect x="740" y="320" width="200" height="84" rx="8"/><rect x="960" y="320" width="200" height="84" rx="8"/></g>
+<rect x="740" y="320" width="200" height="84" rx="8" fill="none" stroke="rgb(217,83,79)" stroke-width="2"/>
+<g font-family="Helvetica Neue,Arial,sans-serif" font-size="18">
+<text x="756" y="350" fill="rgb(217,83,79)">Empty</text><text x="756" y="378" fill="rgb(170,178,192)">Add a first item</text>
+<text x="976" y="350" fill="rgb(125,135,152)">Loading</text><rect x="976" y="366" width="120" height="8" rx="3" fill="rgb(58,66,82)"/>
+<rect x="740" y="480" width="150" height="48" rx="6" fill="rgb(242,239,232)"/><text x="815" y="511" text-anchor="middle" font-size="22" font-weight="700" fill="rgb(20,24,31)">Save draft</text>
+<text x="910" y="511" font-size="20" fill="rgb(125,135,152)">Cancel</text>
+</g>
+</svg>
