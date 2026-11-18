@@ -5,9 +5,13 @@ from the farm, level up, earn gold and buy the dungeon key. The bench image it w
 against was a painted "dungeon update" thumbnail: a hero mid-run, the first enemy with a level
 bar, a guarded gate and a glowing key with its price.
 
-| dungeon (mastery and reward) | summit (exploration) |
-|---|---|
-| <img src="keyart-dungeon-craghold-1920x1080.png" alt="Craghold Quest, dungeon update: title top-left; a big hooded blocky hero with gritted teeth swings his sword into a green enemy, a spark and gold coins flying, under a LVL 5 bar with a red arrow; behind them a gold key blazes in a dark stone gate, a red arrow from a plate reading KEY 12,500 GOLD; snow on the pines and the bridge"> | <img src="keyart-summit-craghold-1920x1080.png" alt="Craghold Quest, new summit: the same hero on the snowy bridge, a stepped trail climbing to a red flag on the peak, a red arrow from a plate reading SUMMIT 4,200 M"> |
+| v3 loop (progression) | dungeon (mastery and reward) | summit (exploration) |
+|---|---|---|
+| <img src="keyart-loop-craghold-1920x1080.png" alt="Craghold Quest, dungeon update, read left to right: a fenced farm with a voxel pig and cow under a LVL 1-10 bar and a red arrow; a big hooded hero with gritted teeth hits a green enemy, coins flying; a gold key blazes in a dark gate under a plate reading KEY 12,500 GOLD"> | <img src="keyart-dungeon-craghold-1920x1080.png" alt="Craghold Quest, dungeon update: the hero hits a green enemy under a LVL 5 bar, coins flying; the gold key blazes in the gate under KEY 12,500 GOLD; snow on the pines and the bridge"> | <img src="keyart-summit-craghold-1920x1080.png" alt="Craghold Quest, new summit: at sunrise the hero points his sword up a switchback path to a red flag on the peak, a plate reading SUMMIT 4,200 M with an arrow to the flag"> |
+
+The **loop** variant is the one that explains the game: left to right it is the core loop, level up
+on the farm (LVL 1-10), fight monsters for gold, buy the key to the dungeon. It follows the bench's
+grammar in vector, not its painted look.
 
 **Art path: vector.** The image model (Gemini) answered 429, free tier, limit 0, so the scenes are
 [build_art.py](build_art.py): blocky ranges snapped to a voxel grid, snow only above a snow line and
@@ -27,26 +31,31 @@ uv run ../../scripts/critic.py craghold.keyart.toon keyart-dungeon-craghold-1920
 
 ## Bench
 
-| Variant | Worst contrast | Smallest core text at 400 px | PNG 1× | Bottom band | Result |
+| Variant | Worst contrast | PNG 1× | Bottom band | Result |
+|---|---|---|---|---|
+| loop | 5.37:1 (ribbon) | 866 KB | clear | pass |
+| dungeon | 5.37:1 (ribbon) | 884 KB | clear | pass |
+| summit | 5.37:1 (ribbon) | 633 KB | clear | pass |
+
+## Critic (deepseek-v4.1-flash via Tokenme, 400 px PNG, 3 runs each)
+
+| Variant | Runs passing | is | loop | goal | Result |
 |---|---|---|---|---|---|
-| dungeon | 5.37:1 (ribbon) | 23.8 px | 875 KB | clear | pass |
-| summit | 5.37:1 (ribbon) | 23.8 px | 737 KB | clear | pass |
+| summit | 3/3 | 1, 1, 1 | 2, 2, 2 | 1, 2, 2 | pass |
+| dungeon | 1/3 | 1, 1, 1 | 1, 1, 1 | 1, 1, 2 | fail |
+| loop | 0/3 | 1, 1, 1 | 1, 1, 1 | 1, 1, 1 | fail |
 
-## Critic: FAIL on both (deepseek-v4.1-flash via Tokenme, 400 px PNG, 3 runs each)
+What is still wrong:
 
-| Variant | Runs passing | is | loop | goal | Eye lands on |
-|---|---|---|---|---|---|
-| dungeon | 0/3 | 1, 1, 1 | 1, 2, 1 | 0, 1, 1 | title, title, the key and its price |
-| summit | 0/3 | 1, 2, 1 | 1, 1, 1 | 2, 2, 2 | the title, all three |
+- **`is` scores 1 everywhere.** The read is "a blocky action RPG / dungeon crawler"; the snow-mountain
+  world never makes it into the sentence.
+- **The farm's "level up" doesn't come through as an idea.** The critic reads "LVL 1-10" as text
+  but describes the loop as "fight enemies, collect gold"; the judge wants "level up".
+- **The goal reads as "get the key"**, not "buy the key and open the gate".
 
-The example stays in as a measured case, not a model answer. What is still wrong:
-
-- **The title still wins the eye.** It survived three passes (centred at 100 px, moved top-left,
-  capped at 76 px). By the skill's own rule that calls for a different approach, not new numbers:
-  an AI-rendered scene with more light and texture, or a less saturated title.
-- **The dungeon's goal reads as "get the key", not "buy the key and open the gate".** The price
-  plate isn't enough; the gate opening isn't shown.
-- **The summit has no stakes.** It was not rebuilt in this round (review tip 7).
+The reads look right to a person ("fight enemies with a sword, collect gold coins, unlock the
+glowing key"); the judge is strict about the brief's exact beats. Next: a second judge model to
+check that, or brief lines a thumbnail can actually show.
 
 ## How it got here
 
@@ -65,5 +74,13 @@ The example stays in as a measured case, not a model answer. What is still wrong
    - red arrows from each callout to its prop; callout text 42 px at 1920
    - the critic fails when the eye lands on the title
 4. With those changes one critic run put the eye on the key, but the next three runs put it back
-   on the title in two. One sample is noise, so the critic now runs three times and takes the majority,
-   which is where both variants fail today.
+   on the title in two. One sample is noise, so the critic now runs three times and takes the majority.
+5. Version 2 and 3, vector only (the bench's painted look is not the target):
+   - v2: a cream title (`title2` token) and richer rock colours on both variants; the summit rebuilt as
+     its own moment: sunrise behind the peak, a switchback path cut up the slope, the hero pointing
+     his sword at the flag, the plate in open sky with an arrow.
+   - v3: a new `loop` variant that explains the core loop left to right, with the farm pen, voxel pig
+     and cow under LVL 1-10. A callout's `only` can now name several variants.
+   - The title still came first in 9 of 9 runs, so the critic was run on the bench thumbnail itself:
+     the logo came first there too, 3 of 3. The focus rule was measuring the model, not the design;
+     focus is reported again, not scored.

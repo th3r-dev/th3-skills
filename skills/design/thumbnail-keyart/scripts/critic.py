@@ -9,8 +9,9 @@ against the brief (*.keyart.toon), so the check is one the author didn't run.
   read    every title, ribbon and callout string of this variant was read back (exact, case-folded)
   beats   a second, text-only call scores the blind read against the brief's is / loop / goal, 0-2 each:
           pass needs every beat >= 1 and a total >= 4 of 6
-  focus   the first thing the model's eye landed on: a fail when it is the title (the scene must out-shout the
-          type: the goal or the hero is the brightest, biggest thing)
+  focus   printed, not scored: where the model's eye landed. Calibrated on a published thumbnail (a painted
+          dungeon-update key art): the model named its logo first in 3 of 3 runs, as it does any title, so
+          "the title" is no evidence of a weak scene; judge focus by eye on the 400 px PNG
   runs    one sample is noise (the same image flipped between pass and fail), so it runs --runs times (default 3)
           and passes on a majority
 
@@ -70,9 +71,6 @@ def score(ka, strings, read, beats):
     fails += [f"beat {k!r} scored 0: the thumbnail does not show it" for k, v in got.items() if v < 1]
     if sum(got.values()) < 4:
         fails.append(f"beats total {sum(got.values())}/6, under 4")
-    focus = fold(read.get("focus") or "")
-    if "title" in focus or any(fold(l) in focus for l in ka.get("title", [])):
-        fails.append(f"the eye lands on the title ({read.get('focus')!r}), not the goal or the hero")
     return fails
 
 
@@ -98,9 +96,8 @@ def selftest():
     assert score(ka, strings, read, {"is": 2, "loop": 1, "goal": 2}) == []
     assert score(ka, strings, dict(read, text=["CRAGHOLD", "QUEST"]), {"is": 2, "loop": 2, "goal": 2}) == \
         ["not read: 'DUNGEON UPDATE'", "not read: 'KEY'", "not read: '12,500 GOLD'"]
-    for f_ in ("The large CRAGHOLD QUEST title.", "the title text"):
-        assert score(ka, strings, dict(read, focus=f_), {"is": 2, "loop": 2, "goal": 2}) == \
-            [f"the eye lands on the title ({f_!r}), not the goal or the hero"]
+    assert score(ka, strings, dict(read, focus="The large CRAGHOLD QUEST title."), {"is": 2, "loop": 2, "goal": 2}) == [], \
+        "focus is reported, never a fail: the model names any logo first"
     f = score(ka, strings, read, {"is": 2, "loop": 1, "goal": 0})
     assert f == ["beat 'goal' scored 0: the thumbnail does not show it", "beats total 3/6, under 4"], f
     brief = os.path.join(HERE, "..", "examples", "craghold", "craghold.keyart.toon")
