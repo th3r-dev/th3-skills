@@ -50,7 +50,7 @@ def banner():
 def expected(brief_path, png_path):
     """The variant's spec (picked by the `keyart-<id>-` file name) and every string drawn on it."""
     b = banner()
-    with open(brief_path, encoding="utf-8") as fh:
+    with open(inside_cwd(brief_path), encoding="utf-8") as fh:
         s = b.keyart_spec(b.load_toon(fh.read()))
     name = os.path.basename(png_path)
     jobs = [j for j in b.jobs(s) if name.startswith(j[3] + "-")] or b.jobs(s)[:1]
@@ -60,10 +60,20 @@ def expected(brief_path, png_path):
     return ka, strings
 
 
+def inside_cwd(path):
+    """`path` resolved, refused unless it lies inside the current directory: the arguments are often
+    written by an agent, so they can never read elsewhere (the same guard as game-dev's mesh_check)."""
+    base = os.path.realpath(os.getcwd())
+    full = os.path.realpath(path)
+    if full != base and not full.startswith(base + os.sep):
+        raise SystemExit(f"{path}: outside the current directory ({base}); run from a folder that contains it")
+    return full
+
+
 fold = lambda x: re.sub(r"[^0-9a-z]", "", str(x).lower())
 
 
-def score(ka, strings, read, beats):
+def score(strings, read, beats):
     """Failures for one critic pass: strings not read back, beats the read missed."""
     seen = fold(" ".join(map(str, read.get("text") or [])))
     fails = [f"not read: {x!r}" for x in strings if fold(x) not in seen]
@@ -90,17 +100,22 @@ def ask(messages, model, key):
 
 
 def selftest():
-    ka = {"is": "a mountain adventure", "loop": "fight, level up", "goal": "buy the key", "title": ["CRAGHOLD", "QUEST"]}
+    os.chdir(os.path.join(HERE, ".."))       # the guard below admits paths inside the working directory only
+    try:
+        inside_cwd("/etc/hosts")
+        raise AssertionError("a path outside the working directory must be refused")
+    except SystemExit:
+        pass
     strings = ["CRAGHOLD", "QUEST", "DUNGEON UPDATE", "KEY", "12,500 GOLD"]
     read = {"text": ["Craghold", "Quest", "Dungeon Update", "KEY", "12,500 GOLD"], "focus": "the glowing key in the gate"}
-    assert score(ka, strings, read, {"is": 2, "loop": 1, "goal": 2}) == []
-    assert score(ka, strings, dict(read, text=["CRAGHOLD", "QUEST"]), {"is": 2, "loop": 2, "goal": 2}) == \
+    assert score(strings, read, {"is": 2, "loop": 1, "goal": 2}) == []
+    assert score(strings, dict(read, text=["CRAGHOLD", "QUEST"]), {"is": 2, "loop": 2, "goal": 2}) == \
         ["not read: 'DUNGEON UPDATE'", "not read: 'KEY'", "not read: '12,500 GOLD'"]
-    assert score(ka, strings, dict(read, focus="The large CRAGHOLD QUEST title."), {"is": 2, "loop": 2, "goal": 2}) == [], \
+    assert score(strings, dict(read, focus="The large CRAGHOLD QUEST title."), {"is": 2, "loop": 2, "goal": 2}) == [], \
         "focus is reported, never a fail: the model names any logo first"
-    f = score(ka, strings, read, {"is": 2, "loop": 1, "goal": 0})
+    f = score(strings, read, {"is": 2, "loop": 1, "goal": 0})
     assert f == ["beat 'goal' scored 0: the thumbnail does not show it", "beats total 3/6, under 4"], f
-    brief = os.path.join(HERE, "..", "examples", "craghold", "craghold.keyart.toon")
+    brief = os.path.join("examples", "craghold", "craghold.keyart.toon")
     if os.path.exists(brief):
         ka, strings = expected(brief, "keyart-summit-craghold-1920x1080-400.png")
         assert strings == ["CRAGHOLD", "QUEST", "NEW SUMMIT", "SUMMIT", "4,200 M"], strings
@@ -121,7 +136,7 @@ def main():
     if not (a.brief and a.png):
         ap.error("give a brief and a PNG, or --selftest")
     ka, strings = expected(a.brief, a.png)
-    with open(a.png, "rb") as fh:
+    with open(inside_cwd(a.png), "rb") as fh:
         url = "data:image/png;base64," + base64.b64encode(fh.read()).decode()
     blind = [{"role": "user", "content": [{"type": "text", "text": BLIND}, {"type": "image_url", "image_url": {"url": url}}]}]
     if a.dry_run:
@@ -139,7 +154,7 @@ def main():
         read = ask(blind, a.model, key)
         seen = "\n".join(f"{k}: {read.get(k)}" for k in ("game", "action", "goal"))
         beats = ask([{"role": "user", "content": f"{JUDGE}\n\nBrief\n{brief}\n\nPlayer's read\n{seen}"}], a.model, key)
-        fails = score(ka, strings, read, beats)
+        fails = score(strings, read, beats)
         passed += not fails
         print(f" run {n}: {'pass' if not fails else 'FAIL'}  is {beats.get('is', 0)} loop {beats.get('loop', 0)} "
               f"goal {beats.get('goal', 0)}  focus: {read.get('focus')}")
