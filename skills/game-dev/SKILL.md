@@ -8,10 +8,10 @@ description: >-
   Octalysis's core drives), with a white-hat / black-hat audit. (2) roblox: Roblox Studio with Luau
   in files (Rojo, Rokit, Selene, StyLua, Lune) and Studio's built-in MCP server wired to the agent
   for playtests. (3) modeling: 3D models built in Blender from a Python script, exported to the
-  engine's limits and checked before import; Meshy AI generation only when the user opts in. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
+  engine's limits and checked before import; Meshy AI generation only when the user opts in. (4) roblox-vfx: Roblox visual effects with ParticleEmitter, Beam, Trail and Highlight under a fill-rate budget, the server deciding and the client rendering, plus a recipe for power abilities. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
   "why is this game not fun", "MDA", "Octalysis", "player motivation", "game brief", "GDD",
   "prototype a mechanic", "Roblox", "Roblox Studio", "Luau", "Rojo", "obby", "tycoon",
-  "simulator", "Studio MCP", "3D model", "Blender", "low poly", "polycount", "Meshy", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
+  "simulator", "Studio MCP", "3D model", "Blender", "low poly", "polycount", "Meshy", "VFX", "ParticleEmitter", "Beam", "Trail", "power ability", "เอฟเฟกต์", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
   before acting.
 ---
 
@@ -20,7 +20,8 @@ description: >-
 | When the work is… | Read | Scripts |
 |---|---|---|
 | an idea, a brief, "is this fun", a loop, rewards, player types, monetization ethics | [`design-lens/SKILL.md`](design-lens/SKILL.md) | none |
-| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory) | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory); deeper topics (DataStores, networking, UI, physics...) route to roblox-suite | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| visual effects: particles, beams, trails, highlights, ability / power effects, fill-rate budget | [`roblox-vfx/SKILL.md`](roblox-vfx/SKILL.md), [`roblox-vfx/references/particles.md`](roblox-vfx/references/particles.md), [`roblox-vfx/references/abilities.md`](roblox-vfx/references/abilities.md) | none |
 | 3D models: build in Blender, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
 
 ## The flow
