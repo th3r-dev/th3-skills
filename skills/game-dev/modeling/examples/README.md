@@ -1,11 +1,13 @@
 # Worked cases: the reference set
 
-Four cases built in one session, from the user's prompts to Roblox-ready files. Each is a Python
-script you can rerun, a bench case that scores it, and renders. Read this before starting a new
+Five cases. The first four were built headless, each a Python script you can rerun, with a bench
+case that scores it and renders. The fifth, `dungeon-key/`, was made in the open Blender through the
+MCP add-on: its `.blend` is the source and `steps/` records each call. Read this before starting a new
 asset of the same kind: copy the closest case's approach, not its numbers.
 
 | Case | Prompt (as typed) | Result | Bench | Shows how to |
 |---|---|---|---|---|
+| [`dungeon-key/`](dungeon-key/README.md) | "an game-dev model work need working with blender not just a pyscript" | 648 triangles, 1 closed mesh, QA pass (roblox), `mesh_check` exit 0 | asset-qa + mesh_check | work live in Blender: a look after every stage, blender-skills' QA gate, its Roblox export presets |
 | [`lowpoly-cat/`](#lowpoly-cat) | "Create an cat furry charactor which lowest polygon" | 188 triangles, 16 parts | 9/9 | design from a reference board; colour by face, not by shape |
 | [`wizard-cat/`](#wizard-cat) | "output is need wizard cat", then "need rework that caps … leg need blend it with body" | 292 triangles, 22 parts, 15-bone rig, 5 actions | 9/9 | dress a base model; take a review; rig and animate for Roblox |
 | [`crystal-ground/`](#crystal-ground) | shading and geometry nodes work | 498 triangles, 3 parts, baked | 8/8 | scatter with Geometry Nodes, bake a procedural look |
