@@ -44,8 +44,10 @@ python ../../scripts/mesh_check.py dungeon-key.glb --target roblox
 ## Replay
 
 Open `dungeon-key.blend` to keep working on it. To replay the steps elsewhere: in a live session send
-`steps/01` to `08` in order (steps 06 and 07 need `BLENDER_SKILLS` and `OUT_DIR` set first); headless,
-run each through blender-skills' `blender-core/scripts/run_in_blender.py`.
+`steps/01` to `08` in order; headless, run each through blender-skills'
+`blender-core/scripts/run_in_blender.py`. Steps 06-08 read `BLENDER_SKILLS` (default `~/.claude/skills`,
+where blender-skills' installer links them) and `OUT_DIR` (default: the saved `.blend`'s folder; an
+unsaved session must set it, or they stop rather than write somewhere unexpected).
 
 Not done here: the Roblox import itself (Studio → 3D Importer, or an upload), so how the key sits in
 the Craghold place is NOT ASSESSED.
