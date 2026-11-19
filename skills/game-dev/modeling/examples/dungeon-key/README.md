@@ -18,6 +18,7 @@ examples, it has no rebuild script: the `.blend` is the source and `steps/` reco
 | `dungeon-key.glb` | Roblox glTF, preset `roblox_gltf`; what `mesh_check.py` reads |
 | `steps/01-08_*.py` | every call as sent, in order |
 | `look/` | viewport renders of the 3D View taken during the session |
+| `references.md` | the game's own key art first, then 8 measured Sketchfab keys (faces, licence, what each gives) and how ours compares; collected after the build, which broke the skill's rule |
 
 ## The session
 
