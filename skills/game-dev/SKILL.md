@@ -7,7 +7,7 @@ description: >-
   until it is cut and shipped. (1) design-lens: design from player motivation (MDA read through
   Octalysis's core drives), with a white-hat / black-hat audit. (2) roblox: Roblox Studio with Luau
   in files (Rojo, Rokit, Selene, StyLua, Lune) and Studio's built-in MCP server wired to the agent
-  for playtests. (3) modeling: 3D models built in Blender from a Python script, exported to the
+  for playtests. (3) modeling: 3D models made in the open Blender through its MCP add-on (a look after every stage, the .blend as source), with the craft from el4cteo/blender-skills and its asset-qa gate, exported to the
   engine's limits and checked before import; Meshy AI generation only when the user opts in. (4) roblox-vfx: Roblox visual effects with ParticleEmitter, Beam, Trail and Highlight under a fill-rate budget, the server deciding and the client rendering, plus a recipe for power abilities. (5) design-ui: the game's interface (HUD, shop, menus) as design-core applied to Roblox: an approved brief per surface with every state, phone-first layout in the safe insets, tokens from the game's look, the server deciding every purchase, checked in a Studio playtest per device. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
   "why is this game not fun", "MDA", "Octalysis", "player motivation", "game brief", "GDD",
   "prototype a mechanic", "Roblox", "Roblox Studio", "Luau", "Rojo", "obby", "tycoon",
@@ -24,7 +24,7 @@ description: >-
 | the interface: HUD, shop, inventory, rewards, menus, onboarding prompts, mobile layout, UI tokens, a UI review | [`design-ui/SKILL.md`](design-ui/SKILL.md) (design-core applied to Roblox), its [`references/`](design-ui/references/) | none (the example's Luau is tested with Lune) |
 | visual effects: particles, beams, trails, highlights, ability / power effects, the anime look (layers, timing, black layers, recolour), fill-rate budget | [`roblox-vfx/SKILL.md`](roblox-vfx/SKILL.md), [`roblox-vfx/references/particles.md`](roblox-vfx/references/particles.md), [`roblox-vfx/references/abilities.md`](roblox-vfx/references/abilities.md), [`roblox-vfx/references/look.md`](roblox-vfx/references/look.md) | none |
 | a thumbnail, key art or update thumbnail for the game (what it is, the loop, the goal in one image) | the design skill's [`thumbnail-keyart`](../design/thumbnail-keyart/SKILL.md) (its brief takes the game read from `design/game-brief.md`) | design's `banner.py`, `bench.py`, `critic.py` |
-| 3D models: build in Blender, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
+| 3D models: made in the open Blender (MCP add-on, a look per stage), craft from blender-skills, its QA gate, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
 
 ## The flow
 

@@ -2,20 +2,23 @@
 name: game-dev-modeling
 description: >-
   Make 3D models for a game with any coding agent, and get them into the engine within its limits.
-  Builds in Blender from a Python script (the durable source), driven through the Blender Lab MCP
-  server, the Blender Agent Studio plugin, or plain `blender --background`; cleans up and exports
-  (FBX for Roblox, GLB for the web); and checks the file against the engine's limits with
-  `mesh_check.py` before import. Meshy AI generation is an opt-in route, off unless the user says
+  Works in the person's open Blender through the official Blender Lab MCP add-on (look at the
+  viewport after every stage, the person can edit between steps, the .blend is the source), with the
+  craft routed to el4cteo/blender-skills (UVs, materials, rigs, the asset-qa gate, Roblox export
+  presets); headless Blender only as the fallback. Exports FBX for Roblox or GLB for the web and
+  checks the file against the engine's limits with `mesh_check.py` before import. Meshy AI generation is an opt-in route, off unless the user says
   they have the Meshy CLI. Use WHENEVER the work is "3D model", "make a prop / asset / character
   model", "Blender", "bpy", "low poly", "polycount", "triangle budget", "environment", "level", "modular kit",
   "set dressing", "art style", "shading", "bake", "geometry nodes", "export FBX / GLB / glTF",
   "import a mesh into Roblox", "MeshPart", "too many triangles", "texture size", "Meshy",
+  "open Blender", "live Blender", "Blender MCP", "work in Blender", "blender-skills",
   "text to 3D", "image to 3D", "โมเดล 3D", "ปั้นโมเดล".
 ---
 
 # Modeling for games
 
-Adapted from three MIT projects: [meshy-3d-agent](https://github.com/meshy-dev/meshy-3d-agent)
+Adapted from four MIT projects: [blender-skills](https://github.com/el4cteo/blender-skills/tree/9e7e04a)
+(the Blender craft layer, section 3), [meshy-3d-agent](https://github.com/meshy-dev/meshy-3d-agent)
 (AI generation through the Meshy CLI), [Blender Agent Studio](https://github.com/ifBars/blender-agent-studio)
 (scripted Blender work with checked renders), and [blender-claude-plugin](https://github.com/ra100/blender-claude-plugin)
 (bpy references and the Blender Lab MCP setup). Install either Blender plugin for its deeper
@@ -57,41 +60,97 @@ budget, a way to do fur or colour).
 - **Not a copy:** no existing game's or brand's character, even when it shows up in the search.
 - Put your renders next to the closest references before calling the model done.
 
-## 3. Blender (default route)
+## 3. Blender (default route): work in the open Blender
+
+The model is made **in Blender**, not only in a script run blind: the agent drives the person's open
+Blender, looks at the viewport after every stage, and the person can grab the mouse and change
+anything between steps. Background Blender is the fallback when no window is open (CI, a server, an
+agent without MCP).
 
 **Check Blender first:** `blender --version` (macOS: `/Applications/Blender.app/Contents/MacOS/Blender`).
 Not installed: say so (blender.org/download, free) and stop the Blender steps.
 
-Three ways to drive it; use the first that is available:
+**The craft comes from [blender-skills](https://github.com/el4cteo/blender-skills/tree/9e7e04a)**
+(el4cteo, MIT, pinned at `9e7e04a`, verified on Blender 5.3): 28 skills, each with tested scripts that
+run the same way live (import, then `run()`) or headless. Install it for any agent with its installer
+(`install/install.sh --agent claude|codex|gemini|cursor|all`; Claude Code: `/plugin marketplace add
+EL4CTEO/blender-skills`). This file keeps only what a game needs on top: the route, the budget, the
+engine's limits and the handoff.
 
-1. **Blender Agent Studio plugin** (Claude Code, Codex): bounded inspection and render tools, and
-   a `blender_check_setup` doctor. Install: `claude plugin marketplace add ifBars/blender-agent-studio`.
-2. **Blender Lab MCP server** (official, Blender 5.1+; v1.0.3, 2026-09-11): a Blender add-on on
-   `localhost:9876`, plus the `blender-mcp` server for any stdio MCP client. It runs model-written
-   Python in the live Blender session **with no sandbox**: say so and ask before wiring it up.
-   Setup checked on Blender 5.3.0, from the v1.0.3 release files
-   (projects.blender.org/lab/blender_mcp/releases):
-   - Add-on: `blender --command extension install-file -r user_default -e mcp-1.0.3.zip`, then
-     enable it and turn on Preferences → System → Allow Online Access. It auto-starts on port
-     9876 when Blender opens with a window.
-   - Server: unzip `blender-1.0.3.mcpb` and register `uv run --directory <unzipped> blender-mcp`
-     (stdio) with the agent. `BLENDER_PATH` names Blender for the background tools.
-   - Two modes. The `*_for_cli` tools open a `.blend` in background Blender and need no window or
-     add-on; `execute_blender_code_for_cli` edits a temporary copy, so save with
-     `save_as_mainfile(copy=True)` to keep a result. The live tools (`execute_blender_code`,
-     `get_objects_summary`, `get_screenshot_of_window_as_image`) drive the open Blender. Code
-     returns data by assigning a dict to `result`; `print` output is not returned.
-3. **Plain Blender:** write the script, then `blender -b --python build_<asset>.py`. Works for any
-   agent with a shell.
+| Stage | blender-skills skill | What to run |
+|---|---|---|
+| First call, the 5.x API rules | `blender-core` | `env_report.run()`; its rules (data API over operators, nodes by type, no default names) |
+| Hard surfaces, bevels, booleans | `blender-hardsurface-modeling` | `apply_stack.py` |
+| UVs | `blender-retopology-uv` | `uv_pack.run(method="smart", res=1024)` |
+| Materials, textures, bakes | `blender-pbr-materials`, `blender-texturing`, `blender-texture-baking` | then this skill's [shading](references/shading.md) and [texturing](references/texturing.md) for game palettes |
+| Kits, terrain, scatter | `blender-environment-kits`, `blender-geometry-nodes` | then [environment](references/environment.md) |
+| Rigs, animation | `blender-character-rigging`, `blender-animation` | `rig_check.py --profile roblox`; then [rigging](references/rigging.md) |
+| Budget | `blender-game-optimization` | `mesh_stats.run(budget="roblox")` |
+| **The gate** before export | `blender-asset-qa` | `qa_check.run(objects=[...], profile="roblox")` must pass |
+| Export | `blender-export-pipelines` | `export_asset.run(preset="roblox")` (FBX) or `"roblox_gltf"`; its `references/roblox.md` |
+| A whole asset | `blender-workflow-recipes` | recipe 4 (Roblox) |
+
+### The live session
+
+**Blender Lab MCP** (official; Blender 5.1+, v1.0.3, 2026-09-11) is a Blender add-on that listens on
+`localhost:9876` while Blender is open with a window, plus a `blender-mcp` server for any stdio MCP
+client. It runs agent-written Python in the person's Blender **with no sandbox**: say so and ask
+before wiring it up. Setup, checked on Blender 5.3.0 (projects.blender.org/lab/blender_mcp/releases):
+
+- Add-on: `blender --command extension install-file -r user_default -e mcp-1.0.3.zip`, enable it,
+  and turn on Preferences → System → Allow Online Access (or start Blender with `--online-mode`).
+- Server: unzip `blender-1.0.3.mcpb` and register `uv run --directory <unzipped> blender-mcp` with the
+  agent (Claude Code: `claude mcp add`; Codex, Cursor, Gemini: their MCP config). `BLENDER_PATH`
+  names Blender for its background tools.
+- Its 26 tools (v1.0.3, listed from the server): live ones run in the open Blender:
+  `execute_blender_code` (assign a dict to `result` to get data back), `get_objects_summary`,
+  `get_object_detail_summary`, `render_viewport_to_path` (the look after each stage),
+  `get_screenshot_of_area_as_image` / `_of_window_as_image`, `jump_to_view3d_object_by_name`;
+  `search_api_docs` and `get_python_api_docs` read Blender's API docs. The `*_for_cli` twins work on
+  a temporary copy of a `.blend` in background Blender. Tools added mid-session appear after the
+  agent reconnects its MCP servers (Claude Code: `/mcp` or a new session).
+- No MCP client yet: the add-on speaks null-byte-delimited JSON on port 9876,
+  `{"type": "execute", "code": "...", "strict_json": false}` → `{"status", "result", "stdout"}`,
+  so any shell can drive it (the worked example did).
+
+How to work in it:
+
+0. **References before step 1.** Section 2's `references.md` comes first in a live session too: the
+   game's own look, then 6-12 measured references. The dungeon key skipped it and had to collect
+   them afterwards.
+1. **A scene or file of its own.** The session is the person's work: never reset it, never delete what
+   you didn't make (blender-core's rule). Start a new scene or file for the asset.
+2. **Small steps, each one sent and saved.** One stage per call (blockout, join, finish, clean, UV,
+   export), each saved as `steps/NN_<stage>.py` as it is sent. The steps are the record; they replay
+   headless.
+3. **Look after every stage.** `render_viewport_to_path`, or `render.opengl` with the 3D View's context
+   (no UI or popups on top: a splash screen covers a window screenshot), in material and wireframe
+   shading.
+   A number never replaces a look.
+4. **Read the scene before each step.** The person may have moved, renamed or edited something
+   between calls: query the objects, never assume the last step's state.
+5. **Keep it non-destructive** while the person may still tune it: modifiers stay live in the stack;
+   the export applies them.
+6. **The `.blend` is the source.** Save it beside the exports (`save_as_mainfile(copy=True)` in a live
+   session). The next person opens the file, not a rebuild script.
+
+### Headless (no window)
+
+`python <blender-skills>/blender-core/scripts/run_in_blender.py --blend in.blend <script.py> -- …`
+runs any blender-skills script in background Blender and prints only its JSON; plain
+`blender -b --python build_<asset>.py` works for a script of your own. The older examples
+(`lowpoly-cat`, `wizard-cat`, `crystal-ground`, `wizard-glade`) were built this way and still rebuild
+from their scripts.
 
 Rules, whichever way:
 
-- **The Python script is the source.** Save `art/<asset>/build_<asset>.py` that builds the model
-  from an empty scene, plus the `.blend` it saves. A change is an edit to the script and a rerun.
+- **The `.blend` is the source**, with `steps/` (live) or `build_<asset>.py` (headless) beside it as
+  the record of how it was made.
 - **Work in stages:** blockout at true scale → primary forms → secondary detail → materials →
   cleanup → export. Check proportions at the blockout, not at the end.
-- **Look at it.** Render front, side, three-quarter and top views and open them before calling the
-  model done. A render shows the look, not the topology: section 4's checks cover that.
+- **Look at it** after every stage (live: the viewport; headless: blender-skills' `review_shots.py`
+  contact sheets) and before calling it done. A look shows the shape, not the topology: the
+  asset-qa gate and section 5's checks cover that.
 - **Colour and textures:** read [`references/texturing.md`](references/texturing.md) first. Low-poly
   work uses one material over a small palette texture (power of two), not a material per colour.
 - **Materials that must leave Blender:** read [`references/shading.md`](references/shading.md) first. No engine reads a procedural node tree: build the look with nodes, bake it to a power-of-two image, export one Principled material over that image.
@@ -99,10 +158,17 @@ Rules, whichever way:
 - **Bones and animation:** read [`references/rigging.md`](references/rigging.md) first. A segmented low-poly model is joined into one mesh and weighted part by part; `examples/wizard-cat/rig_wizard_cat.py` is the worked case.
 - **Scenes and levels:** read [`references/environment.md`](references/environment.md) first. A scene is a kit: each unique piece is built once, exported once (`kit/<Piece>.fbx`) and placed from a layout table, so Roblox uploads it once and instances the copies. `examples/wizard-glade/build_wizard_glade.py` is the worked case.
 - **The house look:** read [`references/art-theme.md`](references/art-theme.md) before modelling anything that stands next to the wizard cat: the palette cells, the value and saturation rules, the size ladder in studs, and the triangle budget per asset class.
-- **Modifiers, then apply.** Mirror, bevel, subdivision and weld are fine while working; apply
-  them before export so the engine gets the real mesh. Booleans leave n-gons: clean them up.
+- **Modifiers stay live, the export applies them** (`use_mesh_modifiers`). Booleans leave n-gons,
+  duplicate verts and back-to-back faces: the asset-qa gate finds them; triangulate only the n-gons.
 
 ## 4. Export
+
+Live: blender-skills' `export_asset.run(preset="roblox", objects=[...], out=...)` (FBX) and
+`preset="roblox_gltf"` (GLB, for `mesh_check.py`). For the GLB pass
+`set=["use_active_scene=True"]`: the glTF exporter walks every scene, and another scene's selected
+object leaks into the file (the worked example's GLB carried the startup Cube until this was set).
+
+Headless, with this skill's own script:
 
 ```bash
 blender -b art/rock/rock.blend --python scripts/blender_export.py -- --target roblox --out build/rock.fbx --dry-run
