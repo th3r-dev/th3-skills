@@ -5,6 +5,7 @@ import math
 
 import bmesh
 import bpy
+from mathutils import Matrix
 
 STUD = 0.28
 col = bpy.data.collections["DungeonKey"]
@@ -43,7 +44,7 @@ def torus(major, minor, seg=12, ring=6):
 def cylinder(r, length, seg=8):
     bm = bmesh.new()
     bmesh.ops.create_cone(bm, cap_ends=True, segments=seg, radius1=r, radius2=r, depth=length)
-    bmesh.ops.rotate(bm, verts=bm.verts, cent=(0, 0, 0), matrix=__import__("mathutils").Matrix.Rotation(math.pi / 2, 3, "Y"))
+    bmesh.ops.rotate(bm, verts=bm.verts, cent=(0, 0, 0), matrix=Matrix.Rotation(math.pi / 2, 3, "Y"))
     return bm
 
 
