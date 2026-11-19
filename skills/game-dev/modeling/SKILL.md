@@ -115,6 +115,9 @@ before wiring it up. Setup, checked on Blender 5.3.0 (projects.blender.org/lab/b
 
 How to work in it:
 
+0. **References before step 1.** Section 2's `references.md` comes first in a live session too: the
+   game's own look, then 6-12 measured references. The dungeon key skipped it and had to collect
+   them afterwards.
 1. **A scene or file of its own.** The session is the person's work: never reset it, never delete what
    you didn't make (blender-core's rule). Start a new scene or file for the asset.
 2. **Small steps, each one sent and saved.** One stage per call (blockout, join, finish, clean, UV,
