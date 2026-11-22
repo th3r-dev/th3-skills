@@ -47,6 +47,8 @@ SKILLS = [
      ["a Q&A sheet, export buttons,", "an Excel import, a ticket"], ["remarks, an evidence .xlsx,", "a test run, a Jira report"]),
     ("devops", "infra changes with a report",
      ["a change on a real server"], ["plan, approved steps, checks,", "before / after / rollback"]),
+    ("software-engineer", "release docs for PM, BA, QA",
+     ["a release scope, retests,", "before and after shots"], ["a release PDF: changes, shots,", "BA questions, a test plan"]),
     ("documentation", "docs in one house style",
      ["a Markdown file,", "two annex PDFs"], ["one PDF + DOCX in the house", "theme, annexes merged"]),
     ("game-dev", "idea to playable game",

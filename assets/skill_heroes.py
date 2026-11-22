@@ -82,6 +82,13 @@ SKILLS = {
          ("Plan", "steps and rollback, approved"), ("Change", "one step at a time"),
          ("Verify", "the same command as before"), ("Report", "before, steps, after, rollback")],
         ["a change record with", "its SEV level and timeline"]),
+    "software-engineer": (
+        ["Release docs the PM,", "BA and QA can use."],
+        ["One sub-skill, release-docs:", "a template, a checker, a house PDF."],
+        [("Scope", "what goes up, from release-scope"), ("Evidence", "a before and after shot per ticket"),
+         ("Decide", "only the BA questions left open"), ("Test plan", "Expected Results QA can check"),
+         ("Check", "check_report.py prints ok"), ("Render", "a cover, a page per section")],
+        ["a release PDF for PM, BA and QA,", "with the staging test plan"]),
     "qa": (
         ["QA evidence that", "holds up in review."],
         ["Four sub-skills for web portals,", "one team format."],

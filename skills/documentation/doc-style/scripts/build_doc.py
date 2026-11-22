@@ -8,6 +8,7 @@
     uv run scripts/build_doc.py doc.md                      # -> "doc - Update <ddmmyyyy>.pdf" + ".docx" beside doc.md
     uv run scripts/build_doc.py doc.md --prefix ACME --out dist --formats html,pdf,docx
     uv run scripts/build_doc.py doc.md --no-date            # -> "doc.pdf" + "doc.docx"
+    uv run scripts/build_doc.py doc.md --css layout.css     # extra stylesheet after the theme (HTML/PDF)
 
 Needs pandoc on PATH. PDF needs Chromium for playwright once: `uv run --with playwright playwright install chromium`.
 
@@ -60,8 +61,9 @@ def mark_html_rows(html: str) -> str:
     return pat.sub(lambda m: f'<tr class="{((m[2] or "") + " " + MARKS[m[4]]).strip()}">{m[3]}', html)
 
 
-def build_html(src: Path, out: Path) -> None:
-    pandoc(str(src), "-f", "markdown", "-t", "html5", "-s", "--embed-resources", "--css", str(CSS),
+def build_html(src: Path, out: Path, extra_css: tuple[Path, ...] = ()) -> None:
+    css = [arg for c in (CSS, *extra_css) for arg in ("--css", str(c))]  # later sheets override the theme
+    pandoc(str(src), "-f", "markdown", "-t", "html5", "-s", "--embed-resources", *css,
            "--resource-path", str(src.parent), "-M", "lang=th", "-o", str(out))
     out.write_text(mark_html_rows(out.read_text(encoding="utf-8")), encoding="utf-8")
 
@@ -283,6 +285,8 @@ def main() -> None:
     ap.add_argument("--prefix", default="", help="file-name prefix, e.g. a client or system code")
     ap.add_argument("--no-date", action="store_true", help='omit " - Update <ddmmyyyy>" from the file name')
     ap.add_argument("--formats", default="pdf,docx", help="comma list of html, pdf, docx")
+    ap.add_argument("--css", type=Path, action="append", default=[],
+                    help="extra stylesheet loaded after theme.css, repeatable (HTML/PDF only)")
     args = ap.parse_args()
 
     if not shutil.which("pandoc"):
@@ -302,7 +306,7 @@ def main() -> None:
         work = Path(tmp)
         if formats & {"html", "pdf"}:
             html = (out_dir if "html" in formats else work) / f"{name}.html"
-            build_html(src, html)
+            build_html(src, html, tuple(c.resolve() for c in args.css))
             if "html" in formats:
                 print(html)
             if "pdf" in formats:
