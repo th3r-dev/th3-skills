@@ -1,6 +1,6 @@
 {
   "name": "th3-skills",
-  "description": "Claude Code skills that each do a whole job: agent-kit, design, containers, dependency-vuln-explainer, devops, documentation, game-dev, marketing, poc-spec-driven-builder, qa, social-media, thai-mock-naming.",
+  "description": "Claude Code skills that each do a whole job: agent-kit, design, containers, dependency-vuln-explainer, devops, documentation, game-dev, marketing, poc-spec-driven-builder, qa, social-media, software-engineer, thai-mock-naming.",
   "version": "2.0.0",
   "author": {
     "name": "TheeraphatStudent"

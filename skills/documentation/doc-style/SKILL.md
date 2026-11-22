@@ -65,6 +65,7 @@ The usual failure is a document that looks right and describes the system wrongl
 uv run scripts/build_doc.py doc.md                         # -> "doc - Update <ddmmyyyy>.pdf" + ".docx"
 uv run scripts/build_doc.py doc.md --prefix ACME --out dist --formats html,pdf,docx
 uv run scripts/build_doc.py doc.md --no-date               # -> "doc.pdf" + "doc.docx"
+uv run scripts/build_doc.py doc.md --css layout.css        # a layout stylesheet after the theme (HTML/PDF), e.g. software-engineer/release-docs
 ```
 
 Needs `pandoc` on PATH. The PDF needs Chromium for playwright once:

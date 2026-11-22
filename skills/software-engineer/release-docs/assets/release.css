@@ -1,0 +1,19 @@
+/* Release report layout, loaded after documentation/doc-style/assets/theme.css (build_doc.py --css).
+   The theme already gives the tables their look: black borders, grey header repeated on every page,
+   rows never split, an empty header row = key/value table. This file adds only the page layout. */
+
+/* the title block is the cover page */
+#title-block-header { min-height: 240mm; display: flex; flex-direction: column; justify-content: center;
+                      break-after: page; margin: 0; }
+
+/* every section starts on a new page, its heading centred */
+h1:not(.title) { break-before: page; text-align: center; }
+#title-block-header + h1 { break-before: auto; }   /* the cover already ends its page */
+
+/* screenshots in a before/after table: full cell width, capped so two ticket blocks fit on a page */
+td img { display: block; width: 100%; max-height: 34mm; object-fit: contain; object-position: left top;
+         border: 1px solid var(--color-border); margin: 2pt 0; }
+td:has(img) { font-size: var(--size-caption); color: var(--color-caption); }
+
+/* long ids and links wrap inside a fixed cell instead of widening the table */
+td { overflow-wrap: anywhere; }

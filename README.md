@@ -40,13 +40,15 @@ npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
 
 - <img src="skills/devops/assets/icon.svg" width="22" height="22" align="top" alt=""> [`devops`](skills/devops/SKILL.md) — DevOps toolkit, one skill with three sub-skills and their scripts: `change` (infra work on real machines in a fixed order — triage, read-only investigation, evidence, approved plan, stepwise change, same-command verification, blameless review — closed with a before / steps / after / rollback report; `jssh.py` jump-host ssh from an ini, `snapshot_haproxy.sh` for the config a container is *really* running), `release-scope` (what ships in the next release vs what prod runs, by ticket keys across every repo plus the issue boards, written as the PM list and checked against the customer message) and `network-diagram` (one draw.io file with a board per version → clean one-page PDF; rebuild a drawio from a final PDF; benchmark text / layout / pixels). Generalised from a Thai-government integration project.
 
+- <img src="skills/software-engineer/assets/icon.svg" width="22" height="22" align="top" alt=""> [`software-engineer`](skills/software-engineer/SKILL.md) — software engineering toolkit, one skill with sub-skills. `release-docs` writes the release report for the PM, the BA and QA: what goes up in vX.Y.Z, a before/after screenshot table per change, the BA questions a ticket or retest left open, what to tell the customer, and the staging test plan with checkable Expected Results. Thai and English templates, a stdlib `check_report.py` that fails on leftover template text, missing shots, "same as before" expectations or a password in the test data, and a render through `documentation`'s `build_doc.py` with a release layout (cover, one page per section). Pairs with `devops`'s `release-scope`, which collects what goes up.
+
 ## Skills by occupation
 
 Grouped by SOC occupation, the classification [SkillsMP](https://skillsmp.com/creators/th3r-dev/th3-skills) browses by.
 
 | Occupation | Skills |
 |---|---|
-| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`poc-spec-driven-builder`](skills/poc-spec-driven-builder/SKILL.md), [`agent-kit`](skills/agent-kit/SKILL.md), [`thai-mock-naming`](skills/thai-mock-naming/SKILL.md) |
+| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`poc-spec-driven-builder`](skills/poc-spec-driven-builder/SKILL.md), [`software-engineer`](skills/software-engineer/SKILL.md), [`agent-kit`](skills/agent-kit/SKILL.md), [`thai-mock-naming`](skills/thai-mock-naming/SKILL.md) |
 | [Software Quality Assurance Analysts and Testers](https://skillsmp.com/occupations/software-quality-assurance-analysts-and-testers) | [`qa`](skills/qa/SKILL.md), [`thai-mock-naming`](skills/thai-mock-naming/SKILL.md) |
 | [Network and Computer Systems Administrators](https://skillsmp.com/occupations/network-and-computer-systems-administrators) | [`devops`](skills/devops/SKILL.md), [`containers`](skills/containers/SKILL.md) |
 | [Information Security Analysts](https://skillsmp.com/occupations/information-security-analysts) | [`dependency-vuln-explainer`](skills/dependency-vuln-explainer/SKILL.md) |
