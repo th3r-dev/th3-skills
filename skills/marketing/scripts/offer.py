@@ -22,7 +22,7 @@ Stdlib only.
 import argparse, csv, re, sys
 from pathlib import Path
 
-# ---- the TOON subset (same reader as social-media/scripts/bench_post.py; skills install separately)
+# ---- the TOON subset (same reader as social-media/scripts/bench_post.py; each script stays standalone)
 HEAD = re.compile(r"^(\w[\w-]*)(?:\[(\d+)\])?(?:\{([^}]*)\})?:\s?(.*)$")
 
 

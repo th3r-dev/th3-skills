@@ -28,8 +28,8 @@
           "icon": "../../../assets/icon.svg"
         },
         {
-          "name": "social-media",
-          "icon": "../../../../social-media/assets/icon.svg"
+          "name": "marketing",
+          "icon": "../../../../marketing/assets/icon.svg"
         }
       ]
     },

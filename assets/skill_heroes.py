@@ -43,18 +43,12 @@ SKILLS = {
         ["a design that passes the critic", "and the bench, not the author"]),
     "marketing": (
         ["Price from your costs,", "sell in the form's fields."],
-        ["Three sub-skills: strategy,", "pricing, listing."],
+        ["Four sub-skills: strategy, pricing,", "listing, social-media."],
         [("Market", "measure the category first"), ("Costs", "your numbers, averages for gaps"),
          ("Price", "no package below break-even"), ("Listing", "field by field, checked"),
-         ("Images", "service, steps, work sample")],
+         ("Images", "service, steps, work sample"),
+         ("Post", "a blog post and cover, benched")],
         ["a listing that pastes clean", "and packages that never lose money"]),
-    "social-media": (
-        ["A post and its cover,", "every claim checked."],
-        ["Two sub-skills: blog-post", "and blog-cover."],
-        [("Brief", "prompt translated, facts listed"), ("Hooks", "five titles, six typed hooks"),
-         ("Draft", "Thai with kien-thai, or English"), ("Review", "humanizer, then bench_post.py"),
-         ("Cover", "banner-design cover, benched")],
-        ["a post that passes its case", "and a cover that reads at 400px"]),
     "agent-kit": (
         ["Cheaper agent runs,", "same prefix every time."],
         ["The right tier, a finish line,", "one cached prefix for every brief."],

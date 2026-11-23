@@ -41,7 +41,7 @@ STYLES = {
 TOKENS = set(STYLES["flat"])
 
 
-# ---- TOON: the reader marketing/scripts/offer.py and social-media/scripts/bench_post.py also carry
+# ---- TOON: the reader marketing/scripts/offer.py and marketing/social-media/scripts/bench_post.py also carry
 # ponytail: a copy per script, since each skill installs on its own; a shared module if they ever ship together
 HEAD = re.compile(r"^(\w[\w-]*)(?:\[(\d+)\])?(?:\{([^}]*)\})?:\s?(.*)$")
 

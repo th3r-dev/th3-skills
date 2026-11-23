@@ -18,7 +18,7 @@ check text starts with "manual:" is printed for a person and not counted.
   materials  at most max_materials materials in the file
   textures   every image is a power of two on both sides and at most max_texture px
 
-Stdlib only. Reads the TOON subset the cases use (as social-media's bench_post.py does).
+Stdlib only. Reads the TOON subset the cases use (as marketing/social-media's bench_post.py does).
 """
 from __future__ import annotations
 

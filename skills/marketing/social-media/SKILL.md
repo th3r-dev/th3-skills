@@ -1,7 +1,7 @@
 ---
-name: social-media
+name: marketing-social-media
 description: >-
-  Social and blog content toolkit, one skill with sub-skills. (1) blog-post: turn a topic or a piece of
+  Social and blog content toolkit under marketing, with sub-skills. (1) blog-post: turn a topic or a piece of
   finished work into title options, typed hooks and a post in Thai or English, grounded only in facts the
   user or the session supplied, closing with an "if you want ..." hook and the user's hire or contact link;
   (2) blog-cover: render the post's cover (1200 x 630 OG card and 1920 x 1080) through design's
@@ -17,7 +17,7 @@ description: >-
 | When the work is… | Read | Scripts |
 |---|---|---|
 | titles, hooks, a blog post or making-of, Thai or English | [`blog-post/SKILL.md`](blog-post/SKILL.md) | `scripts/bench_post.py` (post vs a TOON case) |
-| the cover for that post, an OG image, a 16:9 post image | [`blog-cover/SKILL.md`](blog-cover/SKILL.md) | `../design/banner-design/scripts/banner.py` (`cover` layout), `bench.py` |
+| the cover for that post, an OG image, a 16:9 post image | [`blog-cover/SKILL.md`](blog-cover/SKILL.md) | `../../design/banner-design/scripts/banner.py` (`cover` layout), `bench.py` |
 
 They chain: `blog-post` writes the title and kicker, `blog-cover` sets them on the cover.
 

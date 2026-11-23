@@ -92,7 +92,7 @@ each. `"fonts"` maps text roles to `family-weight` (`"title": "kanit-700"`); the
 Kanit, Anuphan and Mali, since Archivo and JetBrains Mono have no Thai. The `cover` layout takes a
 `cover` block (kicker, title lines, note, author, motif) instead of `brand`, `steps` and `cta`, and the
 `step` layout a `step` block (number, title, caption, a picture). A spec with `pages` renders several
-images, each with its own layout and size; the social-media skill's blog-cover sub-skill documents both.
+images, each with its own layout and size; marketing's social-media blog-cover sub-skill documents both.
 A game thumbnail is a `<game>.keyart.toon` brief rendered by the `keyart` layout (scene full-bleed, block
 title, ribbon, callouts); [`../thumbnail-keyart/SKILL.md`](../thumbnail-keyart/SKILL.md) documents it.
 `bench.py --bottom N` keeps text out of a band the platform covers, `--max-kb` sets the PNG limit.

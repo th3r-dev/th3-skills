@@ -1,5 +1,5 @@
 ---
-name: social-media-blog-cover
+name: marketing-social-media-blog-cover
 description: Make the cover for a blog post or article (1200 x 630 OG card and 1920 x 1080) with design's banner-design engine, in Thai or English, and bench it for crop, contrast and phone width. Title-led: kicker, 2 or 3 title lines, a handwritten note, the author, and a motif that shows the post's subject. Thai uses Kanit, Anuphan and Mali. Use WHENEVER the user wants a blog cover, article cover, OG image, post thumbnail, hero image for a post, "ทำปกบทความ", "ปกบล็อก", "รูปปกโพสต์", or blog-post hands over a title.
 ---
 
@@ -9,7 +9,7 @@ A post gets three kinds of image from one spec: the cover, one image per explain
 closing image of the finished work. A cover carries the post's title and little else, and it is read at feed size first (about 360 to 400px wide),
 so the title is the only core element; everything else is support or decoration.
 
-The renderer is [`../../design/banner-design/scripts/banner.py`](../../design/banner-design/scripts/banner.py)
+The renderer is [`../../../design/banner-design/scripts/banner.py`](../../../design/banner-design/scripts/banner.py)
 with the `cover` layout. This sub-skill holds the cover rules and the spec; it adds no second renderer.
 
 ## The spec
@@ -68,7 +68,7 @@ The cover block on its own:
 1. Take the title and kicker from blog-post. Cut the title to 2 or 3 lines that read alone.
 2. Pick a style that is not the brand's last campaign: the cover belongs to the post. Define it in the
    spec's `styles` so it travels with the spec.
-3. Render: `uv run ../../design/banner-design/scripts/banner.py cover.banner.json` (every size, every variant).
+3. Render: `uv run ../../../design/banner-design/scripts/banner.py cover.banner.json` (every size, every variant).
 4. Bench each SVG with `bench.py`; fix every FAIL in the spec or the layout, never by hand-editing SVG.
 5. Look at the `-400.png` export: the title must read in two seconds.
 
