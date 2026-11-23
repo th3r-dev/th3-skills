@@ -16,6 +16,8 @@ from pathlib import Path
 BUCKETS = ("shipped", "in-progress", "personal", "deprecated")
 LINK = re.compile(r"\]\(([^)\s]+)\)")
 TEXT = {".md", ".py", ".yml", ".yaml", ".json", ".sh", ".toml", ".mjs", ".js", ""}
+MANIFEST = ".claude-plugin/plugin.json"
+README = "README.md"
 
 
 def tracked(root):
@@ -23,25 +25,37 @@ def tracked(root):
     return [root / f for f in out.split("\n") if f]
 
 
-def check(root):
-    root = Path(root)
-    errs = []
-    shipped = sorted(p.parent.name for p in (root / "skills/shipped").glob("*/SKILL.md"))
-    manifest = json.loads((root / ".claude-plugin/plugin.json").read_text())
+def _manifest_errs(root, shipped):
+    manifest = json.loads((root / MANIFEST).read_text())
     listed = sorted(Path(s).name for s in manifest.get("skills", []))
     if listed != shipped:
-        errs.append(f"plugin.json skills {listed} != skills/shipped {shipped}")
+        yield f"{MANIFEST} skills {listed} != skills/shipped {shipped}"
     for s in manifest.get("skills", []):
         if not s.startswith("./skills/shipped/"):
-            errs.append(f"plugin.json lists a non-shipped path: {s}")
-    readme = (root / "README.md").read_text()
+            yield f"{MANIFEST} lists a non-shipped path: {s}"
+
+
+def _readme_errs(root, shipped):
+    readme = (root / README).read_text()
     for name in shipped:
         if f"skills/shipped/{name}/" not in readme:
-            errs.append(f"README.md has no link to skills/shipped/{name}/")
+            yield f"{README} has no link to skills/shipped/{name}/"
     for b in BUCKETS[1:]:
         if f"skills/{b}/" in readme:
-            errs.append(f"README.md links into skills/{b}/")
+            yield f"{README} links into skills/{b}/"
 
+
+def _broken_links(f, text):
+    body = re.sub(r"```.*?```|`[^`\n]*`", "", text, flags=re.S)
+    for target in LINK.findall(body):
+        if re.match(r"[a-z]+:|#|/|<", target):
+            continue
+        path = target.split("#")[0].split("?")[0]
+        if path and not (f.parent / path).exists():
+            yield f"{f.name}: broken link {target}"
+
+
+def _file_errs(root):
     all_skills = {p.parent.name for b in BUCKETS for p in (root / "skills" / b).glob("*/SKILL.md")}
     flat = re.compile(r"(?<![\w.\-/])skills/(" + "|".join(map(re.escape, sorted(all_skills))) + r")(?=/)") if all_skills else None
     for f in tracked(root):
@@ -54,16 +68,16 @@ def check(root):
         rel = f.relative_to(root)
         if flat:
             for m in flat.finditer(text):
-                errs.append(f"{rel}: flat path skills/{m.group(1)}/ (missing bucket)")
+                yield f"{rel}: flat path skills/{m.group(1)}/ (missing bucket)"
         if f.suffix == ".md" and rel.parts[0] == "skills" and "template" not in f.name.lower():  # templates link the output's files
-            body = re.sub(r"```.*?```|`[^`\n]*`", "", text, flags=re.S)
-            for target in LINK.findall(body):
-                if re.match(r"[a-z]+:|#|/|<", target):
-                    continue
-                path = target.split("#")[0].split("?")[0]
-                if path and not (f.parent / path).exists():
-                    errs.append(f"{rel}: broken link {target}")
-    return errs
+            for err in _broken_links(f, text):
+                yield f"{rel.parent}/{err}"
+
+
+def check(root):
+    root = Path(root)
+    shipped = sorted(p.parent.name for p in (root / "skills/shipped").glob("*/SKILL.md"))
+    return [*_manifest_errs(root, shipped), *_readme_errs(root, shipped), *_file_errs(root)]
 
 
 def selftest():
