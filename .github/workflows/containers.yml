@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'skills/containers/**'
+      - 'skills/shipped/containers/**'
       - '.github/workflows/containers.yml'
   pull_request:
     paths:
-      - 'skills/containers/**'
+      - 'skills/shipped/containers/**'
       - '.github/workflows/containers.yml'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: skills/containers
+    working-directory: skills/shipped/containers
 
 jobs:
   test:

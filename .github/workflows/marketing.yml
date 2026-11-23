@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'skills/marketing/**'
+      - 'skills/shipped/marketing/**'
       - '.github/workflows/marketing.yml'
   pull_request:
     paths:
-      - 'skills/marketing/**'
+      - 'skills/shipped/marketing/**'
       - '.github/workflows/marketing.yml'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: skills/marketing
+    working-directory: skills/shipped/marketing
 
 jobs:
   test:
@@ -36,7 +36,7 @@ jobs:
           uv run --no-project python scripts/offer.py price examples/th3r-web-service/offer.toon
           uv run --no-project python scripts/offer.py check examples/th3r-web-service/offer.toon examples/th3r-web-service/listing.md
       - name: social-media bench_post self-check and its benchmark case (stdlib only)
-        working-directory: skills/marketing/social-media
+        working-directory: skills/shipped/marketing/social-media
         run: |
           uv run --no-project python scripts/bench_post.py --selftest
           uv run --no-project python scripts/bench_post.py benchmarks/banner-making-of.toon examples/banner-making-of/post.th.md --titles examples/banner-making-of/titles.md

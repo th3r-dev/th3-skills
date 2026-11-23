@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'skills/game-dev/**'
+      - 'skills/shipped/game-dev/**'
       - '.github/workflows/game-dev.yml'
   pull_request:
     paths:
-      - 'skills/game-dev/**'
+      - 'skills/shipped/game-dev/**'
       - '.github/workflows/game-dev.yml'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: skills/game-dev
+    working-directory: skills/shipped/game-dev
 
 jobs:
   test:
