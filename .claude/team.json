@@ -1,0 +1,5 @@
+{
+  "roles": [["bug", "skill-dev"], ["enhancement", "skill-dev"], ["documentation", "skill-dev"]],
+  "needs": {"skill-dev": ["uv", "gh", "git"], "reviewer": ["uv", "gh", "git"]},
+  "workers": ["skill-dev"]
+}
