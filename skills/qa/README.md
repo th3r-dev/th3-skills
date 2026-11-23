@@ -1,8 +1,8 @@
-<p align="center"><img src="assets/hero.svg" width="100%" alt="qa: QA evidence that holds up in review. Four sub-skills for web portals, one team format."></p>
+<p align="center"><img src="assets/hero.svg" width="100%" alt="qa: QA evidence and security that hold up in review. Five sub-skills for web portals and pentesting, one team format."></p>
 
 # qa
 
-QA evidence that holds up in review. Four sub-skills for web portals, one team format.
+QA evidence and security that hold up in review. Five sub-skills for web portals and pentesting, one team format.
 
 The agent's instructions are in [SKILL.md](SKILL.md).
 
