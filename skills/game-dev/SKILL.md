@@ -8,10 +8,10 @@ description: >-
   Octalysis's core drives), with a white-hat / black-hat audit. (2) roblox: Roblox Studio with Luau
   in files (Rojo, Rokit, Selene, StyLua, Lune) and Studio's built-in MCP server wired to the agent
   for playtests. (3) modeling: 3D models made in the open Blender through its MCP add-on (a look after every stage, the .blend as source), with the craft from el4cteo/blender-skills and its asset-qa gate, exported to the
-  engine's limits and checked before import; Meshy AI generation only when the user opts in. (4) roblox-vfx: Roblox visual effects with ParticleEmitter, Beam, Trail and Highlight under a fill-rate budget, the server deciding and the client rendering, plus a recipe for power abilities. (5) design-ui: the game's interface (HUD, shop, menus) as design-core applied to Roblox: an approved brief per surface with every state, phone-first layout in the safe insets, tokens from the game's look, the server deciding every purchase, checked in a Studio playtest per device. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
+  engine's limits and checked before import; Meshy AI generation only when the user opts in. (4) roblox-vfx: Roblox visual effects with ParticleEmitter, Beam, Trail and Highlight under a fill-rate budget, the server deciding and the client rendering, plus a recipe for power abilities. (5) design-ui: the game's interface (HUD, shop, menus) as design-core applied to Roblox: an approved brief per surface with every state, phone-first layout in the safe insets, tokens from the game's look, the server deciding every purchase, checked in a Studio playtest per device. (6) engine-mcp: wire the agent to any engine's MCP server (Roblox, Unity, Unreal, Godot, Blender, web, Bevy), official first and pinned, so it can play, read the logs and take a screenshot. Use WHENEVER the work is "make a game", "game idea", "game design", "core loop",
   "why is this game not fun", "MDA", "Octalysis", "player motivation", "game brief", "GDD",
   "prototype a mechanic", "Roblox", "Roblox Studio", "Luau", "Rojo", "obby", "tycoon",
-  "simulator", "Studio MCP", "Roblox UI", "HUD", "shop UI", "game UI", "ScreenGui", "ออกแบบ UI เกม Roblox", "3D model", "Blender", "low poly", "polycount", "Meshy", "VFX", "ParticleEmitter", "Beam", "Trail", "power ability", "เอฟเฟกต์", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
+  "simulator", "Studio MCP", "Roblox UI", "HUD", "shop UI", "game UI", "ScreenGui", "ออกแบบ UI เกม Roblox", "3D model", "Blender", "low poly", "polycount", "Meshy", "VFX", "ParticleEmitter", "Beam", "Trail", "power ability", "เอฟเฟกต์", "MCP", "Unity MCP", "Unreal MCP", "Godot MCP", "Blender MCP", "Playwright MCP", "connect the agent to the engine", "ทำเกม", "ออกแบบเกม", "เกม Roblox". Read the sub-skill's SKILL.md
   before acting.
 ---
 
@@ -20,10 +20,11 @@ description: >-
 | When the work is… | Read | Scripts |
 |---|---|---|
 | an idea, a brief, "is this fun", a loop, rewards, player types, monetization ethics | [`design-lens/SKILL.md`](design-lens/SKILL.md) | none |
-| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory); deeper topics (DataStores, networking, UI, physics...) route to roblox-suite | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
+| Roblox Studio: set it up, wire the agent to Studio, build, test, playtest; Luau style (class + factory); deeper topics (DataStores, networking, UI, physics...) route to roblox-suite | [`roblox/SKILL.md`](roblox/SKILL.md), [`roblox/references/luau.md`](roblox/references/luau.md), agent playtests: [`roblox/references/agentic-playtest.md`](roblox/references/agentic-playtest.md) | `roblox/scripts/roblox_setup.py` (stdlib, `--dry-run`, `--selftest`) |
 | the interface: HUD, shop, inventory, rewards, menus, onboarding prompts, mobile layout, UI tokens, a UI review | [`design-ui/SKILL.md`](design-ui/SKILL.md) (design-core applied to Roblox), its [`references/`](design-ui/references/) | none (the example's Luau is tested with Lune) |
 | visual effects: particles, beams, trails, highlights, ability / power effects, the anime look (layers, timing, black layers, recolour), fill-rate budget | [`roblox-vfx/SKILL.md`](roblox-vfx/SKILL.md), [`roblox-vfx/references/particles.md`](roblox-vfx/references/particles.md), [`roblox-vfx/references/abilities.md`](roblox-vfx/references/abilities.md), [`roblox-vfx/references/look.md`](roblox-vfx/references/look.md) | none |
 | a thumbnail, key art or update thumbnail for the game (what it is, the loop, the goal in one image) | the design skill's [`thumbnail-keyart`](../design/thumbnail-keyart/SKILL.md) (its brief takes the game read from `design/game-brief.md`) | design's `banner.py`, `bench.py`, `critic.py` |
+| any engine's MCP server: pick it (official first), wire Claude/Codex/Cursor/Gemini/VS Code, prove the play-logs-screenshot loop | [`engine-mcp/SKILL.md`](engine-mcp/SKILL.md), `engine-mcp/references/<engine>.md` | `engine-mcp/scripts/engine_mcp.py` (stdlib, `--write`, `--selftest`) |
 | 3D models: made in the open Blender (MCP add-on, a look per stage), craft from blender-skills, its QA gate, export, check against the engine's limits; Meshy only on opt-in | [`modeling/SKILL.md`](modeling/SKILL.md) | `modeling/scripts/mesh_check.py`, `bench_model.py` (stdlib, `--selftest`), `modeling/scripts/blender_export.py` (inside Blender, `--dry-run`) |
 
 ## The flow
@@ -66,7 +67,7 @@ shell can follow it.
 |---|---|
 | Claude Code | `/plugin install th3-skills --marketplace th3r-dev/th3-skills`, or `npx skills@latest add th3r-dev/th3-skills --skill game-dev` |
 | Codex CLI, Cursor, Gemini CLI, others | `npx skills@latest add th3r-dev/th3-skills --skill game-dev` installs it for the agents `skills` supports; otherwise point `AGENTS.md` / `.cursor/rules` / `GEMINI.md` at this file |
-| Studio MCP (Roblox) | `roblox/scripts/roblox_setup.py mcp --client <claude|codex|cursor|gemini|vscode>` |
+| An engine's MCP server | `engine-mcp/scripts/engine_mcp.py config --engine <roblox|unity|unreal|godot|blender|web|playwright|bevy> --client <claude|codex|cursor|gemini|vscode>` |
 
 ## Tests
 
@@ -74,5 +75,6 @@ shell can follow it.
 cd skills/game-dev && uv venv && uv pip install --no-build pytest==9.2.0
 uv run --no-project python -m pytest -q
 uv run --no-project python roblox/scripts/roblox_setup.py --selftest
+uv run --no-project python engine-mcp/scripts/engine_mcp.py --selftest
 uv run --no-project python modeling/scripts/mesh_check.py --selftest
 ```

@@ -44,6 +44,13 @@ ART = {
                 f'<path d="M26 {y + 13}H58" {_s(3.5)}/>'
                 f'<circle cx="84" cy="{y + 13}" r="4" {_f()}/><circle cx="96" cy="{y + 13}" r="4" {_f()}/>'
                 for y in (14, 47, 80))),
+    # a code window shipping a tagged release
+    "software-engineer": (
+        f'<rect x="8" y="14" width="104" height="76" rx="6" {_s()}/>'
+        f'<path d="M8 32H112" {_s(4)}/>'
+        + "".join(f'<circle cx="{x}" cy="23" r="3.5" {_f()}/>' for x in (20, 32, 44))
+        + f'<path d="M40 48L28 61L40 74M80 48L92 61L80 74M66 44L54 78" {_s(5)}/>'
+        f'<path d="M58 96H96L110 106L96 116H58Z" {_s(4, fill=Y)}/><circle cx="66" cy="106" r="3.5" {_f()}/>'),
     # a clipboard of ticked checks
     "qa": (
         f'<rect x="20" y="18" width="80" height="94" rx="6" {_s()}/>'

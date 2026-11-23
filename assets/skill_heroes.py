@@ -31,7 +31,7 @@ SKILLS = {
     "poc-spec-driven-builder": (
         ["Proves an idea works,", "tests before code."],
         ["Research, a spec and a full test matrix", "come before any implementation."],
-        [("Research", "best practice for the stack"), ("Spec", "an SRS with success criteria"),
+        [("Research", "best practice for the stack"), ("Spec", "an SRS a council pressure-tests"),
          ("Ticket", "issue filed, branch cut"), ("Tests", "a matrix for every requirement"),
          ("Build", "until the tests pass"), ("Ship", "report, push, open the PR")],
         ["a PR that proves it, and what", "a full build would still need"]),
@@ -82,6 +82,13 @@ SKILLS = {
          ("Plan", "steps and rollback, approved"), ("Change", "one step at a time"),
          ("Verify", "the same command as before"), ("Report", "before, steps, after, rollback")],
         ["a change record with", "its SEV level and timeline"]),
+    "software-engineer": (
+        ["Release docs the PM,", "BA and QA can use."],
+        ["One sub-skill, release-docs:", "a template, a checker, a house PDF."],
+        [("Scope", "what goes up, from release-scope"), ("Evidence", "a before and after shot per ticket"),
+         ("Decide", "only the BA questions left open"), ("Test plan", "Expected Results QA can check"),
+         ("Check", "check_report.py prints ok"), ("Render", "a cover, a page per section")],
+        ["a release PDF for PM, BA and QA,", "with the staging test plan"]),
     "qa": (
         ["QA evidence that", "holds up in review."],
         ["Four sub-skills for web portals,", "one team format."],
@@ -97,7 +104,7 @@ SKILLS = {
         ["a matching PDF and DOCX,", "changes highlighted"]),
     "game-dev": (
         ["Idea to playable game,", "motivation first."],
-        ["Sub-skills design-lens, roblox,", "modeling, roblox-vfx, design-ui."],
+        ["Design, Roblox, VFX, UI, models,", "and MCP for every engine."],
         [("Motivation", "who plays and which drive"), ("Brief", "one page, the loop first"),
          ("Engine", "web, or Roblox Studio"), ("Build", "the core loop, run and looked at"),
          ("UI", "a brief, then a playtest per device"), ("Grow", "one feature a sitting")],

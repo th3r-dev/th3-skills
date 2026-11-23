@@ -61,7 +61,9 @@ Then, each on a yes: `rokit install` (downloads the four tools from GitHub). The
 Studio has its own MCP server (create.roblox.com/docs/studio/mcp). In Studio, the person turns it
 on: **Assistant → `…` → Manage MCP Servers → Enable Studio as MCP server**. Studio's Quick connect
 can wire Claude Code, Claude Desktop, Codex CLI, Gemini CLI, Cursor, VS Code and Antigravity by
-itself. For a project-level file instead:
+itself. For a project-level file instead (the writer is shared with every engine:
+[`../engine-mcp/SKILL.md`](../engine-mcp/SKILL.md); the Studio tool list is in
+[`../engine-mcp/references/roblox.md`](../engine-mcp/references/roblox.md)):
 
 ```bash
 python scripts/roblox_setup.py mcp --root <game folder>          # Claude Code (the default): shows the change
@@ -93,6 +95,10 @@ Restart the agent. Studio shows a green dot with the count of connected clients,
 
 A playtest's result is what the output and the capture show. One that could not run is NOT
 ASSESSED, never a pass.
+
+**An agent that playtests PRs** (a `playtester` role in an agent team): scenarios written from each
+issue's "Done when", server-authority probes, PASS/FAIL with screenshots, a bug issue per failure.
+Read [`references/agentic-playtest.md`](references/agentic-playtest.md).
 
 ## Rules for Roblox code
 

@@ -1,11 +1,11 @@
 ---
 name: poc-spec-driven-builder
-description: Use this skill whenever the user wants Claude Code to build a proof of concept (PoC), prototype, or "prove this idea works" — even if they just describe an idea informally and don't say "PoC" or "skill." Also trigger for "build this from scratch," "design then build," or any request to validate technical feasibility before full development. Works on any language/framework — the stack is researched fresh each time, never assumed. This skill runs the whole pipeline autonomously and without pausing to ask the user clarifying questions — (0) verify git + gh CLI are present (refuses to proceed otherwise), (1) research best practices for the idea's domain/stack, (2) write a lightweight SRS (requirements spec), (2.5) file a tracking ticket in whichever of Jira/Monday.com/GitHub Issues is available and branch feat/<ticket>-<slug> off dev, (3) derive a full test-case matrix that covers every SRS requirement BEFORE any implementation code is written, (4) build to make the tests pass, (5) report results, open questions, and what a full build would still need, (6) push the branch and open a PR via gh CLI, titled feat followed by the ticket ID and a short description. Use this instead of jumping straight into code whenever the user's request implies "is this feasible" / "prove this works" / "make sure it's grounded in best practice" rather than "just write me code."
+description: Use this skill whenever the user wants Claude Code to build a proof of concept (PoC), prototype, or "prove this idea works" — even if they just describe an idea informally and don't say "PoC" or "skill." Also trigger for "build this from scratch," "design then build," or any request to validate technical feasibility before full development. Works on any language/framework — the stack is researched fresh each time, never assumed. This skill runs the whole pipeline autonomously and without pausing to ask the user clarifying questions — (0) verify git + gh CLI are present (refuses to proceed otherwise), (1) research best practices for the idea's domain/stack, (2) write a lightweight SRS (requirements spec), (2.2) pressure-test the SRS with a five-advisor council and apply its verdict, (2.5) file a tracking ticket in whichever of Jira/Monday.com/GitHub Issues is available and branch feat/<ticket>-<slug> off dev, (3) derive a full test-case matrix that covers every SRS requirement BEFORE any implementation code is written, (4) build to make the tests pass, (5) report results, open questions, and what a full build would still need, (6) push the branch and open a PR via gh CLI, titled feat followed by the ticket ID and a short description. Use this instead of jumping straight into code whenever the user's request implies "is this feasible" / "prove this works" / "make sure it's grounded in best practice" rather than "just write me code."
 ---
 
 # PoC Spec-Driven Builder
 
-Turns a loosely-described idea into a working, evidence-backed proof of concept — research → spec (SRS) → test matrix → implementation → verification → PR — run end-to-end without interrupting the user for cla~rification. Ambiguity is resolved by making the most reasonable assumption and logging it, not by asking.
+Turns a loosely-described idea into a working, evidence-backed proof of concept — research → spec (SRS) → council review → test matrix → implementation → verification → PR — run end-to-end without interrupting the user for clarification. Ambiguity is resolved by making the most reasonable assumption and logging it, not by asking.
 
 This mirrors how modern AI coding agents are meant to work: specs and tests are the source of truth the agent builds *to*, not decisions made ad hoc while writing code. A PoC only proves something if what it's proving was written down first.
 
@@ -73,12 +73,20 @@ Every unspecified decision made autonomously, with a one-line rationale. This is
 
 ## 7. Success Criteria
 The concrete, binary condition(s) under which this PoC is considered to have proven (or disproven) the idea.
+
+## 8. Council Review
+Filled in by Step 2.2: agrees / clashes / blind spots / verdict / first move.
 ```
 
 Fundamentals to hold to while writing this, regardless of domain:
 - Every requirement is falsifiable — if you can't imagine a test failing it, rewrite it.
 - Prefer fewer, sharper requirements over broad coverage — a PoC that nails the risky 20% beats one that shallowly covers 100%.
 - State success criteria before any design decisions that could bias what "success" means later.
+
+### Step 2.2 — Council the SRS
+Before the spec is filed or tested, put it in front of a council: five subagents, each with one opposed lens (Contrarian, First Principles, Expansionist, Outsider, Executor), write a short critique in parallel; five more review those critiques blind (shuffled, labelled A–E); then you, as chairman, decide, **edit the SRS to match**, log each accepted or rejected change in §6, and write the verdict into §8. Personas, brief templates, model tiers and the no-subagent fallback are in [`references/council.md`](references/council.md); read it before running this step.
+
+This never asks the user anything: the council stands in for the clarifying question. If it shows the PoC can't fail as written, rewrite §1 and §7 before Step 2.5.
 
 ### Step 2.5 — File the ticket, cut the branch
 The SRS's Purpose and Scope sections (§1–2) are already a ready-made ticket description — use them directly instead of writing a separate summary.
@@ -125,7 +133,7 @@ Once Step 4's tests pass and Step 5's report is written:
 
 1. Commit the SRS, test plan/files, and implementation on the `feat/<TICKET-ID>-<slug>` branch (if not already committed incrementally during Step 4).
 2. Push the branch: `git push -u origin feat/<TICKET-ID>-<slug>`.
-3. Open the PR against `dev` (not `main` — features land on `dev` first): `gh pr create --base dev --title "feat: <TICKET-ID>-<what the feature does>" --body "<link/summary of the SRS success criteria and Step 5's report>"`. If the tracker is GitHub Issues, start the body with `Closes #<TICKET-ID>` so merging the PR auto-closes the ticket — Jira/Monday.com have no equivalent auto-link, so for those just reference the ticket ID in the body text.
+3. Open the PR against `dev` (not `main` — features land on `dev` first): `gh pr create --base dev --title "feat: <TICKET-ID>-<what the feature does>" --body "<link/summary of the SRS success criteria, the council verdict (SRS §8) and Step 5's report>"`. If the tracker is GitHub Issues, start the body with `Closes #<TICKET-ID>` so merging the PR auto-closes the ticket — Jira/Monday.com have no equivalent auto-link, so for those just reference the ticket ID in the body text.
 
 The PR title is intentionally the same shape as the ticket + one-line description, so anyone scanning the PR list can trace it straight back to the ticket. If Step 2.5 fell back to `feat/poc-<slug>` (no ticket), the PR title drops the ticket segment: `feat: <what the feature does>`.
 
@@ -136,5 +144,6 @@ The PR title is intentionally the same shape as the ticket + one-line descriptio
 - **Spec before code, tests before implementation.** Never write implementation logic before the corresponding requirement and test exist on paper.
 - **Assumptions are logged, not silent.** A reader of the SRS should be able to find every place Claude guessed instead of being told.
 - **Small and disposable.** PoC code optimizes for answering the question fast and clearly, not for production hardening, unless an NFR explicitly says otherwise.
+- **The spec survives a council before tests are built on it.** A blind-reviewed critique is cheaper than a test suite written to the wrong spec.
 - **Falsifiable success.** If there's no way the PoC could have failed, it didn't prove anything.
 - **No PR without a passing build.** Step 6 only runs after Step 4's tests pass — an open PR is a claim the work is real, so it must follow verification, never substitute for it.

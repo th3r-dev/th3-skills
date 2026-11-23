@@ -6,7 +6,7 @@
 """Byte-stable project context for cache-friendly agent briefs, plus cache stats.
 
   pcache.py build [root]            fingerprint git-tracked files, re-outline only changed ones
-  pcache.py brief "<task>" [--role R] [--root DIR]
+  pcache.py brief "<task>" [--role R] [--root DIR] [--rag VAULT [--top N]]
   pcache.py stats [session_id] [--logs DIR]
   pcache.py --self-test
 """
@@ -100,13 +100,33 @@ def build(root: Path) -> tuple[int, int]:
     return changed, len(new)
 
 
-def brief(root: Path, task: str, role: str | None) -> str:
+_HERE = Path(__file__).resolve().parent
+# vault.py next to this file (a vendored copy) wins; otherwise the agent-kit rag sub-skill.
+VAULT_PY = _HERE / "vault.py" if (_HERE / "vault.py").exists() else _HERE.parents[1] / "rag" / "scripts" / "vault.py"
+
+
+def rag_sections(vault: Path, task: str, top: int) -> tuple[str, str]:
+    """(hot, passages) from an agent-kit rag vault. hot changes per pass; passages change per task."""
+    hot_md = vault / "wiki" / "hot.md"
+    hot = re.sub(r"\A---\n.*?\n---\n", "", hot_md.read_text(encoding="utf-8"), flags=re.S).strip() if hot_md.exists() else ""
+    r = subprocess.run([sys.executable, str(VAULT_PY), "query", "--vault", str(vault), task, "--top", str(top), "--json"],
+                       capture_output=True, text=True)
+    hits = json.loads(r.stdout) if r.returncode == 0 and r.stdout.strip() else []
+    passages = "\n\n".join(f"### {h['path']}\n{h['text']}" for h in hits)
+    return (f"## Now (vault hot.md)\n{hot}\n" if hot else ""), (f"## Retrieved notes\n{passages}\n" if passages else "")
+
+
+def brief(root: Path, task: str, role: str | None, rag: Path | None = None, top: int = 5) -> str:
     ctx = root / CACHE_DIR / "context.md"
     if not ctx.exists():
         sys.exit(f"no {ctx}; run `pcache.py build` first")
     # Stable parts first, the per-agent task last, so sibling agents share a cached prefix.
+    # RAG keeps that order: hot.md (same for every agent in a pass), then passages retrieved for
+    # this task, then role and task. Retrieved text in front would make every prefix different.
+    hot, passages = rag_sections(rag, task, top) if rag else ("", "")
     tail = (f"## Role\n{role}\n\n" if role else "") + f"## Task\n{task}\n"
-    return ctx.read_text(encoding="utf-8") + "\n" + RULES + "\n" + tail
+    return ctx.read_text(encoding="utf-8") + "\n" + RULES + "\n" + hot + ("\n" if hot else "") + \
+        passages + ("\n" if passages else "") + tail
 
 
 def usage_of(jsonl: Path) -> dict[str, int]:
@@ -181,6 +201,21 @@ def self_test() -> None:
         common = len(b1) - len("## Task\ntask one\n")
         assert b2[:common] == b1[:common], "briefs must share their prefix"
 
+        if VAULT_PY.exists():  # RAG: shared prefix + hot first, retrieved passages after, task last
+            vault = root / "vault"
+            prog = root / "progress.md"
+            prog.write_text("## Now\n\nBuilding the gate.\n\n## Decisions\n\n| Date | Decision |\n|---|---|\n"
+                            "| 2026-11-16 | Dungeon Key costs 14,000 gold |\n| 2026-11-16 | Pets hatch from eggs bought with gold |\n")
+            for cmd in (["migrate", "--vault", str(vault), "--progress", str(prog)], ["index", "--vault", str(vault)]):
+                subprocess.run([sys.executable, str(VAULT_PY), *cmd], check=True, capture_output=True)
+            r1 = brief(root, "price of the dungeon key", None, vault)
+            r2 = brief(root, "how pets hatch from eggs", None, vault)
+            shared = r1.index("## Retrieved notes")
+            assert r2[:shared] == r1[:shared], "everything before the retrieved notes must be shared"
+            assert "Building the gate." in r1[:shared]
+            assert "14,000" in r1[shared:] and "eggs" in r2[r2.index("## Retrieved notes"):]
+            assert r1.index("## Retrieved notes") < r1.index("## Task")
+
         logs = root / "logs"
         (logs / "s1" / "subagents").mkdir(parents=True)
         u = {"input_tokens": 10, "cache_creation_input_tokens": 20, "cache_read_input_tokens": 70, "output_tokens": 5}
@@ -205,6 +240,8 @@ def main() -> None:
     br.add_argument("task")
     br.add_argument("--role")
     br.add_argument("--root", default=".")
+    br.add_argument("--rag", type=Path, default=None, help="agent-kit rag vault: adds hot.md + retrieved notes")
+    br.add_argument("--top", type=int, default=5)
     st = sub.add_parser("stats")
     st.add_argument("session", nargs="?")
     st.add_argument("--logs", type=Path, default=None)
@@ -213,7 +250,7 @@ def main() -> None:
         changed, total = build(Path(args.root).resolve())
         print(f"changed {changed} / total {total}")
     elif args.cmd == "brief":
-        sys.stdout.write(brief(Path(args.root).resolve(), args.task, args.role))
+        sys.stdout.write(brief(Path(args.root).resolve(), args.task, args.role, args.rag, args.top))
     else:
         print_stats(stats(args.logs or default_logs(), args.session))
 
