@@ -18,7 +18,7 @@ npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
 
 ## Skills
 
-- <img src="skills/poc-spec-driven-builder/assets/icon.svg" width="22" height="22" align="top" alt=""> [`poc-spec-driven-builder`](skills/poc-spec-driven-builder/SKILL.md) — builds a proof of concept end-to-end: research → SRS → test matrix → implementation → verification, run autonomously without pausing for clarification.
+- <img src="skills/poc-spec-driven-builder/assets/icon.svg" width="22" height="22" align="top" alt=""> [`poc-spec-driven-builder`](skills/poc-spec-driven-builder/SKILL.md) — builds a proof of concept end-to-end: research → SRS → council review → test matrix → implementation → verification, run autonomously without pausing for clarification.
 - <img src="skills/thai-mock-naming/assets/icon.svg" width="22" height="22" align="top" alt=""> [`thai-mock-naming`](skills/thai-mock-naming/README.md) — Thai mock names that are unmistakably fake, greppable in a database, and still exercise real Thai text handling. Replaces สมชาย ใจดี / สมหญิง พอใจ with marker names like ทดสอบ นามสมมุติ. Ships a generator and a linter.
 - <img src="skills/documentation/assets/icon.svg" width="22" height="22" align="top" alt=""> [`documentation`](skills/documentation/SKILL.md) — documentation toolkit, one skill with two sub-skills: `doc-style` documents any work product (API, deploy, system, release) in one house style, with seven document skeletons, a TH Sarabun theme with change highlighting, and Markdown → PDF + DOCX in one command; `pdf-operations` merges, splits, reorders, rotates and overlays PDFs through an existing `pdf-lib` pipeline instead of writing a new one.
 

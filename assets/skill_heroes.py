@@ -31,7 +31,7 @@ SKILLS = {
     "poc-spec-driven-builder": (
         ["Proves an idea works,", "tests before code."],
         ["Research, a spec and a full test matrix", "come before any implementation."],
-        [("Research", "best practice for the stack"), ("Spec", "an SRS with success criteria"),
+        [("Research", "best practice for the stack"), ("Spec", "an SRS a council pressure-tests"),
          ("Ticket", "issue filed, branch cut"), ("Tests", "a matrix for every requirement"),
          ("Build", "until the tests pass"), ("Ship", "report, push, open the PR")],
         ["a PR that proves it, and what", "a full build would still need"]),
