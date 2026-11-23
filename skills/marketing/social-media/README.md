@@ -1,8 +1,6 @@
-<p align="center"><img src="assets/hero.svg" width="100%" alt="social-media: A post and its cover, every claim checked. Brief, hooks, draft, review, cover."></p>
-
 # social-media
 
-Social and blog content, one skill with sub-skills.
+Social and blog content, a sub-skill of [marketing](../SKILL.md) with its own sub-skills.
 
 | Sub-skill | What it does |
 |---|---|
@@ -16,7 +14,7 @@ the facts a post may cite and a rubric. The worked case is
 The agent's instructions are in [SKILL.md](SKILL.md).
 
 ```
-npx skills@latest add th3r-dev/th3-skills --skill social-media
+npx skills@latest add th3r-dev/th3-skills --skill marketing
 ```
 
 `kien-thai` and `humanizer` are separate skills; install them for the Thai and review passes.

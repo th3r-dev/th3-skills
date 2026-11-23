@@ -1,5 +1,5 @@
 ---
-name: social-media-blog-post
+name: marketing-social-media-blog-post
 description: Write title options, typed hooks and a blog post (Thai or English) about a topic or a piece of finished work, using only facts the user or the session supplied, and close with an "if you want ..." hook plus the user's hire or contact link. Thai is written with kien-thai, every draft gets a humanizer pass, and the post is checked against a TOON benchmark case with bench_post.py. Use WHENEVER the user says "ช่วยคิดหัวข้อ blog", "เขียนบล็อก", "เขียนโพสต์เล่าว่าทำยังไง", "blog post about this", "making-of post", "case study post", "hooks for a post", "titles for a post", or wants a post for Fastwork, LinkedIn or a personal blog.
 ---
 

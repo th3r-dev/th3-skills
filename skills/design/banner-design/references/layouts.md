@@ -87,7 +87,7 @@ depth, a dashed request line running down through every layer and ending in the 
 
 A blog or article cover has no steps. The title is the only core element: a kicker above it, a
 handwritten note under it, the author at the foot, and one motif on the right that shows the post's
-subject. Built for social-media's blog-cover sub-skill.
+subject. Built for marketing/social-media's blog-cover sub-skill.
 
 - The benchmark cover uses a risograph look: deep blue and fluorescent pink on warm paper, the title
   printed twice with the pink copy offset (misregistration), halftone dots, tilted print cards.
