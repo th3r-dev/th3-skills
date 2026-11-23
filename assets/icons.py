@@ -6,6 +6,7 @@ tile behind the art, so it reads on GitHub's light and dark themes alike.
 
 Run: uv run assets/icons.py   (stdlib only)
 """
+import glob
 import os
 
 Y, INK = "#FFD60A", "#0A0A0A"
@@ -111,10 +112,11 @@ def icon_svg(name):
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    have = {d for d in os.listdir(os.path.join(root, "skills")) if os.path.isfile(os.path.join(root, "skills", d, "SKILL.md"))}
-    assert have == set(ART), f"skills without an icon: {sorted(have - set(ART))}; icons without a skill: {sorted(set(ART) - have)}"
+    dirs = {os.path.basename(os.path.dirname(f)): os.path.dirname(f) for f in glob.glob(os.path.join(root, "skills", "*", "*", "SKILL.md"))}
+    shipped = {n for n, d in dirs.items() if os.sep + "shipped" + os.sep in d}
+    assert shipped <= set(ART) <= set(dirs), f"shipped skills without an icon: {sorted(shipped - set(ART))}; icons without a skill: {sorted(set(ART) - set(dirs))}"
     for name in sorted(ART):
-        d = os.path.join(root, "skills", name, "assets")
+        d = os.path.join(dirs[name], "assets")
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "icon.svg"), "w", encoding="utf-8") as fh:
             fh.write(icon_svg(name))

@@ -1,7 +1,7 @@
 {
   "name": "th3-skills",
-  "description": "Claude Code skills that each do a whole job: agent-kit, design, containers, dependency-vuln-explainer, devops, documentation, game-dev, marketing (incl. social-media), poc-spec-driven-builder, qa, software-engineer, thai-mock-naming.",
-  "version": "2.0.0",
+  "description": "Claude Code skills that each do a whole job: agent-kit, containers, dependency-vuln-explainer, design, devops, documentation, game-dev, marketing (incl. social-media), poc-spec-driven-builder, qa, thai-mock-naming.",
+  "version": "3.0.0",
   "author": {
     "name": "TheeraphatStudent"
   },
@@ -33,5 +33,18 @@
     "podman",
     "thai"
   ],
-  "icon": ".claude-plugin/icon.svg"
+  "icon": ".claude-plugin/icon.svg",
+  "skills": [
+    "./skills/shipped/agent-kit",
+    "./skills/shipped/containers",
+    "./skills/shipped/dependency-vuln-explainer",
+    "./skills/shipped/design",
+    "./skills/shipped/devops",
+    "./skills/shipped/documentation",
+    "./skills/shipped/game-dev",
+    "./skills/shipped/marketing",
+    "./skills/shipped/poc-spec-driven-builder",
+    "./skills/shipped/qa",
+    "./skills/shipped/thai-mock-naming"
+  ]
 }

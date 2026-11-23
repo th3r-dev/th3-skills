@@ -8,7 +8,7 @@ Run from the repo root: uv run assets/check_heroes.py
 """
 import sys, pathlib, re
 from playwright.sync_api import sync_playwright
-files = sorted(pathlib.Path("skills").glob("*/assets/hero.svg")) + [pathlib.Path("assets/hero.svg")]
+files = sorted(pathlib.Path("skills").glob("*/*/assets/hero.svg")) + [pathlib.Path("assets/hero.svg")]
 bad = 0
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_page(viewport={"width":1280,"height":720})

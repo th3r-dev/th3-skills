@@ -3,7 +3,7 @@
   description: >-
     Flags plausible-real Thai names (สมชาย ใจดี, มานี, ...) used as mock data,
     so test records stay greppable and screenshots stay unambiguous.
-  entry: python3 skills/thai-mock-naming/scripts/check_mock_names.py
+  entry: python3 skills/shipped/thai-mock-naming/scripts/check_mock_names.py
   language: system
   types: [text]
   pass_filenames: true
