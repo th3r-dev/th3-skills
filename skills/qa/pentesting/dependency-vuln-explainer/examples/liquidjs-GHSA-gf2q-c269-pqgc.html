@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>liquidjs RCE — how it works and whether it reaches us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:#f5f5f5; --color-ink:#2d3142; --color-muted:#4f5d75;
+      --color-accent:#eb6c36; --color-link:#2e5aa8;
+      --font-sans:'Geist',system-ui,sans-serif;
+      --font-serif:'Instrument Serif',serif;
+      --font-mono:'Geist Mono',ui-monospace,monospace;
+    }
+    body { font-family:var(--font-sans); background:var(--color-paper); color:var(--color-ink); padding:3rem 2rem; }
+    .frame { max-width:1100px; margin:0 auto; }
+    .eyebrow { font-family:var(--font-mono); font-size:0.66rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--color-muted); margin-bottom:0.5rem; }
+    h1 { font-family:var(--font-serif); font-size:2rem; font-weight:400; letter-spacing:-0.02em; line-height:1.15; margin-bottom:0.5rem; }
+    .lede { color:var(--color-muted); font-size:0.95rem; max-width:62ch; margin-bottom:2.5rem; }
+    h2 { font-family:var(--font-serif); font-size:1.35rem; font-weight:400; margin:2.5rem 0 1rem; }
+    svg { width:100%; display:block; }
+    .foot { margin-top:2.5rem; padding-top:1rem; border-top:1px solid rgba(45,49,66,0.12); font-family:var(--font-mono); font-size:0.72rem; color:var(--color-muted); line-height:1.8; }
+    .foot b { color:var(--color-link); font-weight:500; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Vuln explainer · GHSA-gf2q-c269-pqgc</p>
+    <h1>A critical RCE that doesn’t reach this app</h1>
+    <p class="lede">LiquidJS 10.21.0 is installed in the app and the advisory is CVSS 10.0. But the package is never loaded — so the real priority is low. Two pictures: how the exploit works, and where the package actually sits.</p>
+
+    <h2>1 · How the exploit works</h2>
+    <svg viewBox="0 0 1000 400" role="img" aria-labelledby="seq-title seq-desc">
+      <title id="seq-title">How the LiquidJS template RCE works</title>
+      <desc id="seq-desc">A crafted template text is parsed by LiquidJS, reaches the engine's internal render context, climbs to the Function constructor, and runs arbitrary code.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- lifelines (drawn first) -->
+      <line x1="140" y1="88" x2="140" y2="372" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="400" y1="88" x2="400" y2="372" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="660" y1="88" x2="660" y2="372" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="880" y1="88" x2="880" y2="372" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- messages (arrows before boxes) -->
+      <!-- m1: template -> liquidjs -->
+      <line x1="140" y1="140" x2="396" y2="140" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="248" y="120" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="270" y="129" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">PARSE</text>
+
+      <!-- m2: liquidjs -> render context -->
+      <line x1="400" y1="196" x2="656" y2="196" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="508" y="176" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="530" y="185" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">valueOf</text>
+
+      <!-- m3: self-loop on render context -->
+      <path d="M 660 240 H 712 V 268 H 664" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="724" y="248" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="746" y="257" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">CLIMB</text>
+
+      <!-- m4: render context -> Function() — focal -->
+      <line x1="660" y1="308" x2="876" y2="308" stroke="#eb6c36" stroke-width="1.6" marker-end="url(#arrow-accent)"/>
+      <rect x="742" y="288" width="52" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="768" y="297" fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">BUILD FN</text>
+
+      <!-- m5: return RCE (dashed, filled) -->
+      <line x1="880" y1="352" x2="144" y2="352" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="486" y="332" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="506" y="341" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">RCE</text>
+
+      <!-- actor boxes (drawn last) -->
+      <!-- template text (focal input) -->
+      <rect x="60" y="44" width="160" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="60" y="44" width="160" height="44" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="140" y="64" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">Template text</text>
+      <text x="140" y="79" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">attacker-controlled</text>
+
+      <rect x="320" y="44" width="160" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="320" y="44" width="160" height="44" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="400" y="64" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">LiquidJS</text>
+      <text x="400" y="79" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">render()</text>
+
+      <rect x="580" y="44" width="160" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="580" y="44" width="160" height="44" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="660" y="64" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">Render context</text>
+      <text x="660" y="79" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">this / parser</text>
+
+      <rect x="800" y="44" width="160" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="800" y="44" width="160" height="44" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="880" y="64" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">Function()</text>
+      <text x="880" y="79" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">sink · exec</text>
+    </svg>
+
+    <h2>2 · Does it reach us?</h2>
+    <svg viewBox="0 0 1000 360" role="img" aria-labelledby="tree-title tree-desc">
+      <title id="tree-title">Where liquidjs sits in the app</title>
+      <desc id="tree-desc">The app sends mail directly through SendGrid; the nestjs mailer that pulls in liquidjs is installed but never imported, so the vulnerable package is unreachable.</desc>
+      <defs>
+        <marker id="t-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+      </defs>
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- connectors first -->
+      <!-- root drop + bus -->
+      <path d="M 500 96 V 118" fill="none" stroke="#4f5d75" stroke-width="1"/>
+      <line x1="250" y1="118" x2="750" y2="118" stroke="#4f5d75" stroke-width="1"/>
+      <!-- bus -> mailer (dashed, not used) -->
+      <path d="M 250 118 V 146" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#t-arrow)"/>
+      <rect x="208" y="122" width="84" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="250" y="131" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">NO IMPORT</text>
+      <!-- bus -> sendgrid (solid, used) -->
+      <path d="M 750 118 V 146" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#t-arrow)"/>
+      <rect x="718" y="122" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="750" y="131" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">USED</text>
+      <!-- mailer -> liquidjs (dashed) -->
+      <path d="M 250 202 V 246" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#t-arrow)"/>
+      <rect x="196" y="214" width="108" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="250" y="223" fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" text-anchor="middle" letter-spacing="0.06em">OPTIONAL PEER</text>
+
+      <!-- nodes -->
+      <!-- root -->
+      <rect x="400" y="52" width="200" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="400" y="52" width="200" height="44" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="500" y="72" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">Honey-Pot</text>
+      <text x="500" y="87" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">the app</text>
+
+      <!-- mailer -->
+      <rect x="150" y="150" width="200" height="52" rx="6" fill="#f5f5f5"/>
+      <rect x="150" y="150" width="200" height="52" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="250" y="172" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">@nestjs-modules/mailer</text>
+      <text x="250" y="189" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">2.0.2 · installed, unused</text>
+
+      <!-- sendgrid -->
+      <rect x="650" y="150" width="200" height="52" rx="6" fill="#f5f5f5"/>
+      <rect x="650" y="150" width="200" height="52" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="750" y="172" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">@sendgrid/mail</text>
+      <text x="750" y="189" fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">mail actually sent here</text>
+
+      <!-- liquidjs (focal) -->
+      <rect x="150" y="250" width="200" height="52" rx="6" fill="#f5f5f5"/>
+      <rect x="150" y="250" width="200" height="52" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <text x="250" y="272" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" text-anchor="middle">liquidjs</text>
+      <text x="250" y="289" fill="#eb6c36" font-size="9" font-family="'Geist Mono',monospace" text-anchor="middle">10.21.0 · R1 not loaded</text>
+
+      <!-- legend -->
+      <line x1="150" y1="330" x2="850" y2="330" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="150" y="346" fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.14em">LEGEND</text>
+      <line x1="250" y1="343" x2="282" y2="343" stroke="#4f5d75" stroke-width="1"/>
+      <text x="290" y="346" fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace">LOADED</text>
+      <line x1="380" y1="343" x2="412" y2="343" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4"/>
+      <text x="420" y="346" fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace">INSTALLED, NOT LOADED</text>
+    </svg>
+
+    <div class="foot">
+      VERDICT · R1 installed, not loaded — liquidjs 10.21.0 via @nestjs-modules/mailer, which the app never imports. App severity: low.<br>
+      FIX (recommended) · npm remove @nestjs-modules/mailer → drops liquidjs; prove with `npm ls --package-lock-only liquidjs`.<br>
+      ADVISORY · <b>GHSA-gf2q-c269-pqgc</b> · CVSS 10.0 · github.com/harttle/liquidjs/security/advisories/GHSA-gf2q-c269-pqgc · full PoC in the advisory, not reproduced here.
+    </div>
+  </div>
+</body>
+</html>

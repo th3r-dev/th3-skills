@@ -8,9 +8,12 @@ description: >-
   and build the team's .xlsx evidence report; (3) excel-import — design, preflight, run and
   verify a test set for an Excel-template import (validate → submit → database); (4)
   ticket-report — post a QA / retest result on a Jira ticket in the team format with screenshots
-  inline. Use WHENEVER the work is test evidence, a QA report, test case design for an import,
-  a pre-meeting answer review, "ทดสอบ", "หลักฐานการทดสอบ", "test report", "ลงผลเทสในตั๋ว", or
-  "review the Q&A before the meeting". Read the sub-skill's SKILL.md before acting.
+  inline; (5) pentesting — authorised offensive security: autonomous pentesting with ARTEX,
+  dependency vulnerability analysis, and practice targets. Use WHENEVER the work is test
+  evidence, a QA report, test case design for an import, a pre-meeting answer review, a pentest,
+  a security assessment, a vulnerability explanation, "ทดสอบ", "หลักฐานการทดสอบ", "test report",
+  "ลงผลเทสในตั๋ว", "review the Q&A before the meeting", "pentest this", "ทดสอบเจาะระบบ", or
+  "is this CVE real for us". Read the sub-skill's SKILL.md before acting.
 ---
 
 # qa — sub-skills
@@ -21,6 +24,7 @@ description: >-
 | "test the Export Excel/PDF/CSV buttons", "QA evidence workbook", "ทดสอบปุ่ม Export" | [`export-evidence/SKILL.md`](export-evidence/SKILL.md) | `export-evidence/scripts/collect_export.py` (CDP walk) · `make_qa_report.py` (xlsx) |
 | "test the xlsx import", "test cases for the import template", "are all dropdown values usable" | [`excel-import/SKILL.md`](excel-import/SKILL.md) + [`references/test-design.md`](excel-import/references/test-design.md) | `excel-import/scripts/run_web.py` (login · run · report) with a project `adapter.py` (contract: `adapter_example.py`) |
 | "post the test result on PROJ-123", "retest done, log it on Jira", "รายงานผลเทสลงตั๋ว" | [`ticket-report/SKILL.md`](ticket-report/SKILL.md) + [`references/format.md`](ticket-report/references/format.md) | `ticket-report/scripts/ticket_report.py` (`draft` · `post` · `--selftest`) |
+| "pentest this target", "run ARTEX", "is this CVE real for us", "explain this alert", "ทดสอบเจาะระบบ" | [`pentesting/SKILL.md`](pentesting/SKILL.md) — umbrella with sub-skills: [`pentesting/dependency-vuln-explainer/SKILL.md`](pentesting/dependency-vuln-explainer/SKILL.md) for vuln analysis, [`pentesting/references/artex.md`](pentesting/references/artex.md) for ARTEX setup | `pentesting/scripts/check_pentest.py` (`selfcheck`) · `bench_pentest.py` (`run` · `selftest` · `validate`) |
 
 They chain: `export-evidence` and a page-timing run produce the evidence folder that
 `ticket-report` drafts from (`steps.csv` / `results.json` → one case); `excel-import`'s
