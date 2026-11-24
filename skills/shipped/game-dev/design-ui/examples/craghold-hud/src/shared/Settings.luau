@@ -1,5 +1,6 @@
 --!strict
 -- The player's settings and the one rule both sides use to clean them (references/settings.md).
+-- Craghold has no hint arrows or key hints, so it has no Hints setting: only what the game has.
 -- The client cleans before it sends, the server cleans again before it keeps them; neither trusts
 -- the other's table. Pure: no `game`, so Lune tests it.
 
@@ -11,14 +12,12 @@ export type Settings = {
 	music: number, -- 0-100
 	sound: number, -- 0-100
 	effects: Effects,
-	hints: boolean,
 }
 
 Settings.DEFAULTS = table.freeze({
 	music = 60,
 	sound = 80,
 	effects = "Auto" :: Effects,
-	hints = true,
 })
 
 local EFFECTS = { Auto = true, Full = true, Reduced = true, Off = true }
@@ -42,7 +41,6 @@ function Settings.validate(raw: any): Settings
 		effects = if typeof(t.effects) == "string" and EFFECTS[t.effects]
 			then t.effects
 			else d.effects,
-		hints = if typeof(t.hints) == "boolean" then t.hints else d.hints,
 	}
 end
 

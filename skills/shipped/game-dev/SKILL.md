@@ -65,7 +65,8 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
   at every size in [design-ui's viewport matrix](design-ui/references/layout.md#viewport-matrix).
   Handing the look to a later playtester is how a game reaches its owner with eighteen defects in
   one sitting. A row judged only by eye is `OWNER EYE`, and it is never counted as a pass. The
-  report lists every NOT ASSESSED row by name; a count of zero hides them.
+  report lists every NOT ASSESSED row by name; a count of zero hides them. A visible defect
+  against what was asked blocks the change; writing it up as a "known limit" doesn't clear it.
 - **Test the placed result, not the plan.** A test that measures the plan passes while the game
   is broken: planks counted from the design model when the real ground had other heights, a cave
   floor faked on a server with no terrain. Measure what the engine placed, in the engine.
@@ -74,7 +75,8 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
   a hot path is timed before and after; one that made a tool eight times slower had to be reverted.
 - **Scope stays put.** A new big idea goes into an issue, not into this build. Don't stack work
   on unmerged work. A change that removes a system lists everything that used it first (a removed
-  farm left day-one quests asking for mobs that no longer existed).
+  farm left day-one quests asking for mobs that no longer existed). When feedback says to remove
+  something shown in a screenshot, list every object in that screenshot and ask which ones go.
 - **The person's words, literally.** Quote the ask in the brief. If the build differs from it,
   say how and ask, rather than reinterpreting.
 - **The owner plays each milestone.** Before you hand a milestone over, run a scripted player

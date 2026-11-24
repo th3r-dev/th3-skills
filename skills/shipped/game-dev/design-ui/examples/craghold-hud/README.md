@@ -10,12 +10,12 @@ judge.
 
 | Path | What it is |
 |---|---|
-| `design/DESIGN.md`, `design/features/{hud,key-shop}/design.md` | the briefs, approved before building, revised and re-approved after the playtests |
-| `src/shared/` | pure modules tested under Lune: `Tokens` (colours, fonts, shape), `Gold` ("12,500", "9.9M"), `Progress` (level, XP, the farm cap), `KeyOffer` (every shop state in one function, and the server's `canBuy`), `Net` (names) |
-| `src/client/` | `Theme` (tokens to Color3 and Font), `Ui` (the factory: plates, text with a size floor, buttons with press feedback, a drawn coin, a spinner), `Hud`, `KeyShop` |
-| `src/server/` | owns gold, level and the key; grants loop income so the HUD moves; the `BuyKey` RemoteFunction decides every purchase. Studio-only switches (`PurchaseDelay`, `FailPurchases`, `PauseServer`) force the loading, error and reconnecting states for captures |
+| `design/DESIGN.md`, `design/features/{hud,key-shop,settings}/design.md` | the briefs, approved before building, revised and re-approved after the playtests; `DESIGN.md` holds the style contract |
+| `src/shared/` | pure modules tested under Lune: `Tokens` (colours, fonts, shape), `Gold` ("12,500", "9.9M"), `Progress` (level, XP, the farm cap), `KeyOffer` (every shop state in one function, and the server's `canBuy`), `Settings` (the clean-up rule both sides run, the effects level), `Count` (a counter's tick-up steps), `LayoutRules` (the layout lint's rules on plain rectangles), `Net` (names) |
+| `src/client/` | `Theme` (tokens to Color3 and Font), `Ui` (the factory: plates, text with a size floor, buttons with press feedback, a drawn coin, a spinner), `Juice` (tick-up, pop, flash, each following the effects level), `LayoutLint` (prints `LINT` lines from the live ScreenGuis; runs by itself in Studio 5 s after start), `Hud`, `KeyShop`, `SettingsPanel` |
+| `src/server/` | owns gold, level and the key; grants loop income so the HUD moves; the `BuyKey` RemoteFunction decides every purchase. Studio-only switches (`PurchaseDelay`, `FailPurchases`, `PauseServer`, `FailSettings`) force the loading, error and reconnecting states for captures. `SaveSettings` cleans the panel's table with `Settings.validate` and keeps it for the session only: the example has no DataStore |
 | `default.project.json` | the Rojo tree, with the baseplate, spawn and the dungeon gate's "E" prompt as data |
-| `tests/run.luau` | 11 Lune tests: token contrast ≥ 4.5:1, font weights that exist, formatting and suffixes (100K, 9.9M, 1B…), progress, every KeyOffer state, the server check agreeing with the view |
+| `tests/run.luau` | 17 Lune tests: token contrast ≥ 4.5:1, font weights that exist, formatting and suffixes (100K, 9.9M, 1B…), progress, every KeyOffer state, the server check agreeing with the view, settings clean-up and the effects level, tick-up steps, and each layout-lint rule firing once on a known-bad layout and never on a clean one |
 | `captures/` | Studio playtest captures |
 
 ## Run it
@@ -24,7 +24,7 @@ From this folder, in any shell (no agent needed):
 
 ```bash
 rokit install                 # rojo, lune, selene, stylua at the pinned versions
-lune run tests/run            # Tests: 11 passed, 0 failed
+lune run tests/run            # Tests: 17 passed, 0 failed
 selene src && stylua --check src tests
 rojo build . -o craghold-hud.rbxl     # open it in Studio and press Play
 ```
@@ -49,6 +49,19 @@ Ten builds ran in Studio. Each pass found something the files alone couldn't:
 
 A purchase the client asked for while it showed 13,000 gold came back `granted=false reason=locked`:
 the server held its own values. That's the trust boundary, run, not assumed.
+
+## Settings, juice and the lint (2026-11-24)
+
+Added after a game built with this skill reached its owner looking like a tool panel. The HUD
+brief already asked for a gold count-up, a level-up flash and a bounce on the bought key; the
+first build had shipped without them. They now come from `Juice`, and the Settings panel's
+effects level reaches every one of them.
+
+The modules and their rules are tested under Lune (17 passing), `selene` and `stylua` are clean,
+and `rojo build` succeeds. **NOT ASSESSED** until a Studio playtest runs (Studio MCP wasn't
+connected for this change): the Settings panel in each state across the viewport matrix, the `LINT`
+output at each size, the effects at Full and at Off, the sliders on touch, and whether the gear
+glyph `⚙` draws on every platform (the coin emoji didn't, which is why the coin is drawn).
 
 ## Device coverage
 

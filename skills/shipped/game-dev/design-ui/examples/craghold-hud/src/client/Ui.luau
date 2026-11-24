@@ -260,6 +260,7 @@ function Ui.sound(id: string)
 	local s = Instance.new("Sound")
 	s.SoundId = id
 	s.Volume = 0.5
+	s.SoundGroup = SoundService:FindFirstChild("Effects") :: SoundGroup? -- the Settings slider's group
 	SoundService:PlayLocalSound(s)
 	s:Destroy()
 end

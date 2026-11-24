@@ -152,6 +152,8 @@ found after the agents had marked the game ready.
 - **No empty stretches.** Give each area a landmark every so many studs, so it doesn't feel
   hollow.
 - **A world prop is screenshotted at its first build**, before more of it is placed.
+- **A contact check runs in every playtest that places parts**: nothing floats, nothing leaves a
+  gap, measured against the baked ground the player walks on.
 
 ## Deeper reference: roblox-suite
 

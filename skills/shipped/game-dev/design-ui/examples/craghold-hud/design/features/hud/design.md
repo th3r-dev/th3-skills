@@ -1,6 +1,6 @@
 # HUD
 
-Status: draft (Settings button added; approved before it)
+Status: approved
 
 ## Job
 Show where the player is in the loop (level up on the farm, earn gold, buy the dungeon key) and the

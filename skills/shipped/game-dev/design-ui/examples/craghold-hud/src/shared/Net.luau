@@ -3,6 +3,8 @@
 
 return {
 	BUY_KEY = "BuyKey", -- RemoteFunction: the client asks, the server decides
+	SAVE_SETTINGS = "SaveSettings", -- RemoteFunction: the client sends its settings, the server cleans and keeps them
+	SETTINGS = "Settings", -- the server's clean copy as JSON, which the Settings panel starts from
 	GOLD = "Gold",
 	LEVEL = "Level",
 	XP = "Xp",
