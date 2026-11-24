@@ -34,7 +34,9 @@ adds a system ("and also pets, and a town"): write it under **Later** and move o
 6. What is the one twist, the thing no game in the market check below does?
 7. If you had to cut half, what goes first?
 
-Done when every answer fits in two lines and the verb, the 30 seconds and the twist agree.
+Done when every answer fits in two lines and the verb, the 30 seconds and the twist agree. If the
+person won't let something go, keep it in v1 only by cutting something of the same size; the
+scope isn't locked, and nothing is built, until the budget below holds.
 
 ## 2. Market check: what exists, then how players use it
 
@@ -47,6 +49,9 @@ it or watch someone play it, then fill one row:
 
 - Complaints come from the game's own comments, its group wall, the DevForum and videos. They are
   the gap the twist can fill.
+- An agent that can't play or watch marks those cells **not checked**. The twist isn't locked
+  until the person has played at least two of the games, or at least one complaint source per
+  game has been read.
 - Revenue and visit figures from third-party sites conflict with each other; mark them **rough**
   and never plan on them.
 - Copy the grammar, not the game. The loop, the genre and the price points are free to use; another
@@ -76,6 +81,11 @@ and UI. So keep the systems few and the ladder long:
 | Monetization at launch | 1 to 2 Game Passes, 1 to 2 Developer Products (see [monetization](../roblox/references/monetization.md)) |
 | Not in the first game | trading, towns or plots, pets, rebirth, a second map, clans, story mode |
 
+**System or row?** A thing is a **system** when it needs its own code path, input or screen: a new
+way to move (a jetpack, a glider), a new tool ability, a building mode. It is a **row** when it is
+a stronger or newer version of something the game already has: the next drill, the next zone, the
+next tier of a cosmetic. Zones are rows: the ladder unlocks them.
+
 ### The goal ladder
 
 Players stay for the next goal they can see. Give them three at once:
@@ -93,15 +103,18 @@ session is never slowed down.
 
 ## 5. Milestones with dates
 
-The person sets the dates; ask for the launch date or the hours per week, then plan backwards.
-Without an answer, use the durations below for a solo first game, marked "default".
+The person sets the dates: ask for the launch date and the hours per week, then plan backwards.
+The default lengths below assume one person at about 15 hours a week. Scale each length by
+15 ÷ their hours, and count only the weeks they can actually work (drop holidays and exam weeks).
+If the result doesn't fit the launch date, cut scope (rows to Later), never the alpha or the
+beta.
 
 | Milestone | Default length | Exit: done when |
 |---|---|---|
 | Prototype | 1 week | the core loop runs with grey boxes and the person played it for 10 minutes |
 | Vertical slice | 2 weeks | the first zone plays from join to the first tier up, with real UI; feel checked |
 | Alpha (playable) | 2 to 3 weeks | every v1 system is in; friends or a small test group play a private server; the owner's playtest finds no blocker |
-| Beta (fun) | 2 weeks | an open test; players come back the next day and play a full session; numbers compared with the benchmarks in Roblox's Creator Analytics |
+| Beta (fun) | 2 weeks | an open test; players come back the next day and play a full session; next-day return and session length read from the Creator Dashboard's analytics, against the targets the person wrote at alpha |
 | Launch (earning) | 1 week | test purchases work end to end; the shop, a pass and a product are live; the thumbnail and icon are done |
 | Live | weekly | one update a week: new tiers, a zone or an event, chosen from what the data and comments show |
 
