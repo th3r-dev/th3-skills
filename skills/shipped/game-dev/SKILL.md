@@ -50,6 +50,7 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
 | 1b | **Grill and plan** (`idea-grill`): the grill, the market check, one twist on a proven loop, the scope caps, the goal ladder, dated milestones | the person says "scope locked" and every milestone has a date |
 | 2 | **Design pass** (`design-lens`): who plays, which motivation the game serves, the loop that delivers it | the motivation, the loop and the first minute are written in one paragraph each |
 | 3 | **One-page brief** at `design/game-brief.md`: the person's words kept, the scope and milestones from `design/idea-grill.md`, pitch, motivation, core loop, first minute, challenge, the features in build order, what is left for later | the person says "build it" |
+| 3b | **Council the brief** ([`references/council.md`](references/council.md)): five opposed lenses pressure-test `design/game-brief.md` before any engine; the chairman applies the verdict | the brief has a Council Review section and the loop survived it |
 | 4 | **Engine.** Web (any browser, nothing to install) unless the brief needs more. Roblox (`roblox`) when the players are on Roblox or the game is multiplayer and social. Godot, Unity or Unreal for big 3D, consoles or stores | the engine is set up and an empty project runs |
 | 5 | **First build**: the core loop only, every value in one config file; placeholder shapes until the loop is fun, then models (`modeling`) | it was **run and looked at**: a browser screenshot, or a Studio playtest's output and capture |
 | 6 | **Grow**: one feature a sitting. Name it, build it, run it, look at it, commit it. Check it against the brief's "keep" and "avoid". A feature with a screen gets its UI brief approved first (`design-ui`) | the feature is in a commit, with what was checked |
@@ -61,6 +62,10 @@ one GitHub issue per feature from the brief's build order, worked by role agents
 ([`agent-kit/team`](../agent-kit/team/SKILL.md)) with the `playtester` for Roblox. Design (steps
 1–3) and the cut (step 7) stay with the person. How to shape the issues and brief each agent so it
 keeps the gates below: [`references/agentic-build.md`](references/agentic-build.md).
+
+**Lay it out for production.** From the first commit the repo carries the brief, the config, the
+tests and a pinned toolchain, and the code cleans up after itself — a game another agent can pick up
+and ship, not a prototype dump: [`references/production-layout.md`](references/production-layout.md).
 
 ## Rules every step keeps
 
