@@ -28,6 +28,7 @@ default, empty, loading and error state.
 
 Detail: [layout](references/layout.md), [visual language](references/visual.md),
 [styling and tokens](references/styling.md), [the brief templates](references/design-brief.md),
+[settings](references/settings.md), [juice](references/juice.md),
 [review and playtest](references/review.md).
 
 ## How design-core maps onto Roblox
@@ -65,21 +66,31 @@ Detail: [layout](references/layout.md), [visual language](references/visual.md),
 5. **Tokens, not literals** ([styling.md](references/styling.md)): colours, type, radius and
    spacing live in a StyleSheet, with themes that swap. They come from the game's look, so the
    UI matches the thumbnail that sold the game.
-6. **States and feedback**: every button has default, hover, pressed, disabled and loading; every
-   action answers with a tween and a sound; a reward shows the delta and the next goal, briefly.
-   No popup interrupts the core action in the first five minutes.
-7. **The client shows, the server decides.** A RemoteFunction asks to buy; the server checks the
+6. **States, feedback and feel**: every button has default, hover, pressed, disabled and loading;
+   every action answers with a tween and a sound from one `Juice` module
+   ([juice.md](references/juice.md)); a reward shows the delta and the next goal, briefly. Playful
+   is a **style contract** in `DESIGN.md` that every brief cites
+   ([visual.md](references/visual.md#style-contract)), not a request made again per surface. No
+   popup interrupts the core action in the first five minutes.
+7. **Settings ships with v1** ([settings.md](references/settings.md)): music and effects volume,
+   an effects level that starts at Reduced when the player's Roblox Reduce Motion is on, hints.
+   Every effect reads that level; at Off nothing loops.
+8. **The client shows, the server decides.** A RemoteFunction asks to buy; the server checks the
    price, the currency and the lock, then answers. The client never grants value, and shows
    `loading` until the answer arrives.
-8. **Run it, before review.** Playtest in Studio, then capture each surface in the Device Emulator
+9. **Run it, before review.** Playtest in Studio, then capture each surface in the Device Emulator
    at every size in the [viewport matrix](references/layout.md#viewport-matrix), in every state, with
    the People list open and every timed element showing, using the Studio MCP server's screenshot
    tool or by hand. The author does this; a surface goes to review with its captures, never
    without. Read the output log for errors. A check that could not run is NOT ASSESSED, never a
    pass.
-9. **Review with fresh eyes**: score the captures with design-core's table plus the Roblox rows. In
+   A layout lint runs in the same playtest and prints a `LINT` line for each overlap, text under
+   14 px, an icon under 60% of its button, a label wider than its box, or a panel of zero size. The
+   example's `LayoutRules` / `LayoutLint` pair is the reference implementation.
+10. **Review with fresh eyes**: score the captures with design-core's table plus the Roblox rows. In
    Claude Code a subagent does it; elsewhere a new session or a second model. The author's own score
-   never decides. Then hand off per [review.md](references/review.md).
+   never decides. A fresh reviewer also reads each **brief** before it is built, so a look that
+   isn't playful is caught on paper, not after three build rounds. Then hand off per [review.md](references/review.md).
 
 ## Worked example
 

@@ -5,9 +5,12 @@
 
 local process = require("@lune/process")
 
+local Count = require("../src/shared/Count")
 local Gold = require("../src/shared/Gold")
 local KeyOffer = require("../src/shared/KeyOffer")
+local LayoutRules = require("../src/shared/LayoutRules")
 local Progress = require("../src/shared/Progress")
+local Settings = require("../src/shared/Settings")
 local Tokens = require("../src/shared/Tokens")
 
 local tests: { { name: string, fn: () -> () } } = {}
@@ -128,6 +131,94 @@ test("the server's check agrees with the view", function()
 	assert(select(2, KeyOffer.canBuy(12499, 10, false)) == "short")
 	assert(select(2, KeyOffer.canBuy(99999, 9, false)) == "locked")
 	assert(select(2, KeyOffer.canBuy(99999, 10, true)) == "owned")
+end)
+
+test("settings: anything in, valid settings out", function()
+	local d = Settings.validate(nil)
+	assert(d.music == 60 and d.sound == 80 and d.effects == "Auto" and d.hints == true)
+	local s = Settings.validate({ music = 140, sound = -3, effects = "Full", hints = false })
+	assert(s.music == 100 and s.sound == 0 and s.effects == "Full" and s.hints == false)
+	local bad = Settings.validate({ music = 0 / 0, sound = "loud", effects = "Max", hints = 1 })
+	assert(bad.music == 60 and bad.sound == 80 and bad.effects == "Auto" and bad.hints == true)
+	assert(Settings.validate({ music = 33.6 }).music == 34, "rounds to whole numbers")
+	assert((Settings.validate({ admin = true }) :: any).admin == nil, "unknown keys dropped")
+end)
+
+test("settings: the device's reduced motion counts only on Auto", function()
+	local auto = Settings.validate({})
+	assert(Settings.level(auto, true) == "Reduced" and Settings.level(auto, false) == "Full")
+	assert(Settings.level(Settings.validate({ effects = "Full" }), true) == "Full")
+	assert(Settings.level(Settings.validate({ effects = "Off" }), false) == "Off")
+	assert(Settings.allows("Full", "Full") and Settings.allows("Reduced", "Reduced"))
+	assert(not Settings.allows("Reduced", "Full") and not Settings.allows("Off", "Reduced"))
+	assert(Settings.allows("Off", "Off"), "feedback marked Off plays at every level")
+end)
+
+test("a counter's steps rise and end exactly on the new value", function()
+	for _, case in { { 0, 250 }, { 9340, 12500 }, { 5, 8 }, { 100, 100 }, { 0, 1e9 } } do
+		local steps = Count.steps(case[1], case[2], 10)
+		assert(steps[#steps] == case[2], `{case[1]}->{case[2]} ends at {steps[#steps]}`)
+		assert(#steps <= 10)
+		local last = case[1]
+		for i, v in steps do
+			assert(v == math.floor(v), "whole numbers")
+			assert(v > last or (i == #steps and v == case[2]), "always rising")
+			last = v
+		end
+	end
+	assert(#Count.steps(5, 8, 10) == 3, "a small rise doesn't repeat numbers")
+end)
+
+local function node(path: string, x: number, y: number, w: number, h: number, extra: any?): any
+	local n = { path = path, x = x, y = y, w = w, h = h, ancestors = {} }
+	for k, v in extra or {} do
+		n[k] = v
+	end
+	return n
+end
+
+local function rules(nodes: { any }): { string }
+	local out = {}
+	for _, f in LayoutRules.check(nodes) do
+		table.insert(out, f.rule)
+	end
+	table.sort(out)
+	return out
+end
+
+test("layout lint: a clean HUD gives nothing", function()
+	local plate = node("Hud.Gold", 10, 100, 200, 48, { hasChildren = true })
+	local amount = node("Hud.Gold.Amount", 60, 108, 120, 32, {
+		ancestors = { "Hud.Gold" },
+		text = 28,
+		textWidth = 90,
+	})
+	local shop = node("Hud.Shop", 700, 160, 64, 64, { hasChildren = true })
+	local icon =
+		node("Hud.Shop.Icon", 712, 172, 40, 40, { ancestors = { "Hud.Shop" }, iconOf = "Hud.Shop" })
+	local touching = node("Hud.Level", 10, 52, 200, 48)
+	assert(#LayoutRules.check({ plate, amount, shop, icon, touching }) == 0)
+end)
+
+test("layout lint: each defect fires its own rule once", function()
+	local function only(n: { any }, want: string)
+		local got = rules(n)
+		assert(#got == 1 and got[1] == want, `{want}: got {table.concat(got, ",")}`)
+	end
+	only({ node("A", 0, 0, 100, 40), node("B", 50, 20, 100, 40) }, "overlap")
+	only({ node("Sheet.Body", 0, 0, 300, 0, { hasChildren = true }) }, "zero")
+	only({ node("Count", 0, 0, 40, 12, { text = 10 }) }, "small-text")
+	only({ node("Wear", 0, 0, 111, 30, { text = 16, textWidth = 186 }) }, "text-overflow")
+	only({
+		node("Slot", 0, 0, 60, 60, { hasChildren = true }),
+		node("Slot.Icon", 21, 21, 18, 18, { ancestors = { "Slot" }, iconOf = "Slot" }),
+	}, "small-icon")
+end)
+
+test("layout lint: a free node (backdrop, toast) may overlap", function()
+	local backdrop = node("Shop.Backdrop", 0, 0, 1280, 720, { free = true })
+	assert(#LayoutRules.check({ backdrop, node("Hud.Gold", 10, 100, 200, 48) }) == 0)
+	assert(LayoutRules.line({ rule = "zero", path = "P", detail = "d" }) == "LINT zero P: d")
 end)
 
 local failed = 0
