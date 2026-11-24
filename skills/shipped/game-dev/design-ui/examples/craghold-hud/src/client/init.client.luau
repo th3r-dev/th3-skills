@@ -4,9 +4,11 @@
 
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
+local RunService = game:GetService("RunService")
 
 local Hud = require("@self/Hud")
 local KeyShop = require("@self/KeyShop")
+local LayoutLint = require("@self/LayoutLint")
 
 local player = Players.LocalPlayer
 local shop = KeyShop.new(player)
@@ -19,3 +21,7 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt)
 		shop:open()
 	end
 end)
+
+if RunService:IsStudio() then
+	task.delay(5, LayoutLint.run) -- once the server's first values have drawn the HUD
+end

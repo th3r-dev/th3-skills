@@ -8,6 +8,7 @@ local Gold = require("@game/ReplicatedStorage/Shared/Gold")
 local KeyOffer = require("@game/ReplicatedStorage/Shared/KeyOffer")
 local Net = require("@game/ReplicatedStorage/Shared/Net")
 local Progress = require("@game/ReplicatedStorage/Shared/Progress")
+local Juice = require("./Juice")
 local Ui = require("./Ui")
 
 local STALE_SECONDS = 10
@@ -29,6 +30,7 @@ export type Hud = typeof(setmetatable(
 		shop: TextButton,
 		stale: Frame,
 		shown: number?,
+		shownLevel: number?,
 	},
 	Hud
 ))
@@ -111,6 +113,7 @@ function Hud.new(player: Player, openShop: () -> ()): Hud
 		shop = shop,
 		stale = stale,
 		shown = nil,
+		shownLevel = nil,
 	}, Hud)
 	for _, name in { Net.GOLD, Net.LEVEL, Net.XP, Net.HAS_KEY } do
 		player:GetAttributeChangedSignal(name):Connect(function()
@@ -142,6 +145,10 @@ function Hud.render(self: Hud)
 		return
 	end
 	self.level.Text = `LVL {level}`
+	if self.shownLevel and level > self.shownLevel then
+		Juice.flash(self.level, "Accent", "Level", 1.5) -- the brief: the badge flashes for 1.5 s
+	end
+	self.shownLevel = level
 	local fraction = if level >= Progress.FARM_CAP then 1 else xp / Progress.xpToNext(level)
 	TweenService:Create(self.xpFill, TweenInfo.new(0.25), { Size = UDim2.fromScale(fraction, 1) })
 		:Play()
@@ -156,8 +163,9 @@ function Hud.render(self: Hud)
 		):Play()
 		Ui.sound(COIN)
 	end
+	-- the brief: gold counts up when it rises
+	Juice.tick(self.gold, self.shown or gold, gold, Gold.short)
 	self.shown = gold
-	self.gold.Text = Gold.short(gold)
 
 	local locked = level < KeyOffer.UNLOCK_LEVEL
 	if owned then

@@ -8,6 +8,7 @@ local UserInputService = game:GetService("UserInputService")
 local Gold = require("@game/ReplicatedStorage/Shared/Gold")
 local KeyOffer = require("@game/ReplicatedStorage/Shared/KeyOffer")
 local Net = require("@game/ReplicatedStorage/Shared/Net")
+local Juice = require("./Juice")
 local Ui = require("./Ui")
 
 local TIMEOUT_SECONDS = 10
@@ -41,6 +42,7 @@ function KeyShop.new(player: Player): KeyShop
 	gui.DisplayOrder = 10 -- above the HUD
 	gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
 	gui.Enabled = false
+	gui:SetAttribute("Modal", true) -- LayoutLint: the HUD under an open shop isn't an overlap
 
 	-- the dim goes edge to edge on its own ScreenGui (no insets); the dialog stays inside the safe
 	-- insets on `gui`. One gui for both left undimmed bands at the top and sides (found in the playtest).
@@ -56,6 +58,7 @@ function KeyShop.new(player: Player): KeyShop
 	backdrop.Name = "Backdrop"
 	backdrop.Size = UDim2.fromScale(1, 1)
 	backdrop.Text = ""
+	backdrop:SetAttribute("LintFree", true)
 	backdrop.AutoButtonColor = false
 	backdrop.BorderSizePixel = 0
 	Ui.tone(backdrop, "Fill", "Backdrop")
@@ -223,10 +226,11 @@ function KeyShop.purchase(self: KeyShop)
 		done = true
 		self.pending = false
 		self.failed = not (ok and result == true)
+		self:render()
 		if not self.failed then
 			Ui.sound(GOT_IT)
+			Juice.pop(self.icon) -- the brief's "short celebration": a bounce on the key
 		end
-		self:render()
 	end)
 end
 

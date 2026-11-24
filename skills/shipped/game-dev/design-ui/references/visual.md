@@ -54,11 +54,31 @@ Study the genre's top games before departing from these: a player's habit beats 
 
 - Buttons sit in a contrasting container with a highlight or shadow for depth; chunky, outlined,
   rounded buttons read as tappable at phone size.
-- Light themes suit cartoony and playful games; don't default to dark.
+- Light themes suit cartoony and playful games; don't default to dark. A HUD that is all one dark
+  fill reads as a tool panel on a sunny world.
 - Gradients, glows and drop shadows are finishing touches on the one thing that matters (the
   "Go VIP" glow), not on every panel. design-core calls decoration everywhere an AI tell.
 - **Match the game's thumbnail.** The thumbnail promised a look; the UI keeps it (palette, outline
   weight, type). Craghold's UI takes its navy plates, gold accent and cream type from its key art.
+
+## Style contract
+
+One owner had to ask for "playful" again on every new surface, because the first playful HUD
+never became a rule. Write the contract into `design/DESIGN.md` once, and have every surface brief
+cite it in one line ("Follows the style contract"). If a surface breaks the contract, its brief
+says where and why.
+
+| Part | The contract says |
+|---|---|
+| Roles of colour | which hue means numbers, which means words and goals, which means *press me* (one example: navy for numbers, cream for words, colour for anything pressable) |
+| Buttons | the shape (radius, outline), the lip under the face, one role colour per action, an icon in a coloured disc |
+| Icons | one family: filled, rounded, white on a colour disc; each role colour has its own icon shape, so colour is never the only signal |
+| Counters | always X / Y when there is a cap ("Bag 7 / 10"); a counter with a goal gets a bar |
+| Size | the HUD's share of the screen (cap it; a phone HUD over about 20% of the screen buries the game), the text floor, the icon share of its button (60% or more) |
+| Motion | which effects from [juice.md](juice.md) this game uses, and at which Settings level |
+
+Check it from a capture in one second: can a new player tell what to press, what they have, and
+what to do next?
 
 ## Reference catalogue
 
