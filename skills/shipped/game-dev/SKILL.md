@@ -67,6 +67,10 @@ keeps the gates below: [`references/agentic-build.md`](references/agentic-build.
 tests and a pinned toolchain, and the code cleans up after itself — a game another agent can pick up
 and ship, not a prototype dump: [`references/production-layout.md`](references/production-layout.md).
 
+**Remember across sittings.** Design decisions, playtest findings and what got cut go in a local,
+Obsidian-compatible vault and ride into each agent's brief after the cached prefix, so a build that
+spans weeks and several agents doesn't re-break what a past sitting fixed: [`references/memory.md`](references/memory.md).
+
 ## Rules every step keeps
 
 - **Playable before paperwork.** One page of brief, then a build. More documents only when the
