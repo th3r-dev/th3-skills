@@ -106,6 +106,9 @@ The reference for each engine has the exact names and what is unverified.
 - **Code execution is the person's account.** `execute_luau`, `execute_code`, `execute_blender_code`,
   `evaluate_script`, Python in Unreal: each runs with the editor's or browser's rights. Test
   project, under git, saved first.
+- **One agent per editor.** An editor session is single-user. Two agents driving the same Studio,
+  Unity or Blender made both runs fail. Take a lock (an issue label, a file), check the process
+  list before launching the editor, and run playtests one at a time.
 - **Loopback only.** Keep HTTP servers on `127.0.0.1`. Never turn on "allow remote" or bind
   `0.0.0.0`. A capability token (EngineWire) is a password: env var, never a committed file.
 - **Telemetry off** where the server has a switch (`DISABLE_TELEMETRY`, `--no-usage-statistics`).

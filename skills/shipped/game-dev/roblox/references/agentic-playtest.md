@@ -67,6 +67,23 @@ catch a client-trusting remote, the classic Roblox exploit.
    wasn't assessed. Each FAIL → a `bug` issue (steps, expected, actual, screenshot, "Found in #<pr>").
 7. Label: `status:needs-review` if everything passed, else `status:changes-requested`.
 
+## Studio and capture limits
+
+Each of these was found the hard way, one PR at a time, on a game built with this skill. Read
+them before the first playtest, not after the third failure.
+
+| Limit | What to do |
+|---|---|
+| Two agents driving one Studio made both runs fail and lag | one agent in Studio at a time: take the lock, check `pgrep` before launching it, never launch a second |
+| Studio keeps an old ModuleScript after a sync; every driver crashed on a stale module | restart Studio every three playtests and whenever a shared module changed; a harness script loads its modules fresh |
+| `screen_capture` doesn't draw `AlwaysOnTop` BillboardGuis | check those labels with `execute_luau` (Enabled, size, distance) and say so in the row |
+| A capture taken in Edit mode shows terrain as thin shells | capture in Play |
+| The cloud Luau tier has no baked terrain; a test there faked the cave floor and passed | a row that reads terrain, caves or placed props needs a Studio row; the cloud row covers server rules only |
+| A geometry test passed on the design model and failed on real ground (563 planks, not 398) | measure the parts the engine placed, on the real ground |
+| A config script near 200,000 characters would no longer sync into Studio | split config and data by domain early; fail the build at 150,000 |
+| Screenshot links with tokens expired before the owner opened them | commit the image to the evidence branch and embed it inline (`?raw=true`) |
+| A warning everyone called "known noise" stayed for eight days | a console warning that repeats becomes an issue in the same round |
+
 ## Agent definition
 
 ```markdown

@@ -35,7 +35,7 @@ Detail: [layout](references/layout.md), [visual language](references/visual.md),
 | design-core | On Roblox |
 |---|---|
 | Order of authority: the request, then the product's system, then platform rules, then defaults | The product's system is the game's StyleSheet tokens and its existing screens. The platform rules are Roblox's: core-UI insets, the default touch controls, console and touch input |
-| Workflow: understand → inventory → intent → build → review → hand off | Intent is the **design brief**, and nothing is built until it says `Status: approved`. Build is Luau with tokens. Review is on Studio captures at three devices |
+| Workflow: understand → inventory → intent → build → review → hand off | Intent is the **design brief**, and nothing is built until it says `Status: approved`. Build is Luau with tokens. Review is on Studio captures across the viewport matrix |
 | Composition, writing, interface baseline | The Roblox conventions below, and a shop's extra states: affordable, unaffordable, owned |
 | Review table, 0-10, pass at 8+ | Three more rows: mobile fit, the first action, the trust boundary ([review.md](references/review.md)) |
 | Reference first, off-default, taste | References are the game's own thumbnail and screens, then the catalogue in [visual.md](references/visual.md). Take grammar from a reference, never a paid pack's art |
@@ -71,10 +71,12 @@ Detail: [layout](references/layout.md), [visual language](references/visual.md),
 7. **The client shows, the server decides.** A RemoteFunction asks to buy; the server checks the
    price, the currency and the lock, then answers. The client never grants value, and shows
    `loading` until the answer arrives.
-8. **Run it.** Playtest in Studio, then capture each surface in the Device Emulator at a phone
-   (about 844×390 landscape), a tablet (1024×768) and 1920×1080, in every state, with the Studio MCP
-   server's screenshot tool, or by hand. Read the output log for errors. A check that could not run
-   is NOT ASSESSED, never a pass.
+8. **Run it, before review.** Playtest in Studio, then capture each surface in the Device Emulator
+   at every size in the [viewport matrix](references/layout.md#viewport-matrix), in every state, with
+   the People list open and every timed element showing, using the Studio MCP server's screenshot
+   tool or by hand. The author does this; a surface goes to review with its captures, never
+   without. Read the output log for errors. A check that could not run is NOT ASSESSED, never a
+   pass.
 9. **Review with fresh eyes**: score the captures with design-core's table plus the Roblox rows. In
    Claude Code a subagent does it; elsewhere a new session or a second model. The author's own score
    never decides. Then hand off per [review.md](references/review.md).

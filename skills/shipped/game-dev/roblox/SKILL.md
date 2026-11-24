@@ -120,6 +120,8 @@ what the Luau VM rewards, and a review checklist, with each rule's source.
 - **Scripts.** Roblox recommends a `Script` with `RunContext = Client` over a `LocalScript`
   (create.roblox.com/docs/scripting/scripts). A ModuleScript runs once per side, and the two sides
   never share a copy. No circular requires.
+- **One agent in Studio at a time.** Two agents driving one Studio broke both playtests. Take a
+  lock, check whether Studio is already running, and never launch a second one.
 - **Ask first:** `save_place` (writes a new place version), publishing, anything paid, and any
   asset upload.
 - **API from the docs.** Read `create.roblox.com/docs/reference/engine/classes/<Class>.md` (or MCP
@@ -129,6 +131,25 @@ what the Luau VM rewards, and a review checklist, with each rule's source.
 - **Effects.** Particles, beams, trails, highlights, ability visuals: read
   [`../roblox-vfx/SKILL.md`](../roblox-vfx/SKILL.md).
 - **Design:** for a young audience, run `design-lens`'s black-hat audit on anything paid.
+
+## World readability
+
+A player has to see where to go and what something does. Every item below was a defect the owner
+found after the agents had marked the game ready.
+
+- **Markers on every background.** Paths, beams, arrows and banners are captured on each biome at
+  chase-camera height, with terrain Decoration on (tall grass hides flat things). A marker gets a
+  dark rim or an outline, so it reads on snow and on rock.
+- **Interactables say their verb.** A size floor, plus an idle effect visible before the player
+  touches it (a vent puffs, a chest glints). Effects come from
+  [`../roblox-vfx/SKILL.md`](../roblox-vfx/SKILL.md).
+- **Interiors have light.** Caves and rooms get a minimum light level, checked by walking in and
+  capturing from the player's view.
+- **The edge of the world is scenery.** A ring of peaks or water, plus an invisible wall. A drop
+  into fog is never the edge.
+- **No empty stretches.** Give each area a landmark every so many studs, so it doesn't feel
+  hollow.
+- **A world prop is screenshotted at its first build**, before more of it is placed.
 
 ## Deeper reference: roblox-suite
 

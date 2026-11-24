@@ -68,6 +68,20 @@ Write each step as a short paragraph in the brief. Do the steps in order.
    first. If it is none, the first minute is wrong.
 7. **Audit.** Run the checklist below.
 
+## Soft cost over hard block
+
+Every fix below came from the owner, after the agents had built the hard version:
+
+- **Never block a core verb outright.** Put a cost on it instead: stamina, time, a detour. A climb
+  limited to slopes under 55° became "climb any angle, stamina drains, show the bar".
+- **Suggest a route.** Don't warp the player back. Showing the path beats teleporting someone who
+  wandered off it.
+- **Don't punish exploring.** Borders are scenery, plots are open land, and a dead end still has
+  something to find.
+- **Feel before numbers.** Play the loop's feel (one pickup, one hit, one climb) before you settle
+  the economy. A pickup changed from one press to several hits after the prices around it were
+  already set.
+
 ## White-hat / black-hat audit
 
 For each mechanic, write its drive and hat. Then:
