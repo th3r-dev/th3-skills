@@ -15,8 +15,9 @@ agent a new session or a second model. The author's own score never decides.
 
 ## Playtest checklist
 
-Run in Studio (Play), then the Device Emulator at phone, tablet and desktop. Capture each with the
-Studio MCP server's screenshot tool, or by hand.
+Run in Studio (Play), then the Device Emulator at every size in the
+[viewport matrix](layout.md#viewport-matrix). Capture each with the Studio MCP server's screenshot
+tool, or by hand. The author does this before asking for review.
 
 - [ ] Every state in the brief shows, at every device size: default, empty, loading, error, locked
       (and a shop's affordable, unaffordable, owned).

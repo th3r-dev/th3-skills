@@ -51,6 +51,25 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
   person asks or a team needs them.
 - **A check is a run, not a parse.** A step that changes what the player sees is not done until the
   game was started and looked at. A check that could not run is NOT ASSESSED, never a pass.
+- **Look before review.** A change the player sees stays a draft until its author has captured it
+  at every size in [design-ui's viewport matrix](design-ui/references/layout.md#viewport-matrix).
+  Handing the look to a later playtester is how a game reaches its owner with eighteen defects in
+  one sitting. A row judged only by eye is `OWNER EYE`, and it is never counted as a pass. The
+  report lists every NOT ASSESSED row by name; a count of zero hides them.
+- **Test the placed result, not the plan.** A test that measures the plan passes while the game
+  is broken: planks counted from the design model when the real ground had other heights, a cave
+  floor faked on a server with no terrain. Measure what the engine placed, in the engine.
+- **Three rounds, then change the approach.** After three fix rounds on one problem, stop and
+  redesign or ask, instead of a fourth round of the same idea. One grounding fix took 21. A fix to
+  a hot path is timed before and after; one that made a tool eight times slower had to be reverted.
+- **Scope stays put.** A new big idea goes into an issue, not into this build. Don't stack work
+  on unmerged work. A change that removes a system lists everything that used it first (a removed
+  farm left day-one quests asking for mobs that no longer existed).
+- **The person's words, literally.** Quote the ask in the brief. If the build differs from it,
+  say how and ask, rather than reinterpreting.
+- **The owner plays each milestone.** Before you hand a milestone over, run a scripted player
+  journey from join through the first goal, a failure, the recovery and the sale. Each thing
+  the owner reports becomes its own issue.
 - **Ask before writing or installing.** Show the file list first; installs, downloads, account
   sign-ins and publishing are the person's yes.
 - **No copies of existing games.** Genres and mechanics are free to use; another game's name,

@@ -48,6 +48,12 @@ still decide grouping and spacing; this file is how to make them hold on every s
 - **Chat** sits top-left on every device, and its input bar reaches about a third of the way down
   when active. Keep the HUD out of that corner, or move the chat window with TextChatService's
   `ChatWindowConfiguration`.
+- The **People list** (PlayerList) opens top-right and grows down with the server's size; on a
+  phone it covers a quarter of the screen. Capture the HUD with it open, at the server's full
+  size, or the plates under it are found by the owner, not the review.
+- Every HUD brief has a **Reserved zones** section naming what it keeps clear: chat, the People
+  list, the top bar, the thumbstick and the jump button, plus any of the game's own permanent
+  panels.
 - Hide what you replace: `StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)` for your own
   health bar; `GuiService.TouchControlsEnabled = false` only when the game ships its own controls.
 
@@ -60,8 +66,26 @@ still decide grouping and spacing; this file is how to make them hold on every s
 | Desktop | 1280×720 baseline, then 1920×1080 | stretched panels and icons (missing aspect constraints) |
 | Console / ten-foot | 1920×1080 from across a room | small text; every control must be reachable by gamepad selection |
 
-Design at 1280×720 and scale up; check every state at all three sizes in the Studio Device
-Emulator. A big, ten-foot-style UI also tends to be touch-friendly and gamepad-navigable.
+Design at 1280×720 and scale up. A big, ten-foot-style UI also tends to be touch-friendly and
+gamepad-navigable.
+
+## Viewport matrix
+
+Every state of every surface is captured at each of these before it goes to review. Three sizes
+were not enough: a flyout that fitted 844×390 ran off a 667-tall screen, and a desktop window
+with the browser's chrome is far shorter than 1080.
+
+| Viewport | Why it is here |
+|---|---|
+| 667×375 | the smallest common phone; flyouts and stacks run out of height first |
+| 844×390 | the usual phone; text floors and thumb reach |
+| 1024×768 | tablet; wide panels squeezed, thumb zones farther in |
+| 1270×557 | a desktop window with browser chrome; short and wide |
+| 1920×1080 | full desktop and console; stretched panels, ten-foot text |
+| any of the above at graphics quality 1 | SurfaceGuis and effects can draw blank at the lowest level |
+
+Capture with the People list open and with every timed element showing at once (banners,
+chips, badges, toasts). Overlaps hide in the states that rarely coincide.
 
 ## Thumb zones (touch)
 
