@@ -8,8 +8,8 @@
     {
       "name": "th3-skills",
       "source": "./",
-      "description": "Claude Code skills that each do a whole job: agent-kit, design, containers, dependency-vuln-explainer, devops, documentation, game-dev, marketing, poc-spec-driven-builder, qa, social-media, software-engineer, thai-mock-naming.",
-      "version": "2.0.0",
+      "description": "Claude Code skills that each do a whole job: agent-kit, containers, dependency-vuln-explainer, design, devops, documentation, game-dev, marketing (incl. social-media), poc-spec-driven-builder, qa, thai-mock-naming.",
+      "version": "3.0.0",
       "category": "productivity",
       "keywords": [
         "claude-code",

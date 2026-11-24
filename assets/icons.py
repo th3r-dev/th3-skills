@@ -6,6 +6,7 @@ tile behind the art, so it reads on GitHub's light and dark themes alike.
 
 Run: uv run assets/icons.py   (stdlib only)
 """
+import glob
 import os
 
 Y, INK = "#FFD60A", "#0A0A0A"
@@ -87,12 +88,6 @@ ART = {
         f'<circle cx="84" cy="30" r="7" {_f()}/>'
         f'<path d="M84 30Q100 4 112 14" {_s(3.5)}/>'
         f'<path d="M44 46V80M44 46H56Q64 46 64 54Q64 62 56 62H44M44 62H58Q66 62 66 71Q66 80 58 80H44M50 40V86" {_s(4)}/>'),
-    # a post card: the cover image on top, a title and two lines under it
-    "social-media": (
-        f'<rect x="14" y="10" width="92" height="100" rx="8" {_s()}/>'
-        f'<rect x="24" y="20" width="72" height="42" rx="4" {_f()}/>'
-        f'<path d="M30 56L48 38L60 50L68 42L90 56Z" fill="{Y}"/>'
-        f'<path d="M24 76H96" {_s(5)}/><path d="M24 90H76" {_s(3.5)}/><path d="M24 100H64" {_s(3.5)}/>'),
     # a dependency tree with the vulnerable leaf traced from the root
     "dependency-vuln-explainer": (
         f'<path d="M60 20L30 60M60 20L90 60M30 60L18 100M90 60L90 100" {_s(3.5)} opacity=".5"/>'
@@ -117,10 +112,11 @@ def icon_svg(name):
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    have = {d for d in os.listdir(os.path.join(root, "skills")) if os.path.isfile(os.path.join(root, "skills", d, "SKILL.md"))}
-    assert have == set(ART), f"skills without an icon: {sorted(have - set(ART))}; icons without a skill: {sorted(set(ART) - have)}"
+    dirs = {os.path.basename(os.path.dirname(f)): os.path.dirname(f) for f in glob.glob(os.path.join(root, "skills", "*", "*", "SKILL.md"))}
+    shipped = {n for n, d in dirs.items() if os.sep + "shipped" + os.sep in d}
+    assert shipped <= set(ART) <= set(dirs), f"shipped skills without an icon: {sorted(shipped - set(ART))}; icons without a skill: {sorted(set(ART) - set(dirs))}"
     for name in sorted(ART):
-        d = os.path.join(root, "skills", name, "assets")
+        d = os.path.join(dirs[name], "assets")
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "icon.svg"), "w", encoding="utf-8") as fh:
             fh.write(icon_svg(name))

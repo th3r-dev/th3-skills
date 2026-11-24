@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'skills/agent-kit/**'
+      - 'skills/shipped/agent-kit/**'
       - '.github/workflows/agent-kit.yml'
   pull_request:
     paths:
-      - 'skills/agent-kit/**'
+      - 'skills/shipped/agent-kit/**'
       - '.github/workflows/agent-kit.yml'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: skills/agent-kit
+    working-directory: skills/shipped/agent-kit
 
 jobs:
   test:

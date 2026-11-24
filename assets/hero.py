@@ -9,14 +9,14 @@ Right: a stage that walks the skills one by one and shows each one's input and o
 while a highlight follows it down the index.
 
 Run: uv run assets/hero.py   (uv installs fonttools + brotli from the header)
-Helpers and fonts come from skills/design/core/assets/hero.py.
+Helpers and fonts come from skills/shipped/design/core/assets/hero.py.
 """
 import importlib.util, os
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _spec = importlib.util.spec_from_file_location(
-    "dc_hero", os.path.join(HERE, "..", "skills", "design", "core", "assets", "hero.py"))
+    "dc_hero", os.path.join(HERE, "..", "skills", "shipped", "design", "core", "assets", "hero.py"))
 dc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(dc)
 Doc, embed_fonts, width, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.width, dc.Y, dc.INK, dc.INK2, dc.INK3
@@ -33,10 +33,8 @@ SKILLS = [
      ["“Can tickets sync to a sheet?”"], ["spec, test matrix, build,", "a PR with the proof"]),
     ("design", "screens, flows, banners, scored",
      ["a live page, a brief,", "an author's own 9.8"], ["a Figma screen and its flow,", "a banner; critic-scored 9.4"]),
-    ("marketing", "prices from costs, listings",
-     ["a salary, monthly costs,", "a marketplace category"], ["4 packages, none at a loss,", "a listing ready to paste"]),
-    ("social-media", "posts and covers, fact-checked",
-     ["a Thai prompt: write about", "the banner, hire me at the end"], ["5 titles, 6 hooks, a Thai post,", "a cover; case passes 7/7"]),
+    ("marketing", "prices, listings and posts",
+     ["a salary, monthly costs,", "a marketplace category"], ["4 packages, none at a loss,", "a listing, a post to sell it"]),
     ("agent-kit", "cheaper agent runs",
      ["every agent on the top tier,", "briefs that differ"], ["the cheapest tier that works,", "one cached prefix"]),
     ("thai-mock-naming", "mock names that are fake on sight",
@@ -47,8 +45,7 @@ SKILLS = [
      ["a Q&A sheet, export buttons,", "an Excel import, a ticket"], ["remarks, an evidence .xlsx,", "a test run, a Jira report"]),
     ("devops", "infra changes with a report",
      ["a change on a real server"], ["plan, approved steps, checks,", "before / after / rollback"]),
-    ("software-engineer", "release docs for PM, BA, QA",
-     ["a release scope, retests,", "before and after shots"], ["a release PDF: changes, shots,", "BA questions, a test plan"]),
+  # software-engineer is in skills/in-progress/: back here when it ships
     ("documentation", "docs in one house style",
      ["a Markdown file,", "two annex PDFs"], ["one PDF + DOCX in the house", "theme, annexes merged"]),
     ("game-dev", "idea to playable game",

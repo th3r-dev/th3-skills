@@ -1,0 +1,22 @@
+name: layout
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: skills/ buckets, manifest, README, links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.5'
+          python-version: '3.12'
+      - name: Self-test
+        run: uv run --no-project python scripts/check_layout.py --selftest
+      - name: Check
+        run: uv run --no-project python scripts/check_layout.py

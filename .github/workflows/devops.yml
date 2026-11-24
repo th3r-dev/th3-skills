@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'skills/devops/**'
+      - 'skills/shipped/devops/**'
       - '.github/workflows/devops.yml'
   pull_request:
     paths:
-      - 'skills/devops/**'
+      - 'skills/shipped/devops/**'
       - '.github/workflows/devops.yml'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: skills/devops
+    working-directory: skills/shipped/devops
 
 jobs:
   test:

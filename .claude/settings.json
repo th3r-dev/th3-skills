@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; case \"$f\" in */skills/thai-mock-naming/*|*/README.md) exit 0;; esac; uv run --no-project python \"$CLAUDE_PROJECT_DIR/skills/thai-mock-naming/scripts/check_mock_names.py\" \"$f\" >&2 || exit 2; }",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; case \"$f\" in */thai-mock-naming/*|*/README.md) exit 0;; esac; uv run --no-project python \"$CLAUDE_PROJECT_DIR/skills/shipped/thai-mock-naming/scripts/check_mock_names.py\" \"$f\" >&2 || exit 2; }",
             "statusMessage": "Checking mock names..."
           }
         ]
@@ -18,11 +18,45 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --script \"$CLAUDE_PROJECT_DIR/skills/agent-kit/cost/scripts/agent_guard.py\"",
+            "command": "uv run --script \"$CLAUDE_PROJECT_DIR/skills/shipped/agent-kit/cost/scripts/agent_guard.py\"",
             "statusMessage": "Checking agent tier..."
           }
         ]
       }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(uv run --script skills/shipped/agent-kit/team/scripts/team.py board)",
+      "Bash(uv run --script skills/shipped/agent-kit/team/scripts/team.py doctor)",
+      "Bash(uv run --script skills/shipped/agent-kit/team/scripts/team.py next:*)",
+      "Bash(uv run --script skills/shipped/agent-kit/team/scripts/team.py claim:*)",
+      "Bash(uv run --script skills/shipped/agent-kit/team/scripts/team.py release:*)",
+      "Bash(uv run --script skills/shipped/agent-kit/prompt-cache/scripts/pcache.py brief:*)",
+      "Bash(uv run --script scripts/ci.py:*)",
+      "Bash(uv run --no-project python scripts/check_layout.py:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr comment:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(gh pr create --draft:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git fetch:*)",
+      "Bash(git worktree add /tmp/review-:*)",
+      "Bash(git worktree remove /tmp/review-:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m:*)",
+      "Bash(git switch -c feat/:*)",
+      "Bash(git switch -c fix/:*)",
+      "Bash(git push -u origin feat/:*)",
+      "Bash(git push -u origin fix/:*)",
+      "Bash(git push origin feat/:*)",
+      "Bash(git push origin fix/:*)"
     ]
   }
 }

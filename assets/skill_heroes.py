@@ -7,17 +7,17 @@
 Left: the skill's name, its claim, and how to install it. Right: the steps it really runs (from its
 SKILL.md); a marker walks down them, each step inverts while it runs and keeps a tick when done,
 then the output appears. The still (reduced motion) shows every step ticked and the output.
-design's core sub-skill also has its own hero (skills/design/core/assets/hero.py).
+design's core sub-skill also has its own hero (skills/shipped/design/core/assets/hero.py).
 
 Run: uv run assets/skill_heroes.py [name ...]   (uv installs fonttools + brotli from the header)
 """
-import importlib.util, os, sys
+import glob, importlib.util, os, sys
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 _spec = importlib.util.spec_from_file_location(
-    "dc_hero", os.path.join(ROOT, "skills", "design", "core", "assets", "hero.py"))
+    "dc_hero", os.path.join(ROOT, "skills", "shipped", "design", "core", "assets", "hero.py"))
 dc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(dc)
 Doc, embed_fonts, width, Y, INK, INK2, INK3 = dc.Doc, dc.embed_fonts, dc.width, dc.Y, dc.INK, dc.INK2, dc.INK3
@@ -43,18 +43,12 @@ SKILLS = {
         ["a design that passes the critic", "and the bench, not the author"]),
     "marketing": (
         ["Price from your costs,", "sell in the form's fields."],
-        ["Three sub-skills: strategy,", "pricing, listing."],
+        ["Four sub-skills: strategy, pricing,", "listing, social-media."],
         [("Market", "measure the category first"), ("Costs", "your numbers, averages for gaps"),
          ("Price", "no package below break-even"), ("Listing", "field by field, checked"),
-         ("Images", "service, steps, work sample")],
+         ("Images", "service, steps, work sample"),
+         ("Post", "a blog post and cover, benched")],
         ["a listing that pastes clean", "and packages that never lose money"]),
-    "social-media": (
-        ["A post and its cover,", "every claim checked."],
-        ["Two sub-skills: blog-post", "and blog-cover."],
-        [("Brief", "prompt translated, facts listed"), ("Hooks", "five titles, six typed hooks"),
-         ("Draft", "Thai with kien-thai, or English"), ("Review", "humanizer, then bench_post.py"),
-         ("Cover", "banner-design cover, benched")],
-        ["a post that passes its case", "and a cover that reads at 400px"]),
     "agent-kit": (
         ["Cheaper agent runs,", "same prefix every time."],
         ["The right tier, a finish line,", "one cached prefix for every brief."],
@@ -218,7 +212,7 @@ def build(name):
 if __name__ == "__main__":
     for name in sys.argv[1:] or SKILLS:
         svg, cycle = build(name)
-        d = os.path.join(ROOT, "skills", name, "assets")
+        d = os.path.join(glob.glob(os.path.join(ROOT, "skills", "*", name))[0], "assets")
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "hero.svg"), "w", encoding="utf-8") as fh:
             fh.write(svg)
