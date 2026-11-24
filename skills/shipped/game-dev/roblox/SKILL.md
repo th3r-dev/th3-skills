@@ -130,7 +130,9 @@ what the Luau VM rewards, and a review checklist, with each rule's source.
   `create.roblox.com/docs/reference/engine/llms.txt`.
 - **Effects.** Particles, beams, trails, highlights, ability visuals: read
   [`../roblox-vfx/SKILL.md`](../roblox-vfx/SKILL.md).
-- **Design:** for a young audience, run `design-lens`'s black-hat audit on anything paid.
+- **Money:** passes, products, ads, Creator Rewards, prices and the fair-wait rules are in
+  [`references/monetization.md`](references/monetization.md). For a young audience, run
+  `design-lens`'s black-hat audit on anything paid.
 
 ## World readability
 
