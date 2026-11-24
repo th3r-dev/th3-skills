@@ -90,8 +90,10 @@ For each mechanic, write its drive and hat. Then:
   allowed to start an action, never as the only reason to keep playing. Each one needs a white-hat
   reason to stay.
 - **Money.** Nothing that is paid for may use drive 6, 7 or 8 to push the purchase (countdown
-  offers, paid random boxes, "lose your progress unless…"). Check the platform's rules: Roblox
-  has its own for paid random items and for younger players.
+  offers, paid random boxes, "lose your progress unless…"). A paid speed-up is allowed only for a
+  wait that was tuned for fun before any price existed and was never stretched to sell the skip.
+  The rules are in [the monetization reference](../roblox/references/monetization.md#fair-speed-ups).
+  Check the platform's rules too: Roblox has its own for paid random items and for younger players.
 - **Young players.** On a platform with many children (Roblox), no loss-aversion or scarcity
   pressure around spending, and no social pressure to pay.
 - **Sensation.** If the fun depends on feel (game feel, haptics, audio), say what hardware the
