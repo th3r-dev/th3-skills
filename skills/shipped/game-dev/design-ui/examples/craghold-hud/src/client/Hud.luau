@@ -28,6 +28,7 @@ export type Hud = typeof(setmetatable(
 		delta: TextLabel,
 		objective: TextLabel,
 		shop: TextButton,
+		gear: TextButton,
 		stale: Frame,
 		shown: number?,
 		shownLevel: number?,
@@ -35,7 +36,7 @@ export type Hud = typeof(setmetatable(
 	Hud
 ))
 
-function Hud.new(player: Player, openShop: () -> ()): Hud
+function Hud.new(player: Player, openShop: () -> (), toggleSettings: () -> ()): Hud
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "Hud"
 	gui.ResetOnSpawn = false
@@ -99,8 +100,27 @@ function Hud.new(player: Player, openShop: () -> ()): Hud
 		-- tablets (closer to 4:3) need the button lower for the thumb; phones and desktops at 45%
 		shop.Position = UDim2.fromScale(0.985, if view.X / view.Y < 1.5 then 0.55 else 0.45)
 	end
-	(workspace.CurrentCamera :: Camera):GetPropertyChangedSignal("ViewportSize"):Connect(placeShop)
+	-- the Settings gear: under the Shop button, smaller, still above the jump button
+	local gear = Ui.button(
+		gui,
+		"Settings",
+		UDim2.fromScale(0.063, 0.063),
+		"⚙",
+		"Panel",
+		"OnPanel",
+		toggleSettings
+	)
+	gear.AnchorPoint = Vector2.new(1, 0.5)
+	Ui.aspect(gear, 1)
+	local function placeGear()
+		local view = (workspace.CurrentCamera :: Camera).ViewportSize
+		gear.Position = UDim2.fromScale(0.985, if view.X / view.Y < 1.5 then 0.7 else 0.6)
+	end
+	local camera = workspace.CurrentCamera :: Camera
+	camera:GetPropertyChangedSignal("ViewportSize"):Connect(placeShop)
+	camera:GetPropertyChangedSignal("ViewportSize"):Connect(placeGear)
 	placeShop()
+	placeGear()
 
 	local self = setmetatable({
 		player = player,
@@ -111,6 +131,7 @@ function Hud.new(player: Player, openShop: () -> ()): Hud
 		delta = delta,
 		objective = objective,
 		shop = shop,
+		gear = gear,
 		stale = stale,
 		shown = nil,
 		shownLevel = nil,

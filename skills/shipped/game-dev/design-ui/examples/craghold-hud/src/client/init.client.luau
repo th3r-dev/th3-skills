@@ -9,11 +9,15 @@ local RunService = game:GetService("RunService")
 local Hud = require("@self/Hud")
 local KeyShop = require("@self/KeyShop")
 local LayoutLint = require("@self/LayoutLint")
+local SettingsPanel = require("@self/SettingsPanel")
 
 local player = Players.LocalPlayer
 local shop = KeyShop.new(player)
+local settings = SettingsPanel.new(player)
 Hud.new(player, function()
 	shop:open()
+end, function()
+	settings:toggle()
 end)
 
 ProximityPromptService.PromptTriggered:Connect(function(prompt)

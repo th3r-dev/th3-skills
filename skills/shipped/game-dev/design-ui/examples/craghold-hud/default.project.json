@@ -85,6 +85,15 @@
           ]
         }
       }
+    },
+    "SoundService": {
+      "$className": "SoundService",
+      "Music": {
+        "$className": "SoundGroup"
+      },
+      "Effects": {
+        "$className": "SoundGroup"
+      }
     }
   }
 }

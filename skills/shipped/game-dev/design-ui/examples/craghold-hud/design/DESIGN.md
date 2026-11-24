@@ -1,6 +1,6 @@
 # Craghold: UI system
 
-Status: draft (style contract added; approved before it)
+Status: approved
 
 ## Look
 From Craghold's key art (design's thumbnail-keyart example): navy plates, a gold accent for the goal

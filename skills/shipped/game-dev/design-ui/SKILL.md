@@ -80,7 +80,8 @@ Detail: [layout](references/layout.md), [visual language](references/visual.md),
    `loading` until the answer arrives.
 9. **Run it, before review.** Playtest in Studio, then capture each surface in the Device Emulator
    at every size in the [viewport matrix](references/layout.md#viewport-matrix), in every state, with
-   the People list open and every timed element showing, using the Studio MCP server's screenshot
+   the People list open and every timed element showing, and with each input the game supports
+   (touch, keyboard, gamepad) played once, using the Studio MCP server's screenshot
    tool or by hand. The author does this; a surface goes to review with its captures, never
    without. Read the output log for errors. A check that could not run is NOT ASSESSED, never a
    pass.
@@ -97,7 +98,8 @@ Detail: [layout](references/layout.md), [visual language](references/visual.md),
 [examples/craghold-hud](examples/craghold-hud/README.md): the HUD and dungeon-key shop of Craghold,
 the mock game whose thumbnails design's thumbnail-keyart makes. It includes the approved briefs,
 StyleSheet tokens taken from the thumbnail, pure Luau modules tested under Lune, a server that
-checks every purchase, and Studio captures at three devices.
+checks every purchase, Studio captures at three devices, and a Settings panel, `Juice` effects and
+the layout lint added after (their Studio run is listed as NOT ASSESSED in its README).
 
 ## Sources
 

@@ -82,6 +82,7 @@ with the browser's chrome is far shorter than 1080.
 | 1024×768 | tablet; wide panels squeezed, thumb zones farther in |
 | 1270×557 | a desktop window with browser chrome; short and wide |
 | 1920×1080 | full desktop and console; stretched panels, ten-foot text |
+| the owner's own window | ask for it; one owner played at 1270×499, a size no list had |
 | any of the above at graphics quality 1 | SurfaceGuis and effects can draw blank at the lowest level |
 
 Capture with the People list open and with every timed element showing at once (banners,
