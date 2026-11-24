@@ -55,6 +55,13 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
 | 6 | **Grow**: one feature a sitting. Name it, build it, run it, look at it, commit it. Check it against the brief's "keep" and "avoid". A feature with a screen gets its UI brief approved first (`design-ui`) | the feature is in a commit, with what was checked |
 | 7 | **Cut and ship**: list what to cut, a polish list, the date it ships | the person signs off the list |
 
+**Hand the build to a loop.** Steps 5–6 are one move repeated — name a feature, build it, run it,
+look at it, commit it — so once the brief locks they can run as an agentic loop instead of by hand:
+one GitHub issue per feature from the brief's build order, worked by role agents
+([`agent-kit/team`](../agent-kit/team/SKILL.md)) with the `playtester` for Roblox. Design (steps
+1–3) and the cut (step 7) stay with the person. How to shape the issues and brief each agent so it
+keeps the gates below: [`references/agentic-build.md`](references/agentic-build.md).
+
 ## Rules every step keeps
 
 - **Playable before paperwork.** One page of brief, then a build. More documents only when the
@@ -77,6 +84,11 @@ Roblox route. **If the project is a copy of that template** (its `CLAUDE.md` nam
   on unmerged work. A change that removes a system lists everything that used it first (a removed
   farm left day-one quests asking for mobs that no longer existed). When feedback says to remove
   something shown in a screenshot, list every object in that screenshot and ask which ones go.
+- **Every agent carries the instructions.** When the build runs as a loop, each agent's brief
+  preloads this skill and ends with its feature's "Done when"; the reviewer blocks a PR that skipped
+  a gate — no capture across the viewport matrix, a NOT ASSESSED row dropped, a fourth round on one
+  problem, work stacked on unmerged work. An agent with no instruction and no finish line loops.
+  See [`references/agentic-build.md`](references/agentic-build.md).
 - **The person's words, literally.** Quote the ask in the brief. If the build differs from it,
   say how and ask, rather than reinterpreting.
 - **The owner plays each milestone.** Before you hand a milestone over, run a scripted player
