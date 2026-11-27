@@ -29,6 +29,8 @@ SLIDE = 2.8
 
 # copy first: (skill, its job, what goes in, what comes out); lifecycle order
 SKILLS = [
+    ("th3-skills", "the front door, routes the task",
+     ["any job for this toolkit"], ["the skill that owns it,", "plans by default to build"]),
     ("plans", "idea to a tested PR",
      ["“prove this works”"], ["agent-kit, design, qa, devops,", "a PR built to a councilled spec"]),
     ("design", "screens, flows, banners, scored",

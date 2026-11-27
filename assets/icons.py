@@ -22,6 +22,12 @@ def _f():
 
 
 ART = {
+    # a command palette: the front door that launches the right skill
+    "th3-skills": (
+        f'<rect x="10" y="22" width="100" height="76" rx="8" {_s()}/>'
+        f'<path d="M26 44l11 8l-11 8" {_s(5)}/>'
+        f'<path d="M50 60H92" {_s(5)}/>'
+        f'<path d="M26 82H94" {_s(4)}/>'),
     # a gamepad: d-pad left, two buttons right
     "game-dev": (
         f'<path d="M34 36H86C100 36 110 48 112 64L114 84C115 94 106 100 98 94L84 80H36L22 94C14 100 5 94 6 84L8 64C10 48 20 36 34 36Z" {_s(fill=Y)}/>'
