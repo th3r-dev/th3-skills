@@ -6,7 +6,7 @@ chairman turns that into edits to the brief. It runs once, between step 3 (the b
 
 Method after Karpathy's LLM Council (different models answer, then rank each other anonymously), in
 the one-model-five-lenses form the repo already uses for specs
-([`poc-spec-driven-builder/references/council.md`](../../poc-spec-driven-builder/references/council.md)).
+([`poc-spec-driven-builder/references/council.md`](../../plans/poc-spec-driven-builder/references/council.md)).
 Text here is our own.
 
 ## The five lenses
