@@ -17,7 +17,7 @@ The facts come from `devops-release-scope` (`scope.md`: what is new against prod
 what is pending) and from the tickets and retest results. This skill turns them into the document.
 
 ```bash
-S=skills/in-progress/software-engineer/release-docs
+S=skills/shipped/software-engineer/release-docs
 D=skills/shipped/documentation/doc-style
 cp $S/references/template-th.md work/release/v1.4.0/release-v1.4.0.md      # or template-en.md; fill it in
 mkdir -p work/release/v1.4.0/img                                           # copies of the screenshots

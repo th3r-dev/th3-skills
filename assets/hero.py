@@ -29,14 +29,16 @@ SLIDE = 2.8
 
 # copy first: (skill, its job, what goes in, what comes out); lifecycle order
 SKILLS = [
-    ("poc-spec-driven-builder", "proves an idea, tests first",
-     ["“Can tickets sync to a sheet?”"], ["spec, test matrix, build,", "a PR with the proof"]),
+    ("plans", "idea to a tested PR",
+     ["“prove this works”"], ["agent-kit, design, qa, devops,", "a PR built to a councilled spec"]),
     ("design", "screens, flows, banners, scored",
      ["a live page, a brief,", "an author's own 9.8"], ["a Figma screen and its flow,", "a banner; critic-scored 9.4"]),
     ("marketing", "prices, listings and posts",
      ["a salary, monthly costs,", "a marketplace category"], ["4 packages, none at a loss,", "a listing, a post to sell it"]),
     ("agent-kit", "cheaper agent runs",
      ["every agent on the top tier,", "briefs that differ"], ["the cheapest tier that works,", "one cached prefix"]),
+    ("cross-agent-skills", "skills any agent can run",
+     ["a skill written for Claude,", "a Codex session"], ["a skill any agent runs,", "handoffs by label and PR"]),
     ("thai-mock-naming", "mock names that are fake on sight",
      ["a test user who looks", "like a real person"], ["a marker name: fake on sight,", "one grep finds every row"]),
     ("dependency-vuln-explainer", "does this CVE reach you?",
@@ -45,7 +47,8 @@ SKILLS = [
      ["a Q&A sheet, export buttons,", "an Excel import, a ticket"], ["remarks, an evidence .xlsx,", "a test run, a Jira report"]),
     ("devops", "infra changes with a report",
      ["a change on a real server"], ["plan, approved steps, checks,", "before / after / rollback"]),
-  # software-engineer is in skills/in-progress/: back here when it ships
+    ("software-engineer", "the release report, documented",
+     ["a release, its tickets", "and screenshots"], ["one PDF for PM, BA and QA,", "with the staging test plan"]),
     ("documentation", "docs in one house style",
      ["a Markdown file,", "two annex PDFs"], ["one PDF + DOCX in the house", "theme, annexes merged"]),
     ("game-dev", "idea to playable game",

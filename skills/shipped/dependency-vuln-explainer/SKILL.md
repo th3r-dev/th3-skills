@@ -119,7 +119,7 @@ Write the card from [references/vuln-card.md](references/vuln-card.md). It is th
 
 When the user wants to *see* it — "show me a real example", "prove the verdict", "does it actually fire here" — turn the card into a tiny spec-driven PoC and run it in a throwaway container. The PoC proves one thing: **whether the vulnerable code is reachable the way the verdict claims.** A clean R0/R1 PoC that fails to trigger is as valuable as an R3 PoC that does.
 
-Drive the `poc-spec-driven-builder` skill with a scope locked to verification, and read [references/repro.md](references/repro.md) for the container recipe and the two spec shapes (confirm-reachable vs confirm-safe). Guardrails that override nothing in that skill:
+Drive `plans`'s `poc-spec-driven-builder` sub-skill (`plans-poc-spec-driven-builder`) with a scope locked to verification, and read [references/repro.md](references/repro.md) for the container recipe and the two spec shapes (confirm-reachable vs confirm-safe). Guardrails that override nothing in that skill:
 
 - The PoC lives in the scratchpad or a disposable repo, **never** committed to the target. Skip that skill's ticket/branch/PR step unless the user explicitly wants a PoC repo of their own.
 - It runs only against a local harness built from the one vulnerable package plus the app's own calling pattern — never against a deployed instance.
