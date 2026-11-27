@@ -8,8 +8,8 @@ description: >-
   agent will run these skills, a skill assumes a tool the agent doesn't have, or an engine/MCP server
   is connected but its tools aren't in the agent's tool list. Built from a real run: a Codex session
   built a Roblox game with the game-dev skill, then was interviewed about what it read, skipped and
-  worked around. Pairs with [`agent-kit/team`](../../shipped/agent-kit/team/SKILL.md) (the handoff
-  protocol) and [`agent-kit/cost`](../../shipped/agent-kit/cost/SKILL.md).
+  worked around. Pairs with [`agent-kit/team`](../agent-kit/team/SKILL.md) (the handoff
+  protocol) and [`agent-kit/cost`](../agent-kit/cost/SKILL.md).
 ---
 
 # Cross-agent skills
@@ -74,7 +74,7 @@ Asked what a Claude agent would need to continue its work, Codex named: a **git 
 source committed**, **one canonical brief** for goals and decisions, and **reproducible steps with
 screenshots and console output**. There was no git repo, so the only trail was the files and the
 conversation — which the next agent doesn't have. The handoff is real only when it survives the
-session that made it. (The label-and-PR protocol is [`agent-kit/team`](../../shipped/agent-kit/team/SKILL.md).)
+session that made it. (The label-and-PR protocol is [`agent-kit/team`](../agent-kit/team/SKILL.md).)
 
 ## 8. Interview the agent that did the work
 

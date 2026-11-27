@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'skills/in-progress/software-engineer/**'
+      - 'skills/shipped/software-engineer/**'
       - '.github/workflows/software-engineer.yml'
   pull_request:
     paths:
-      - 'skills/in-progress/software-engineer/**'
+      - 'skills/shipped/software-engineer/**'
       - '.github/workflows/software-engineer.yml'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: skills/in-progress/software-engineer
+    working-directory: skills/shipped/software-engineer
 
 jobs:
   test:

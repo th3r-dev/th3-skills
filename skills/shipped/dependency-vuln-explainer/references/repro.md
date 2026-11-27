@@ -2,7 +2,7 @@
 
 A repro answers one question: **does the vulnerable code behave as the verdict says in this app's usage pattern?** It is a test, not an attack. The sink is a harmless sentinel. Run it only when the user asks to see a real example, and only in a disposable, network-less container.
 
-This is step 7 of the skill. Use the `poc-spec-driven-builder` process (research → SRS → test matrix → build → verify) but keep the scope tiny and skip its ticket/branch/PR tail unless the user wants a PoC repo.
+This is step 7 of the skill. Use the `plans` skill's `poc-spec-driven-builder` process (research → SRS → test matrix → build → verify) but keep the scope tiny and skip its ticket/branch/PR tail unless the user wants a PoC repo.
 
 ## What the PoC contains
 

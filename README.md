@@ -1,6 +1,6 @@
 # th3-skills
 
-<p align="center"><img src="assets/hero.svg" width="100%" alt="th3-skills: all twelve skills with the job each one does, and an animated stage showing what goes in and what comes out of each"></p>
+<p align="center"><img src="assets/hero.svg" width="100%" alt="th3-skills: all thirteen skills with the job each one does, and an animated stage showing what goes in and what comes out of each"></p>
 
 Skills for Claude Code, installable via [`npx skills`](https://dev.to/baltz/sharing-skills-with-npx-2nbc).
 
@@ -13,12 +13,14 @@ Skills for Claude Code, installable via [`npx skills`](https://dev.to/baltz/shar
 ## Install a skill
 
 ```
-npx skills@latest add th3r-dev/th3-skills --skill poc-spec-driven-builder
+npx skills@latest add th3r-dev/th3-skills --skill plans
 ```
 
 ## Skills
 
-- <img src="skills/shipped/poc-spec-driven-builder/assets/icon.svg" width="22" height="22" align="top" alt=""> [`poc-spec-driven-builder`](skills/shipped/poc-spec-driven-builder/SKILL.md) — builds a proof of concept end-to-end: research → SRS → council review → test matrix → implementation → verification, run autonomously without pausing for clarification.
+- <img src="skills/shipped/plans/assets/icon.svg" width="22" height="22" align="top" alt=""> [`plans`](skills/shipped/plans/SKILL.md) — plan-then-build toolkit, one orchestrator over the other th3-skills. Routes a loose idea through four phases — agent-kit sets up the team and model routing, design plus a councilled SRS cleans the requirement, qa and devops build it cheap and fast with a `--selftest` on every script, then it ships as a ticket and a PR — with the autonomous `poc-spec-driven-builder` engine (research → SRS → five-advisor council → test matrix → build-to-green → PR) moved in as its sub-skill.
+- <img src="skills/shipped/cross-agent-skills/assets/icon.svg" width="22" height="22" align="top" alt=""> [`cross-agent-skills`](skills/shipped/cross-agent-skills/SKILL.md) — make a skill or a whole project usable by any coding agent (Codex, Cursor, Gemini CLI, an MCP client), not just Claude, and hand work off between them reliably. Built from a real run: a Codex session built a Roblox game with the `game-dev` skill, then was interviewed about what it read, skipped and worked around. Pairs with `agent-kit`'s `team` and `cost`.
+- <img src="skills/shipped/software-engineer/assets/icon.svg" width="22" height="22" align="top" alt=""> [`software-engineer`](skills/shipped/software-engineer/SKILL.md) — software engineering toolkit, one skill with a sub-skill: `release-docs` builds the release report for the PM, the BA and QA — what goes up in vX.Y.Z, a before/after screenshot per change, the open BA decisions and the staging test plan — from a Thai or English template, checked by a script and rendered to PDF in the documentation house style.
 - <img src="skills/shipped/thai-mock-naming/assets/icon.svg" width="22" height="22" align="top" alt=""> [`thai-mock-naming`](skills/shipped/thai-mock-naming/README.md) — Thai mock names that are unmistakably fake, greppable in a database, and still exercise real Thai text handling. Replaces สมชาย ใจดี / สมหญิง พอใจ with marker names like ทดสอบ นามสมมุติ. Ships a generator and a linter.
 - <img src="skills/shipped/documentation/assets/icon.svg" width="22" height="22" align="top" alt=""> [`documentation`](skills/shipped/documentation/SKILL.md) — documentation toolkit, one skill with two sub-skills: `doc-style` documents any work product (API, deploy, system, release) in one house style, with seven document skeletons, a TH Sarabun theme with change highlighting, and Markdown → PDF + DOCX in one command; `pdf-operations` merges, splits, reorders, rotates and overlays PDFs through an existing `pdf-lib` pipeline instead of writing a new one.
 
@@ -44,7 +46,7 @@ Grouped by SOC occupation, the classification [SkillsMP](https://skillsmp.com/cr
 
 | Occupation | Skills |
 |---|---|
-| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`poc-spec-driven-builder`](skills/shipped/poc-spec-driven-builder/SKILL.md), [`agent-kit`](skills/shipped/agent-kit/SKILL.md), [`thai-mock-naming`](skills/shipped/thai-mock-naming/SKILL.md) |
+| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`plans`](skills/shipped/plans/SKILL.md), [`software-engineer`](skills/shipped/software-engineer/SKILL.md), [`cross-agent-skills`](skills/shipped/cross-agent-skills/SKILL.md), [`agent-kit`](skills/shipped/agent-kit/SKILL.md), [`thai-mock-naming`](skills/shipped/thai-mock-naming/SKILL.md) |
 | [Software Quality Assurance Analysts and Testers](https://skillsmp.com/occupations/software-quality-assurance-analysts-and-testers) | [`qa`](skills/shipped/qa/SKILL.md), [`thai-mock-naming`](skills/shipped/thai-mock-naming/SKILL.md) |
 | [Network and Computer Systems Administrators](https://skillsmp.com/occupations/network-and-computer-systems-administrators) | [`devops`](skills/shipped/devops/SKILL.md), [`containers`](skills/shipped/containers/SKILL.md) |
 | [Information Security Analysts](https://skillsmp.com/occupations/information-security-analysts) | [`dependency-vuln-explainer`](skills/shipped/dependency-vuln-explainer/SKILL.md) |

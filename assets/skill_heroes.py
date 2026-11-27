@@ -28,13 +28,18 @@ W, H = 1280, 640
 
 # copy first. name: (claim, sub, steps [(step, detail)], output)
 SKILLS = {
-    "poc-spec-driven-builder": (
-        ["Proves an idea works,", "tests before code."],
-        ["Research, a spec and a full test matrix", "come before any implementation."],
-        [("Research", "best practice for the stack"), ("Spec", "an SRS a council pressure-tests"),
-         ("Ticket", "issue filed, branch cut"), ("Tests", "a matrix for every requirement"),
-         ("Build", "until the tests pass"), ("Ship", "report, push, open the PR")],
-        ["a PR that proves it, and what", "a full build would still need"]),
+    "plans": (
+        ["One idea in,", "a tested PR out."],
+        ["Routes agent-kit, design, qa and devops", "through a spec-driven pipeline."],
+        [("Team", "agent-kit sets up routing and board"), ("Clean", "design plus a councilled SRS"),
+         ("Build", "qa and devops, cheap and self-checked"), ("Ship", "ticket, report, PR into dev")],
+        ["a tested PR, built to a spec", "a council pressure-tested"]),
+    "cross-agent-skills": (
+        ["Skills any agent can run,", "not just Claude."],
+        ["Codex, Cursor, Gemini or an MCP client,", "with reliable handoffs between them."],
+        [("Read", "what a non-Claude agent skips"), ("Fix", "the tool a skill assumes"),
+         ("Hand off", "a label and a PR, not chat"), ("Check", "the other agent can run it")],
+        ["a skill that works on any agent,", "and a clean handoff protocol"]),
     "design": (
         ["Design from references,", "scored by a critic."],
         ["Four sub-skills: core, flow,", "banner-design, thumbnail-keyart."],

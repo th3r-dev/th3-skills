@@ -64,11 +64,20 @@ ART = {
         f'<rect x="36" y="42" width="44" height="10" {_f()}/>'
         f'<path d="M36 66H88M36 80H76M36 94H84" {_s(4)}/>'
         f'<rect x="30" y="74" width="4" height="12" {_f()}/>'),
-    # a lab flask: prove the idea
-    "poc-spec-driven-builder": (
-        f'<path d="M50 12H70M54 12V44L24 100Q21 108 30 108H90Q99 108 96 100L66 44V12" {_s()}/>'
-        f'<path d="M38 76H82L93 99Q95 104 89 104H31Q25 104 27 99Z" {_f()}/>'
-        f'<circle cx="56" cy="62" r="4" {_f()}/><circle cx="66" cy="54" r="3" {_f()}/>'),
+    # a routed pipeline: staged nodes, the last one checked off
+    "plans": (
+        f'<path d="M30 60H92" {_s()}/>'
+        f'<circle cx="30" cy="60" r="11" {_s(fill=Y)}/>'
+        f'<circle cx="60" cy="60" r="11" {_s(fill=Y)}/>'
+        f'<circle cx="92" cy="60" r="16" {_s(fill=Y)}/>'
+        f'<path d="M84 60l6 7l12-14" {_s(4)}/>'),
+    # one skill in the middle, handed out to several agents
+    "cross-agent-skills": (
+        f'<rect x="46" y="46" width="28" height="28" rx="5" {_s(fill=Y)}/>'
+        f'<path d="M48 48L26 30M72 48L94 30M60 74V96" {_s(4)}/>'
+        f'<circle cx="20" cy="26" r="10" {_s(fill=Y)}/>'
+        f'<circle cx="100" cy="26" r="10" {_s(fill=Y)}/>'
+        f'<circle cx="60" cy="102" r="10" {_s(fill=Y)}/>'),
     # a cache: stacked store, the shared prefix on top (agent runs that hit it)
     "agent-kit": (
         f'<path d="M20 28V92Q20 104 60 104Q100 104 100 92V28" {_s()}/>'

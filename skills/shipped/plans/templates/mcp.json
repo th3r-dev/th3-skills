@@ -1,0 +1,10 @@
+{
+  "_comment": "Target repo .mcp.json. Replace the placeholder server with the real ones Phase 2 needs (a tracker, a browser, an engine). Never commit tokens: use ${ENV_VAR}.",
+  "mcpServers": {
+    "example-server": {
+      "command": "npx",
+      "args": ["-y", "@scope/placeholder-mcp-server"],
+      "env": {"API_TOKEN": "${EXAMPLE_API_TOKEN}"}
+    }
+  }
+}
