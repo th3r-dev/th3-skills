@@ -28,6 +28,12 @@ W, H = 1280, 640
 
 # copy first. name: (claim, sub, steps [(step, detail)], output)
 SKILLS = {
+    "th3-skills": (
+        ["The front door to", "the whole toolkit."],
+        ["One command routes your task", "to the skill that owns it."],
+        [("Read", "what the task actually is"), ("Route", "plans, design, qa, devops…"),
+         ("Default", "plans runs the build pipeline"), ("Hand off", "the right skill takes it")],
+        ["the right skill, picked for you,", "plans by default to build"]),
     "plans": (
         ["One idea in,", "a tested PR out."],
         ["Routes agent-kit, design, qa and devops", "through a spec-driven pipeline."],

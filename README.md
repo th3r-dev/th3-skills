@@ -1,6 +1,6 @@
 # th3-skills
 
-<p align="center"><img src="assets/hero.svg" width="100%" alt="th3-skills: all thirteen skills with the job each one does, and an animated stage showing what goes in and what comes out of each"></p>
+<p align="center"><img src="assets/hero.svg" width="100%" alt="th3-skills: all fourteen skills with the job each one does, and an animated stage showing what goes in and what comes out of each"></p>
 
 Skills for Claude Code, installable via [`npx skills`](https://dev.to/baltz/sharing-skills-with-npx-2nbc).
 
@@ -18,6 +18,7 @@ npx skills@latest add th3r-dev/th3-skills --skill plans
 
 ## Skills
 
+- <img src="skills/shipped/th3-skills/assets/icon.svg" width="22" height="22" align="top" alt=""> [`th3-skills`](skills/shipped/th3-skills/SKILL.md) — the front door to the toolkit: reads the task and routes it to the skill that owns it — `plans` for a build, `design` for UI, `qa` / `devops` for test and infra, and so on. Auto-activates as the default way to start a job; it routes, the owning skill does the work.
 - <img src="skills/shipped/plans/assets/icon.svg" width="22" height="22" align="top" alt=""> [`plans`](skills/shipped/plans/SKILL.md) — plan-then-build toolkit, one orchestrator over the other th3-skills. Routes a loose idea through four phases — agent-kit sets up the team and model routing, design plus a councilled SRS cleans the requirement, qa and devops build it cheap and fast with a `--selftest` on every script, then it ships as a ticket and a PR — with the autonomous `poc-spec-driven-builder` engine (research → SRS → five-advisor council → test matrix → build-to-green → PR) moved in as its sub-skill.
 - <img src="skills/shipped/cross-agent-skills/assets/icon.svg" width="22" height="22" align="top" alt=""> [`cross-agent-skills`](skills/shipped/cross-agent-skills/SKILL.md) — make a skill or a whole project usable by any coding agent (Codex, Cursor, Gemini CLI, an MCP client), not just Claude, and hand work off between them reliably. Built from a real run: a Codex session built a Roblox game with the `game-dev` skill, then was interviewed about what it read, skipped and worked around. Pairs with `agent-kit`'s `team` and `cost`.
 - <img src="skills/shipped/software-engineer/assets/icon.svg" width="22" height="22" align="top" alt=""> [`software-engineer`](skills/shipped/software-engineer/SKILL.md) — software engineering toolkit, one skill with a sub-skill: `release-docs` builds the release report for the PM, the BA and QA — what goes up in vX.Y.Z, a before/after screenshot per change, the open BA decisions and the staging test plan — from a Thai or English template, checked by a script and rendered to PDF in the documentation house style.
@@ -46,7 +47,7 @@ Grouped by SOC occupation, the classification [SkillsMP](https://skillsmp.com/cr
 
 | Occupation | Skills |
 |---|---|
-| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`plans`](skills/shipped/plans/SKILL.md), [`software-engineer`](skills/shipped/software-engineer/SKILL.md), [`cross-agent-skills`](skills/shipped/cross-agent-skills/SKILL.md), [`agent-kit`](skills/shipped/agent-kit/SKILL.md), [`thai-mock-naming`](skills/shipped/thai-mock-naming/SKILL.md) |
+| [Software Developers](https://skillsmp.com/occupations/software-developers) | [`th3-skills`](skills/shipped/th3-skills/SKILL.md), [`plans`](skills/shipped/plans/SKILL.md), [`software-engineer`](skills/shipped/software-engineer/SKILL.md), [`cross-agent-skills`](skills/shipped/cross-agent-skills/SKILL.md), [`agent-kit`](skills/shipped/agent-kit/SKILL.md), [`thai-mock-naming`](skills/shipped/thai-mock-naming/SKILL.md) |
 | [Software Quality Assurance Analysts and Testers](https://skillsmp.com/occupations/software-quality-assurance-analysts-and-testers) | [`qa`](skills/shipped/qa/SKILL.md), [`thai-mock-naming`](skills/shipped/thai-mock-naming/SKILL.md) |
 | [Network and Computer Systems Administrators](https://skillsmp.com/occupations/network-and-computer-systems-administrators) | [`devops`](skills/shipped/devops/SKILL.md), [`containers`](skills/shipped/containers/SKILL.md) |
 | [Information Security Analysts](https://skillsmp.com/occupations/information-security-analysts) | [`dependency-vuln-explainer`](skills/shipped/dependency-vuln-explainer/SKILL.md) |

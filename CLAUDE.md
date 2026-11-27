@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A collection of Claude Code skills, shipped as one plugin (`.claude-plugin/`) and installable per skill via `npx skills`. Most are umbrella skills with sub-skills in subdirs.
 
+**Default workflow:** start any new job through the `th3-skills` front door (`/th3-skills:th3-skills`) — it reads the task and routes to the skill that owns it, defaulting to `plans` for anything that gets built.
+
 ## Layout
 
 Skills live in status buckets under `skills/` (after [9arm-skills](https://github.com/thananon/9arm-skills)):
